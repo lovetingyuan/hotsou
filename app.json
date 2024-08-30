@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "hotsou",
+    "name": "Hotsou",
     "slug": "hotsou",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#e8ffcc"
     },
     "ios": {
       "supportsTablet": true
@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tingyuan.hotsou"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +32,21 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8dc9d1fe-0fde-4416-a5f9-6f2947b0ccd4"
+      }
+    },
+    "owner": "tingyuan",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8dc9d1fe-0fde-4416-a5f9-6f2947b0ccd4"
     }
   }
 }
