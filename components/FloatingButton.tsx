@@ -12,10 +12,19 @@ import Animated, {
 
 interface FloatingButtonProps extends ViewProps {
   onPress: () => void
+  color?: string
 }
 
-export function FloatingButton({ onPress, style, ...rest }: FloatingButtonProps) {
+export function FloatingButton({ onPress, color, style, ...rest }: FloatingButtonProps) {
   const rotation = useSharedValue(0)
+  const colorStyle = {
+    shadowColor: '#f02a4b',
+    backgroundColor: '#f02a4b',
+  }
+  if (color) {
+    colorStyle.shadowColor = color
+    colorStyle.backgroundColor = color
+  }
 
   const startRotation = () => {
     rotation.value = withTiming(
@@ -44,8 +53,8 @@ export function FloatingButton({ onPress, style, ...rest }: FloatingButtonProps)
           startRotation()
         }}
       >
-        <Animated.View style={[styles.button, styles.menu, rotationAnimatedStyle]}>
-          <Ionicons name="refresh" size={30} color="white" />
+        <Animated.View style={[styles.button, styles.menu, colorStyle, rotationAnimatedStyle]}>
+          <Ionicons name="refresh" size={28} color="white" />
         </Animated.View>
       </TouchableOpacity>
     </View>

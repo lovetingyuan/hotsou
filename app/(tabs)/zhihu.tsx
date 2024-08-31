@@ -13,6 +13,12 @@ export default function Zhihu() {
           font-size: 20px;
           padding: 10px;
         }
+        .Question-mainEntity > div:nth-of-type(2) {
+          display: none;
+        }
+        .MobileModal-wrapper {
+          display: none !important;
+        }
       `}
       js={`
         if (root) {
@@ -21,8 +27,14 @@ export default function Zhihu() {
          title.textContent = '知乎热榜'
          root.prepend(title)
         }
+         setInterval(() => {
+          const btn = document.querySelector('.MobileModal-wrapper button')
+          if (btn) {
+            btn.click()
+          }
+         }, 200);
         `}
-      url={'https://www.zhihu.com/billboard?utm_id=0'}
+      url={'https://www.zhihu.com/billboard'}
     ></WebView>
   )
 }

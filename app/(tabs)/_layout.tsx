@@ -29,6 +29,43 @@ export default function TabLayout() {
     padding: 0,
     margin: 0,
   }
+  const tabs = [
+    {
+      name: 'index',
+      title: '微博',
+    },
+    {
+      name: 'baidu',
+      title: '百度',
+    },
+    {
+      name: 'toutiao',
+      title: '头条',
+    },
+    {
+      name: 'zhihu',
+      title: '知乎',
+    },
+    {
+      name: 'li',
+      title: 'LI',
+    },
+  ].map(item => {
+    return (
+      <Tabs.Screen
+        name={item.name}
+        key={item.name}
+        options={{
+          title: item.title,
+          tabBarLabelPosition: 'beside-icon',
+          tabBarAllowFontScaling: true,
+          tabBarIcon: undefined,
+          tabBarLabel: getTabBarLabel,
+          tabBarIconStyle,
+        }}
+      />
+    )
+  })
   return (
     <>
       <Tabs
@@ -37,37 +74,7 @@ export default function TabLayout() {
           headerShown: false,
         }}
       >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: '微博热搜',
-            tabBarLabelPosition: 'beside-icon',
-            tabBarAllowFontScaling: true,
-            tabBarIcon: undefined,
-            tabBarLabel: getTabBarLabel,
-            tabBarIconStyle,
-          }}
-        />
-        <Tabs.Screen
-          name="baidu"
-          options={{
-            title: '百度热搜',
-            tabBarLabelPosition: 'beside-icon',
-            tabBarLabel: getTabBarLabel,
-            tabBarAllowFontScaling: true,
-            tabBarIconStyle,
-          }}
-        />
-        <Tabs.Screen
-          name="zhihu"
-          options={{
-            title: '知乎热搜',
-            tabBarIcon: undefined,
-            tabBarLabel: getTabBarLabel,
-            tabBarLabelPosition: 'beside-icon',
-            tabBarIconStyle,
-          }}
-        />
+        {tabs}
       </Tabs>
     </>
   )
