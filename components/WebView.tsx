@@ -1,6 +1,14 @@
 import { WebView as RNWebView } from 'react-native-webview'
 import Constants from 'expo-constants'
-import { StyleSheet, View, ActivityIndicator, Platform, BackHandler } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  Platform,
+  BackHandler,
+  ToastAndroid,
+  Text,
+} from 'react-native'
 import React from 'react'
 import { FloatingButton } from './FloatingButton'
 
@@ -14,6 +22,19 @@ function __$inject() {
   }
   // @ts-ignore
   style.textContent = CSS_CODE
+  setInterval(() => {
+    if (document.getElementById('__keep-alive__')) {
+      document.getElementById('__keep-alive__')?.remove()
+    } else {
+      const div = document.createElement('div')
+      div.id = '__keep-alive__'
+      div.innerHTML = document.body.clientHeight + 'px'
+      div.style.width = '1px'
+      div.style.height = '1px'
+      div.style.fontSize = '0'
+      document.body.appendChild(div)
+    }
+  }, 500)
 }
 
 export default function WebView(props: {
@@ -55,6 +76,9 @@ export default function WebView(props: {
           .toString()
           .replace('CSS_CODE', JSON.stringify(props.css || ''))})();${props.js || ''};true;
         `}
+        onRenderProcessGone={syntheticEvent => {
+          ToastAndroid.show('请刷新下页面', ToastAndroid.SHORT)
+        }}
         // injectedJavaScriptBeforeContentLoaded
         renderLoading={() => (
           <View
@@ -86,6 +110,13 @@ export default function WebView(props: {
         onContentProcessDidTerminate={() => {
           webViewRef.current?.reload()
         }}
+        renderError={errorName => {
+          return (
+            <Text style={{ padding: 10, fontSize: 16, color: '#de4600' }}>
+              抱歉，网页加载失败 😔 {errorName}
+            </Text>
+          )
+        }}
         source={{
           uri: props.url,
         }}
@@ -93,6 +124,7 @@ export default function WebView(props: {
       {showReloadButton ? (
         <FloatingButton
           color="#54bb00"
+          style={{ opacity: 0.8 }}
           onPress={() => {
             webViewRef.current?.reload()
           }}

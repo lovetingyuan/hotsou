@@ -5,8 +5,10 @@ export default function Zhihu() {
     <WebView
       css={`
         .OpenInAppButton,
-        .OpenInApp {
-          display: none;
+        .OpenInApp,
+        .MobileModal-wrapper,
+        .MBannerAd {
+          display: none !important;
         }
         .zhihu-title {
           text-align: center;
@@ -14,9 +16,6 @@ export default function Zhihu() {
           padding: 10px;
         }
         .Question-mainEntity > div:nth-of-type(2) {
-          display: none;
-        }
-        .MobileModal-wrapper {
           display: none !important;
         }
       `}

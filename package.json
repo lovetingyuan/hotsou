@@ -7,6 +7,7 @@
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "build:android": "eas build --profile production --platform android",
+    "update:android": "eas update --branch production --platform android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
@@ -36,7 +37,8 @@
     "react-native-screens": "3.31.1",
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
-    "expo-updates": "~0.25.24"
+    "expo-updates": "~0.25.24",
+    "expo-application": "~5.9.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

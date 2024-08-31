@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import React from 'react'
-import { StyleSheet, TouchableOpacity, View, ViewProps } from 'react-native'
+import { Alert, StyleSheet, TouchableOpacity, View, ViewProps } from 'react-native'
 import Animated, {
   // Extrapolation,
   // interpolate,
@@ -9,6 +9,7 @@ import Animated, {
   // withSpring,
   withTiming,
 } from 'react-native-reanimated'
+import * as Application from 'expo-application'
 
 interface FloatingButtonProps extends ViewProps {
   onPress: () => void
@@ -52,6 +53,14 @@ export function FloatingButton({ onPress, color, style, ...rest }: FloatingButto
           onPress()
           startRotation()
         }}
+        onLongPress={() => {
+          Alert.alert(
+            '欢迎使用',
+            ['本应用聚合展示一些媒体热搜信息', `版本 ${Application.nativeApplicationVersion}`].join(
+              '\n'
+            )
+          )
+        }}
       >
         <Animated.View style={[styles.button, styles.menu, colorStyle, rotationAnimatedStyle]}>
           <Ionicons name="refresh" size={28} color="white" />
@@ -66,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     justifyContent: 'center',
-    bottom: 20,
+    bottom: 16,
     right: 20,
   },
   button: {

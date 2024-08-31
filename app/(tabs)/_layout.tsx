@@ -3,26 +3,25 @@ import React from 'react'
 
 import { Colors } from '@/constants/Colors'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { Text } from 'react-native'
+import { Pressable, Text } from 'react-native'
+
+const getTabBarLabel = (props: { focused: boolean; color: string; children: string }) => {
+  return (
+    <Text
+      style={{
+        color: props.color,
+        fontSize: 18,
+        fontWeight: props.focused ? 'bold' : 'normal',
+      }}
+    >
+      {props.children}
+    </Text>
+  )
+}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
-  const getTabBarLabel = (props: { focused: boolean; color: string; children: string }) => {
-    return (
-      <Text
-        // onLongPress={() => {
-        //   alert(9)
-        // }}
-        style={{
-          color: props.color,
-          fontSize: 18,
-          fontWeight: props.focused ? 'bold' : 'normal',
-        }}
-      >
-        {props.children}
-      </Text>
-    )
-  }
+
   const tabBarIconStyle = {
     width: 0,
     height: 0,
@@ -48,7 +47,7 @@ export default function TabLayout() {
     },
     {
       name: 'li',
-      title: 'LI',
+      title: '木子',
     },
   ].map(item => {
     return (
@@ -62,6 +61,23 @@ export default function TabLayout() {
           tabBarIcon: undefined,
           tabBarLabel: getTabBarLabel,
           tabBarIconStyle,
+          tabBarButton: props => {
+            // @ts-ignore
+            const textNode = props.children.props.children[1]
+            return (
+              <Pressable
+                onPress={evt => {
+                  props.onPress?.(evt)
+                }}
+                // onLongPress={() => {
+                //   // console.log(item.name)
+                // }}
+                style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+              >
+                {textNode}
+              </Pressable>
+            )
+          },
         }}
       />
     )
