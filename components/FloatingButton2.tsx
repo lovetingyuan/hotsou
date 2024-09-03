@@ -107,7 +107,7 @@ export function FloatingButton({ onPress, color, style, ...rest }: FloatingButto
         setIsOpen(false)
         animation.value = 0
       }
-    }, [])
+    }, [animation])
   )
   const infoBtn = (
     <Animated.View
