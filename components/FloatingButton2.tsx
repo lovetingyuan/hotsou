@@ -104,7 +104,8 @@ export function FloatingButton({ onPress, color, style, ...rest }: FloatingButto
   useFocusEffect(
     useCallback(() => {
       return () => {
-        toggleMenu()
+        setIsOpen(false)
+        animation.value = 0
       }
     }, [])
   )
