@@ -118,7 +118,14 @@ export default function About() {
   }
   return (
     <ThemedView style={{ flex: 1, padding: 20, gap: 20 }}>
-      <ThemedText style={{ fontSize: 20 }}>欢迎使用本应用</ThemedText>
+      <ThemedText
+        style={{ fontSize: 20 }}
+        onPress={() => {
+          // ToastAndroid.show('this is' + process.env.EXPO_PUBLIC_FOO, ToastAndroid.SHORT)
+        }}
+      >
+        欢迎使用本应用
+      </ThemedText>
       <ThemedText>聚合一些媒体的热搜热点，仅供展示和浏览</ThemedText>
       <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }}>
         <ThemedText>当前版本：{currentVersion}</ThemedText>
@@ -130,13 +137,13 @@ export default function About() {
                 Linking.openURL(latestVersion.downloadUrl)
               }}
             >
-              有更新：{latestVersion.version} 点击下载
+              有更新：{latestVersion.version}, 点击下载
             </Text>
           ) : (
-            <Text style={{ fontSize: 16 }}>暂无更新</Text>
+            <Text style={{ fontSize: 16, color: '#555' }}>暂无更新</Text>
           )
         ) : checking ? (
-          <Text style={{ fontSize: 16 }}>正在检查...</Text>
+          <Text style={{ fontSize: 16, color: '#555' }}>正在检查...</Text>
         ) : (
           <Text style={{ color: '#0065da', fontSize: 16 }} onPress={handleCheckAppUpdate}>
             检查更新
