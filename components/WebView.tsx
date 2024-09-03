@@ -132,7 +132,9 @@ export default function WebView(props: {
       if (Platform.OS === 'android') {
         BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress)
 
-        return () => BackHandler.removeEventListener('hardwareBackPress', onAndroidBackPress)
+        return () => {
+          BackHandler.removeEventListener('hardwareBackPress', onAndroidBackPress)
+        }
       }
     }, [])
   )

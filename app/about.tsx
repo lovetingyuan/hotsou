@@ -1,6 +1,8 @@
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import * as Application from 'expo-application'
+import React from 'react'
+import { StyleSheet, TextInput } from 'react-native'
 
 export default function About() {
   return (
@@ -11,3 +13,12 @@ export default function About() {
     </ThemedView>
   )
 }
+
+const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
+})

@@ -1,5 +1,5 @@
 import { Entypo } from '@expo/vector-icons'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, ViewProps } from 'react-native'
 import Animated, {
   Extrapolation,
@@ -8,7 +8,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import { Link } from 'expo-router'
+import { Link, useFocusEffect } from 'expo-router'
 
 interface FloatingButtonProps extends ViewProps {
   onPress: (action?: string) => void
@@ -101,6 +101,13 @@ export function FloatingButton({ onPress, color, style, ...rest }: FloatingButto
       return !current
     })
   }
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        toggleMenu()
+      }
+    }, [])
+  )
   const infoBtn = (
     <Animated.View
       style={[styles.button, styles.secondary, heartAnimatedStyle, opacityAnimatedStyle]}
@@ -109,10 +116,7 @@ export function FloatingButton({ onPress, color, style, ...rest }: FloatingButto
     </Animated.View>
   )
   return (
-    <View
-      style={[styles.container, style, { height: isOpen ? 233 : 52, borderWidth: 1 }]}
-      {...rest}
-    >
+    <View style={[styles.container, style, { height: isOpen ? 233 : 52 }]} {...rest}>
       {isOpen ? <Link href="/about">{infoBtn}</Link> : infoBtn}
       <TouchableOpacity
         activeOpacity={0.8}
