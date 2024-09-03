@@ -3,12 +3,14 @@ import { SimpleCrypto } from '@/utils'
 import React from 'react'
 import { Button, Text, TextInput, View } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useColorScheme } from '@/hooks/useColorScheme'
 
 const ch = new SimpleCrypto(process.env.EXPO_PUBLIC_LI_URL_ENC_KEY!)
 
 export default function Li() {
   const [showValue, setShowValue] = React.useState('-1')
   const [text, setText] = React.useState('')
+  const colorScheme = useColorScheme()
   React.useEffect(() => {
     AsyncStorage.getItem('__LI_SHOW').then(r => {
       if (r === '1') {
@@ -21,11 +23,18 @@ export default function Li() {
   if (showValue === '-1') {
     return <Text style={{ fontSize: 18, padding: 20 }}>loading...</Text>
   }
+
   if (showValue === '0') {
     return (
       <View style={{ flexDirection: 'column', marginTop: 100, padding: 20, gap: 20 }}>
         <TextInput
-          style={{ height: 40, borderWidth: 1, padding: 10 }}
+          style={{
+            height: 40,
+            borderWidth: 1,
+            padding: 10,
+            borderColor: colorScheme === 'dark' ? 'white' : 'black',
+            color: colorScheme === 'dark' ? 'white' : 'black',
+          }}
           onChangeText={setText}
           autoFocus
           placeholder="input text"
