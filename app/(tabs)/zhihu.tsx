@@ -1,5 +1,22 @@
 import WebView from '@/components/WebView'
 
+function __$inject() {
+  const root = document.getElementById('root')
+  if (root) {
+    const title = document.createElement('h1')
+    title.className = 'zhihu-title'
+    title.textContent = '知乎热榜'
+    root.prepend(title)
+  }
+  setInterval(() => {
+    const btn = document.querySelector('.MobileModal-wrapper button')
+    if (btn) {
+      // @ts-ignore
+      btn.click()
+    }
+  }, 200)
+}
+
 export default function Zhihu() {
   return (
     <WebView
@@ -22,20 +39,7 @@ export default function Zhihu() {
           display: none !important;
         }
       `}
-      js={`
-        if (root) {
-         const title = document.createElement('h1')
-         title.className = 'zhihu-title'
-         title.textContent = '知乎热榜'
-         root.prepend(title)
-        }
-         setInterval(() => {
-          const btn = document.querySelector('.MobileModal-wrapper button')
-          if (btn) {
-            btn.click()
-          }
-         }, 200);
-        `}
+      js={`(${__$inject})()`}
       url={'https://www.zhihu.com/billboard'}
     ></WebView>
   )

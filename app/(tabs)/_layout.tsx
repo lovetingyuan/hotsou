@@ -42,6 +42,10 @@ export default function TabLayout() {
       title: '头条',
     },
     {
+      name: 'douyin',
+      title: '抖音',
+    },
+    {
       name: 'zhihu',
       title: '知乎',
     },

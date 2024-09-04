@@ -1,6 +1,9 @@
 import WebView from '@/components/WebView'
 
 function __$inject() {
+  if (location.hostname !== 'top.baidu.com') {
+    return
+  }
   history.scrollRestoration = 'auto'
 
   document.body.addEventListener(

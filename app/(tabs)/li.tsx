@@ -25,6 +25,7 @@ export default function Li() {
   }
 
   if (showValue === '0') {
+    const color = colorScheme === 'dark' ? 'white' : 'black'
     return (
       <View style={{ flexDirection: 'column', marginTop: 100, padding: 20, gap: 20 }}>
         <TextInput
@@ -32,9 +33,10 @@ export default function Li() {
             height: 40,
             borderWidth: 1,
             padding: 10,
-            borderColor: colorScheme === 'dark' ? 'white' : 'black',
-            color: colorScheme === 'dark' ? 'white' : 'black',
+            borderColor: color,
+            color: color,
           }}
+          placeholderTextColor={'#555'}
           onChangeText={setText}
           autoFocus
           placeholder="input text"

@@ -1,6 +1,9 @@
 import WebView from '@/components/WebView'
 
 function __$inject() {
+  if (!location.pathname.startsWith('/p/106003')) {
+    return
+  }
   history.scrollRestoration = 'auto'
   document.body.addEventListener(
     'click',
