@@ -7,6 +7,9 @@ export default function Zhihu() {
         .OpenInAppButton,
         .OpenInApp,
         .MobileModal-wrapper,
+        .MHotFeedAd,
+        .AdBelowMoreAnswers,
+        .KfeCollection-VipRecommendCard,
         .MBannerAd {
           display: none !important;
         }
