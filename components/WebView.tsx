@@ -115,6 +115,7 @@ export default function WebView(props: {
   js?: string
   css?: string
   showReloadButton?: boolean
+  forbiddenUrls?: (string | RegExp)[]
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const canGoBackRef = React.useRef(false)
@@ -150,6 +151,7 @@ export default function WebView(props: {
         injectedJavaScriptForMainFrameOnly
         allowsInlineMediaPlayback
         mixedContentMode={'always'}
+        originWhitelist={['*']}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
         injectedJavaScript={`(${__$inject
           .toString()
@@ -176,21 +178,24 @@ export default function WebView(props: {
         onNavigationStateChange={navState => {
           canGoBackRef.current = navState.canGoBack
         }}
+        pullToRefreshEnabled
         onShouldStartLoadWithRequest={request => {
           // console.log(request.url)
-          if (request.url.includes('.apk')) {
-            return false
-          }
-          if (request.url.includes('passport.weibo.com')) {
-            return false
-          }
-          if (request.url.includes('activity.baidu.com/mbox')) {
-            return false
-          }
-          if (request.url.includes('wappass.baidu.com')) {
-            return false
-          }
           if (!request.url.startsWith('http')) {
+            return false
+          }
+          if (
+            props.forbiddenUrls &&
+            props.forbiddenUrls.some(v => {
+              if (typeof v === 'string') {
+                return request.url.includes(v)
+              }
+              return v.test(request.url)
+            })
+          ) {
+            return false
+          }
+          if (request.url.includes('.apk')) {
             return false
           }
           return true

@@ -49,6 +49,7 @@ export default function Baidu() {
           display: none !important;
         }
       `}
+      forbiddenUrls={['activity.baidu.com/mbox', 'wappass.baidu.com']}
     ></WebView>
   )
 }

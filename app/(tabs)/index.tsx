@@ -55,7 +55,7 @@ export default function Weibo() {
         }
       `}
       js={`(${__$inject})()`}
-      showReloadButton
+      forbiddenUrls={['passport.weibo.com']}
     ></WebView>
   )
 }
