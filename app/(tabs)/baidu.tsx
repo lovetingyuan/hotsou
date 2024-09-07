@@ -51,6 +51,9 @@ export default function Baidu() {
         #bdrainrwDragButton {
           display: none !important;
         }
+        .row-start-center:has(img[src*='redtop']) {
+          display: none;
+        }
       `}
       forbiddenUrls={['activity.baidu.com/mbox', 'wappass.baidu.com']}
     ></WebView>

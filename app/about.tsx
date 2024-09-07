@@ -9,73 +9,22 @@ const repo = process.env.EXPO_PUBLIC_GITHUB_REPO
 const url = `https://api.github.com/repos/${owner}/${repo}/releases`
 
 function checkAppUpdate() {
-  return fetch(url)
+  return fetch(url, {
+    method: 'GET',
+    headers: {
+      accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'user-agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0',
+    },
+  })
     .then(response => {
       if (!response.ok) {
-        response.text().then(r => {
-          __DEV__ && console.log('error:' + r)
+        return response.text().then(r => {
+          return Promise.reject(new Error(r))
         })
-        throw new Error('Network response was not ok')
       }
       return response.json()
-      // return [
-      //   {
-      //     assets: [
-      //       {
-      //         browser_download_url:
-      //           'https://github.com/lovetingyuan/hotsou/releases/download/v1.0.0/hotsou-1.0.0.apk',
-      //         content_type: 'application/vnd.android.package-archive',
-      //         created_at: '2024-09-03T10:09:11Z',
-      //         download_count: 1,
-      //         id: 190075111,
-      //         label: null,
-      //         name: 'hotsou-1.0.0.apk',
-      //         node_id: 'RA_kwDOMqmLs84LVFDn',
-      //         size: 73023396,
-      //         state: 'uploaded',
-      //         updated_at: '2024-09-03T10:09:35Z',
-      //         url: 'https://api.github.com/repos/lovetingyuan/hotsou/releases/assets/190075111',
-      //       },
-      //     ],
-      //     assets_url: 'https://api.github.com/repos/lovetingyuan/hotsou/releases/173181158/assets',
-      //     author: {
-      //       avatar_url: 'https://avatars.githubusercontent.com/u/7310471?v=4',
-      //       events_url: 'https://api.github.com/users/lovetingyuan/events{/privacy}',
-      //       followers_url: 'https://api.github.com/users/lovetingyuan/followers',
-      //       following_url: 'https://api.github.com/users/lovetingyuan/following{/other_user}',
-      //       gists_url: 'https://api.github.com/users/lovetingyuan/gists{/gist_id}',
-      //       gravatar_id: '',
-      //       html_url: 'https://github.com/lovetingyuan',
-      //       id: 7310471,
-      //       login: 'lovetingyuan',
-      //       node_id: 'MDQ6VXNlcjczMTA0NzE=',
-      //       organizations_url: 'https://api.github.com/users/lovetingyuan/orgs',
-      //       received_events_url: 'https://api.github.com/users/lovetingyuan/received_events',
-      //       repos_url: 'https://api.github.com/users/lovetingyuan/repos',
-      //       site_admin: false,
-      //       starred_url: 'https://api.github.com/users/lovetingyuan/starred{/owner}{/repo}',
-      //       subscriptions_url: 'https://api.github.com/users/lovetingyuan/subscriptions',
-      //       type: 'User',
-      //       url: 'https://api.github.com/users/lovetingyuan',
-      //     },
-      //     body: 'initial release',
-      //     created_at: '2024-09-03T10:08:35Z',
-      //     draft: false,
-      //     html_url: 'https://github.com/lovetingyuan/hotsou/releases/tag/v1.0.0',
-      //     id: 173181158,
-      //     name: 'v1.0.0',
-      //     node_id: 'RE_kwDOMqmLs84KUojm',
-      //     prerelease: false,
-      //     published_at: '2024-09-03T10:09:45Z',
-      //     tag_name: 'v1.0.0',
-      //     tarball_url: 'https://api.github.com/repos/lovetingyuan/hotsou/tarball/v1.0.0',
-      //     target_commitish: 'main',
-      //     upload_url:
-      //       'https://uploads.github.com/repos/lovetingyuan/hotsou/releases/173181158/assets{?name,label}',
-      //     url: 'https://api.github.com/repos/lovetingyuan/hotsou/releases/173181158',
-      //     zipball_url: 'https://api.github.com/repos/lovetingyuan/hotsou/zipball/v1.0.0',
-      //   },
-      // ]
     })
     .then(data => {
       // console.log('Latest releases:', data.length, data[0])
@@ -89,7 +38,9 @@ function checkAppUpdate() {
       }
     })
     .catch(error => {
-      __DEV__ && console.error('There was a problem with the fetch operation:', error)
+      if (__DEV__) {
+        console.error('There was a problem with the fetch operation:', error)
+      }
     })
 }
 
@@ -143,7 +94,7 @@ export default function About() {
             <Text style={{ fontSize: 16, color: '#555' }}>暂无更新</Text>
           )
         ) : checking ? (
-          <Text style={{ fontSize: 16, color: '#555' }}>正在检查...</Text>
+          <Text style={{ fontSize: 16, color: '#555', fontStyle: 'italic' }}>正在检查...</Text>
         ) : (
           <Text style={{ color: '#0065da', fontSize: 16 }} onPress={handleCheckAppUpdate}>
             检查更新

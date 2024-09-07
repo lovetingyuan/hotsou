@@ -15,6 +15,13 @@ import { FloatingButton } from './FloatingButton2'
 import { useFocusEffect } from 'expo-router'
 
 function __$inject() {
+  const cookies = document.cookie.split(';')
+
+  for (let cookie of cookies) {
+    const eqPos = cookie.indexOf('=')
+    const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`
+  }
   let style = document.querySelector('style[data-inject]')
   if (!style) {
     style = document.createElement('style')
@@ -25,6 +32,7 @@ function __$inject() {
   // @ts-ignore
   style.textContent = CSS_CODE
   setInterval(() => {
+    return
     if (document.getElementById('__keep-alive__')) {
       document.getElementById('__keep-alive__')?.remove()
     } else {
@@ -37,7 +45,7 @@ function __$inject() {
       div.style.position = 'fixed'
       document.body.appendChild(div)
     }
-  }, 500)
+  }, 1000)
   // @ts-ignore
   window.__handleShare = function () {
     // @ts-ignore
@@ -50,63 +58,6 @@ function __$inject() {
         },
       })
     )
-  }
-  if (document.getElementById('__tool-bar__')) {
-    const toolbar = document.createElement('div')
-    toolbar.id = '__tool-bar__'
-    toolbar.className = 'toolbar'
-    toolbar.innerHTML = `
-    <style>
-        .toolbar {
-            position: fixed;
-            left: 20px;
-            bottom: 20px;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .toolbar button {
-            width: 50px;
-            height: 50px;
-            border-radius: 25px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-
-        .toolbar button:hover {
-            background-color: #0056b3;
-        }
-
-        .toolbar .function-btn {
-        font-size: 14px;
-            transform: translateY(20px);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .toolbar.expanded .function-btn {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #controlBtn {
-            font-size: 20px;
-            z-index: 1001;
-        }
-    </style>
-      <button id="controlBtn" onclick="document.getElementById('__tool-bar__').classList.toggle('expanded');">☰</button>
-      <button class="function-btn" onclick="__handleShare()">分享</button>
-      <button class="function-btn" onclick="location.reload()">刷新</button>
-    `
-    toolbar.style.position = 'fixed'
-    document.body.appendChild(toolbar)
   }
 }
 
@@ -152,6 +103,8 @@ export default function WebView(props: {
         allowsInlineMediaPlayback
         mixedContentMode={'always'}
         originWhitelist={['*']}
+        webviewDebuggingEnabled={__DEV__}
+        thirdPartyCookiesEnabled={false}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
         injectedJavaScript={`(${__$inject
           .toString()
@@ -193,9 +146,6 @@ export default function WebView(props: {
               return v.test(request.url)
             })
           ) {
-            return false
-          }
-          if (request.url.includes('.apk')) {
             return false
           }
           return true

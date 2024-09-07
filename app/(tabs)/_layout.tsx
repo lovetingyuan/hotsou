@@ -54,6 +54,22 @@ export default function TabLayout() {
       title: '木子',
     },
   ].map(item => {
+    const tabBarButton = (
+      props: import('@react-navigation/bottom-tabs').BottomTabBarButtonProps
+    ) => {
+      // @ts-ignore
+      const textNode = props.children.props.children[1]
+      return (
+        <Pressable
+          onPress={evt => {
+            props.onPress?.(evt)
+          }}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
+          {textNode}
+        </Pressable>
+      )
+    }
     return (
       <Tabs.Screen
         name={item.name}
@@ -65,37 +81,19 @@ export default function TabLayout() {
           tabBarIcon: undefined,
           tabBarLabel: getTabBarLabel,
           tabBarIconStyle,
-          tabBarButton: props => {
-            // @ts-ignore
-            const textNode = props.children.props.children[1]
-            return (
-              <Pressable
-                onPress={evt => {
-                  props.onPress?.(evt)
-                }}
-                // onLongPress={() => {
-                //   // console.log(item.name)
-                // }}
-                style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-              >
-                {textNode}
-              </Pressable>
-            )
-          },
+          tabBarButton,
         }}
       />
     )
   })
   return (
-    <>
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-          headerShown: false,
-        }}
-      >
-        {tabs}
-      </Tabs>
-    </>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        headerShown: false,
+      }}
+    >
+      {tabs}
+    </Tabs>
   )
 }

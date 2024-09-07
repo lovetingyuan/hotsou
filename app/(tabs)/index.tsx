@@ -49,6 +49,9 @@ export default function Weibo() {
         div.card.m-panel.card4:has(img[src*='point_orange']) {
           display: none;
         }
+        div.card.m-panel.card4:has(img[src*='search_stick']) {
+          display: none;
+        }
         iframe,
         .main .card .wrap,
         /* .npage-bg, */
