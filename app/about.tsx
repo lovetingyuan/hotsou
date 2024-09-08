@@ -2,9 +2,9 @@ import * as Application from 'expo-application'
 import React from 'react'
 import { Linking, Text, ToastAndroid, View } from 'react-native'
 
+import { HelloWave } from '@/components/HelloWave'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { HelloWave } from '@/components/HelloWave'
 
 const owner = process.env.EXPO_PUBLIC_GITHUB_USER
 const repo = process.env.EXPO_PUBLIC_GITHUB_REPO
