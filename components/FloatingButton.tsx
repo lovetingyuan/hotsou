@@ -1,69 +1,160 @@
-import Ionicons from '@expo/vector-icons/Ionicons'
-import React from 'react'
-import { Alert, StyleSheet, TouchableOpacity, View, ViewProps } from 'react-native'
+import { Entypo } from '@expo/vector-icons'
+import { Link, useFocusEffect } from 'expo-router'
+import React, { useCallback, useState } from 'react'
+import { StyleSheet, TouchableOpacity, View, ViewProps } from 'react-native'
 import Animated, {
-  // Extrapolation,
-  // interpolate,
+  Extrapolation,
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
-  // withSpring,
-  withTiming,
+  withSpring,
 } from 'react-native-reanimated'
-import * as Application from 'expo-application'
 
 interface FloatingButtonProps extends ViewProps {
-  onPress: () => void
+  onPress: (action?: string) => void
   color?: string
 }
 
 export function FloatingButton({ onPress, color, style, ...rest }: FloatingButtonProps) {
-  const rotation = useSharedValue(0)
-  const colorStyle = {
-    shadowColor: '#f02a4b',
-    backgroundColor: '#f02a4b',
-  }
-  if (color) {
-    colorStyle.shadowColor = color
-    colorStyle.backgroundColor = color
-  }
+  const [isOpen, setIsOpen] = useState(false)
+  const animation = useSharedValue(0)
 
-  const startRotation = () => {
-    rotation.value = withTiming(
-      360,
-      {
-        duration: 600, // 动画时长，单位为毫秒
-      },
-      () => {
-        // 重置旋转角度，以便重复动画
-        rotation.value = 0
+  const colorStyle = color
+    ? {
+        shadowColor: color,
+        backgroundColor: color,
       }
-    )
-  }
+    : null
+
   const rotationAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${rotation.value}deg` }],
+      transform: [
+        {
+          rotate: withSpring(isOpen ? '45deg' : '0deg'),
+        },
+      ],
     }
   })
 
+  const reloadAnimatedStyle = useAnimatedStyle(() => {
+    const translateYAnimation = interpolate(animation.value, [0, 1], [0, -15], Extrapolation.CLAMP)
+
+    return {
+      transform: [
+        {
+          scale: withSpring(animation.value),
+        },
+        {
+          translateY: withSpring(translateYAnimation),
+        },
+      ],
+    }
+  })
+
+  const shareAnimatedStyle = useAnimatedStyle(() => {
+    const translateYAnimation = interpolate(animation.value, [0, 1], [0, -30], Extrapolation.CLAMP)
+
+    return {
+      transform: [
+        {
+          scale: withSpring(animation.value),
+        },
+        {
+          translateY: withSpring(translateYAnimation),
+        },
+      ],
+    }
+  })
+
+  const heartAnimatedStyle = useAnimatedStyle(() => {
+    const translateYAnimation = interpolate(animation.value, [0, 1], [0, -45], Extrapolation.CLAMP)
+
+    return {
+      transform: [
+        {
+          scale: withSpring(animation.value),
+        },
+        {
+          translateY: withSpring(translateYAnimation),
+        },
+      ],
+    }
+  })
+
+  const opacityAnimatedStyle = useAnimatedStyle(() => {
+    const opacityAnimation = interpolate(
+      animation.value,
+      [0, 0.5, 1],
+      [0, 0, 1],
+      Extrapolation.CLAMP
+    )
+
+    return {
+      opacity: withSpring(opacityAnimation),
+    }
+  })
+
+  function toggleMenu() {
+    // onPress()
+    setIsOpen(current => {
+      animation.value = current ? 0 : 1
+      return !current
+    })
+  }
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setIsOpen(false)
+        animation.value = 0
+      }
+    }, [animation])
+  )
+  const infoBtn = (
+    <Animated.View
+      style={[styles.button, styles.secondary, heartAnimatedStyle, opacityAnimatedStyle]}
+    >
+      <Entypo name="info" size={24} color="#f02a4b" />
+    </Animated.View>
+  )
   return (
-    <View style={[styles.container, style]} {...rest}>
+    <View style={[styles.container, style, { height: isOpen ? 233 : 52 }]} {...rest}>
+      {isOpen ? <Link href="/about">{infoBtn}</Link> : infoBtn}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => {
-          onPress()
-          startRotation()
-        }}
-        onLongPress={() => {
-          Alert.alert(
-            '欢迎使用',
-            ['本应用聚合展示一些媒体热搜信息', `版本 ${Application.nativeApplicationVersion}`].join(
-              '\n'
-            )
-          )
+        onPress={evt => {
+          if (!isOpen) {
+            return
+          }
+          onPress('share')
+          toggleMenu()
         }}
       >
+        <Animated.View
+          style={[styles.button, styles.secondary, shareAnimatedStyle, opacityAnimatedStyle]}
+        >
+          <Entypo name="forward" size={24} color="#f02a4b" />
+        </Animated.View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={evt => {
+          if (!isOpen) {
+            return
+          }
+          onPress('reload')
+          toggleMenu()
+        }}
+      >
+        <Animated.View
+          style={[styles.button, styles.secondary, reloadAnimatedStyle, opacityAnimatedStyle]}
+        >
+          <Entypo name="cw" size={24} color="#f02a4b" />
+        </Animated.View>
+      </TouchableOpacity>
+
+      <TouchableOpacity activeOpacity={0.8} onPress={toggleMenu}>
         <Animated.View style={[styles.button, styles.menu, colorStyle, rotationAnimatedStyle]}>
-          <Ionicons name="refresh" size={28} color="white" />
+          <Entypo name="plus" size={32} color="#ffffff" />
         </Animated.View>
       </TouchableOpacity>
     </View>
@@ -74,13 +165,12 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     position: 'absolute',
-    justifyContent: 'center',
-    bottom: 16,
-    right: 20,
+    zIndex: 9,
+    justifyContent: 'flex-end',
   },
   button: {
-    width: 45,
-    height: 45,
+    width: 50,
+    height: 50,
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
@@ -94,8 +184,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f02a4b',
   },
   secondary: {
-    width: 48,
-    height: 48,
+    width: 45,
+    height: 45,
     borderRadius: 24,
     backgroundColor: '#ffffff',
   },

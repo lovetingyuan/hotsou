@@ -1,27 +1,21 @@
-import { WebView as RNWebView } from 'react-native-webview'
 import Constants from 'expo-constants'
-import {
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  Platform,
-  BackHandler,
-  ToastAndroid,
-  Text,
-  Share,
-} from 'react-native'
-import React, { useCallback } from 'react'
-import { FloatingButton } from './FloatingButton2'
 import { useFocusEffect } from 'expo-router'
+import React, { useCallback } from 'react'
+import {
+  ActivityIndicator,
+  BackHandler,
+  Platform,
+  Share,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native'
+import { WebView as RNWebView } from 'react-native-webview'
+
+import { FloatingButton } from './FloatingButton'
 
 function __$inject() {
-  const cookies = document.cookie.split(';')
-
-  for (let cookie of cookies) {
-    const eqPos = cookie.indexOf('=')
-    const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`
-  }
   let style = document.querySelector('style[data-inject]')
   if (!style) {
     style = document.createElement('style')
@@ -32,7 +26,6 @@ function __$inject() {
   // @ts-ignore
   style.textContent = CSS_CODE
   setInterval(() => {
-    return
     if (document.getElementById('__keep-alive__')) {
       document.getElementById('__keep-alive__')?.remove()
     } else {
@@ -45,7 +38,7 @@ function __$inject() {
       div.style.position = 'fixed'
       document.body.appendChild(div)
     }
-  }, 1000)
+  }, 5000)
   // @ts-ignore
   window.__handleShare = function () {
     // @ts-ignore
@@ -137,6 +130,7 @@ export default function WebView(props: {
           if (!request.url.startsWith('http')) {
             return false
           }
+          // eslint-disable-next-line sonarjs/prefer-single-boolean-return
           if (
             props.forbiddenUrls &&
             props.forbiddenUrls.some(v => {

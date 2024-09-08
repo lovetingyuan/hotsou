@@ -1,9 +1,9 @@
 import { Tabs } from 'expo-router'
 import React from 'react'
+import { Pressable, Text } from 'react-native'
 
 import { Colors } from '@/constants/Colors'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { Pressable, Text } from 'react-native'
 
 const getTabBarLabel = (props: { focused: boolean; color: string; children: string }) => {
   return (

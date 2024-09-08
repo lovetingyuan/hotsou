@@ -1,9 +1,10 @@
-import WebView from '@/components/WebView'
-import { SimpleCrypto } from '@/utils'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React from 'react'
 import { Button, Text, TextInput, View } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+
+import WebView from '@/components/WebView'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { SimpleCrypto } from '@/utils'
 
 const ch = new SimpleCrypto(process.env.EXPO_PUBLIC_LI_URL_ENC_KEY!)
 

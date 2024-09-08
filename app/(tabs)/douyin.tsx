@@ -52,12 +52,23 @@ function __$inject() {
         // @ts-ignore
         fullScreen.click()
         clearInterval(timer)
+        const volumes = document.querySelectorAll(
+          '.xgplayer-volume[data-state="mute"] .xgplayer-icon'
+        )
+        volumes.forEach(v => {
+          // @ts-ignore
+          v.click()
+        })
+        document.querySelectorAll('video').forEach(v => {
+          v.muted = false
+        })
         setTimeout(() => {
           document.body.style.opacity = '1'
           loader.remove()
         }, 1000)
       }
     }, 200)
+
     setInterval(() => {
       const close = document.querySelector('.related-video-card-login-guide__footer-close')
       if (close) {
@@ -65,6 +76,7 @@ function __$inject() {
         // @ts-ignore
         close.click()
       }
+      document.title = decodeURIComponent(location.pathname.split('/')[2]) + ' - 抖音'
     }, 200)
   }
   if (location.pathname === '/share/billboard') {
@@ -88,7 +100,7 @@ function __$inject() {
               }
             }
             localStorage.setItem('__clicked__', JSON.stringify(clicked))
-            const url = 'https://www.douyin.com/root/search/' + titleText
+            const url = 'https://www.douyin.com/search/' + titleText
             location.href = url
             evt.stopPropagation()
             evt.preventDefault()
@@ -126,13 +138,13 @@ export default function Douyin() {
           display: none !important;
         }
         #video-info-wrap {
-          zoom: 2.5;
+          zoom: 2.6;
           position: absolute;
           left: 0;
           bottom: 20px;
         }
         xg-inner-controls {
-          zoom: 2.5;
+          zoom: 2.6;
         }
         .hot-list {
           filter: invert(100%) hue-rotate(180deg);
@@ -151,7 +163,7 @@ export default function Douyin() {
           width: calc(100% - 60vw);
         }
         #videoSideCard {
-          zoom: 2.5;
+          zoom: 2.6;
         }
         xg-start {
           zoom: 3;
@@ -159,7 +171,9 @@ export default function Douyin() {
         .ZTBYOIeC.CG9pTqjv .JOT0FK4T.I1t22JqH.videoSideCard {
           width: 60vw;
         }
+        [id^='login-full-panel'],
         .QSoEc32i,
+        .pGZF8lyn,
         div#searchSideCard,
         .comment-input-container {
           display: none !important;

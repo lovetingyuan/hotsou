@@ -1,8 +1,10 @@
-import { ThemedText } from '@/components/ThemedText'
-import { ThemedView } from '@/components/ThemedView'
 import * as Application from 'expo-application'
 import React from 'react'
 import { Linking, Text, ToastAndroid, View } from 'react-native'
+
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
+import { HelloWave } from '@/components/HelloWave'
 
 const owner = process.env.EXPO_PUBLIC_GITHUB_USER
 const repo = process.env.EXPO_PUBLIC_GITHUB_REPO
@@ -50,6 +52,7 @@ export default function About() {
     downloadUrl: string
   }>(null)
   const [checking, setChecking] = React.useState(false)
+  const [helloKey, setHelloKey] = React.useState(1)
   const currentVersion = Application.nativeApplicationVersion
   const handleCheckAppUpdate = () => {
     setChecking(true)
@@ -67,39 +70,43 @@ export default function About() {
       setChecking(false)
     })
   }
-  return (
-    <ThemedView style={{ flex: 1, padding: 20, gap: 20 }}>
-      <ThemedText
-        style={{ fontSize: 20 }}
+  const fetchedVersion =
+    latestVersion?.version !== currentVersion ? (
+      <Text
+        style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}
         onPress={() => {
-          // ToastAndroid.show('this is' + process.env.EXPO_PUBLIC_FOO, ToastAndroid.SHORT)
+          Linking.openURL(latestVersion!.downloadUrl)
         }}
       >
-        欢迎使用本应用
-      </ThemedText>
-      <ThemedText>聚合一些媒体的热搜热点，仅供展示和浏览</ThemedText>
+        有更新：{latestVersion?.version}, 点击下载
+      </Text>
+    ) : (
+      <Text style={{ fontSize: 16, color: '#555' }}>暂无更新</Text>
+    )
+  const noFetchedVersion = checking ? (
+    <Text style={{ fontSize: 16, color: '#555', fontStyle: 'italic' }}>正在检查...</Text>
+  ) : (
+    <Text style={{ color: '#0065da', fontSize: 16 }} onPress={handleCheckAppUpdate}>
+      检查更新
+    </Text>
+  )
+  return (
+    <ThemedView style={{ flex: 1, padding: 20, gap: 20 }}>
+      <ThemedView style={{ flexDirection: 'row' }}>
+        <ThemedText
+          style={{ fontSize: 20 }}
+          onPress={() => {
+            setHelloKey(helloKey + 1)
+          }}
+        >
+          欢迎使用本应用{' '}
+        </ThemedText>
+        <HelloWave key={helloKey}></HelloWave>
+      </ThemedView>
+      <ThemedText>聚合一些媒体的热搜热点，仅供展示和浏览。</ThemedText>
       <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }}>
         <ThemedText>当前版本：{currentVersion}</ThemedText>
-        {latestVersion ? (
-          latestVersion.version !== currentVersion ? (
-            <Text
-              style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}
-              onPress={() => {
-                Linking.openURL(latestVersion.downloadUrl)
-              }}
-            >
-              有更新：{latestVersion.version}, 点击下载
-            </Text>
-          ) : (
-            <Text style={{ fontSize: 16, color: '#555' }}>暂无更新</Text>
-          )
-        ) : checking ? (
-          <Text style={{ fontSize: 16, color: '#555', fontStyle: 'italic' }}>正在检查...</Text>
-        ) : (
-          <Text style={{ color: '#0065da', fontSize: 16 }} onPress={handleCheckAppUpdate}>
-            检查更新
-          </Text>
-        )}
+        {latestVersion ? fetchedVersion : noFetchedVersion}
       </View>
     </ThemedView>
   )

@@ -1,13 +1,14 @@
+import 'react-native-reanimated'
+
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
-import 'react-native-reanimated'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Alert } from 'react-native'
 
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { Alert } from 'react-native'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
