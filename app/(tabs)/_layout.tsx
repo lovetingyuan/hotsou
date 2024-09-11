@@ -4,6 +4,7 @@ import { Pressable, Text } from 'react-native'
 
 import { Colors } from '@/constants/Colors'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { useStore } from '@/store'
 
 const getTabBarLabel = (props: { focused: boolean; color: string; children: string }) => {
   return (
@@ -21,6 +22,7 @@ const getTabBarLabel = (props: { focused: boolean; color: string; children: stri
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
+  const { reloadAllTab } = useStore()
 
   const tabBarIconStyle = {
     width: 0,
@@ -92,6 +94,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
       }}
+      key={'tabs_' + reloadAllTab}
     >
       {tabs}
     </Tabs>

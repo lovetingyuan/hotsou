@@ -12,10 +12,17 @@ import Animated, {
 
 interface FloatingButtonProps extends ViewProps {
   onPress: (action?: string) => void
+  onLongPress?: (action?: string) => void
   color?: string
 }
 
-export function FloatingButton({ onPress, color, style, ...rest }: FloatingButtonProps) {
+export function FloatingButton({
+  onPress,
+  onLongPress,
+  color,
+  style,
+  ...rest
+}: FloatingButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const animation = useSharedValue(0)
 
@@ -128,6 +135,14 @@ export function FloatingButton({ onPress, color, style, ...rest }: FloatingButto
           onPress('share')
           toggleMenu()
         }}
+        onLongPress={
+          onLongPress
+            ? () => {
+                onLongPress?.('share')
+                toggleMenu()
+              }
+            : undefined
+        }
       >
         <Animated.View
           style={[styles.button, styles.secondary, shareAnimatedStyle, opacityAnimatedStyle]}
@@ -144,6 +159,14 @@ export function FloatingButton({ onPress, color, style, ...rest }: FloatingButto
           onPress('reload')
           toggleMenu()
         }}
+        onLongPress={
+          onLongPress
+            ? () => {
+                onLongPress?.('reload')
+                toggleMenu()
+              }
+            : undefined
+        }
       >
         <Animated.View
           style={[styles.button, styles.secondary, reloadAnimatedStyle, opacityAnimatedStyle]}

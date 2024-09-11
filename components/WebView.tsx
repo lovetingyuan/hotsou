@@ -13,6 +13,8 @@ import {
 } from 'react-native'
 import { WebView as RNWebView } from 'react-native-webview'
 
+import { useStore } from '@/store'
+
 import { FloatingButton } from './FloatingButton'
 
 function __$inject() {
@@ -63,6 +65,7 @@ export default function WebView(props: {
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const canGoBackRef = React.useRef(false)
+  const { reloadAllTab, setReloadAllTab } = useStore()
 
   const showReloadButton = props.showReloadButton === undefined ? true : !!props.showReloadButton
   useFocusEffect(
@@ -176,6 +179,11 @@ export default function WebView(props: {
             }
             if (action === 'share') {
               webViewRef.current?.injectJavaScript('window.__handleShare();')
+            }
+          }}
+          onLongPress={action => {
+            if (action === 'reload') {
+              setReloadAllTab(reloadAllTab + 1)
             }
           }}
         ></FloatingButton>

@@ -78,7 +78,7 @@ export default function About() {
           Linking.openURL(latestVersion!.downloadUrl)
         }}
       >
-        有更新：{latestVersion?.version}, 点击下载
+        🎉 有更新：{latestVersion?.version}, 点击下载
       </Text>
     ) : (
       <Text style={{ fontSize: 16, color: '#555' }}>暂无更新</Text>
@@ -92,7 +92,7 @@ export default function About() {
   )
   return (
     <ThemedView style={{ flex: 1, padding: 20, gap: 20 }}>
-      <ThemedView style={{ flexDirection: 'row' }}>
+      <ThemedView style={{ flexDirection: 'row', marginTop: 20 }}>
         <ThemedText
           style={{ fontSize: 20 }}
           onPress={() => {
@@ -104,6 +104,7 @@ export default function About() {
         <HelloWave key={helloKey}></HelloWave>
       </ThemedView>
       <ThemedText>聚合一些媒体的热搜热点，仅供展示和浏览。</ThemedText>
+      <ThemedText>如果使用过程中遇到问题，请及时更新版本。</ThemedText>
       <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }}>
         <ThemedText>当前版本：{currentVersion}</ThemedText>
         {latestVersion ? fetchedVersion : noFetchedVersion}
