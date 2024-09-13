@@ -43,13 +43,14 @@ function __$inject() {
   }, 5000)
   // @ts-ignore
   window.__handleShare = function () {
+    const url = location.hostname === 'm.douyin.com' ? location.href.split('#')[0] : location.href
     // @ts-ignore
     window.ReactNativeWebView.postMessage(
       JSON.stringify({
         type: 'share',
         payload: {
           title: document.title,
-          url: location.href,
+          url,
         },
       })
     )
@@ -131,6 +132,9 @@ export default function WebView(props: {
         onShouldStartLoadWithRequest={request => {
           // console.log(request.url)
           if (!request.url.startsWith('http')) {
+            return false
+          }
+          if (request.url.split('?')[0].endsWith('.apk')) {
             return false
           }
           // eslint-disable-next-line sonarjs/prefer-single-boolean-return

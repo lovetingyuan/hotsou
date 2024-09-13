@@ -4,11 +4,26 @@ import WebView from '@/components/WebView'
  */
 
 function __$inject() {
-  if (!document.querySelector('meta[name="viewport"]')) {
-    const meta = document.createElement('meta')
-    meta.setAttribute('name', 'viewport')
-    meta.setAttribute('content', 'width=device-width,viewport-fit=cover')
-    //document.head.prepend(meta)
+  // @ts-ignore
+  const searchByKeyword = word => {
+    return fetch(
+      `https://www.douyin.com/aweme/v1/web/general/search/single/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_general&enable_history=1&keyword=${encodeURIComponent(
+        word
+      )}&search_source=normal_search&query_correct_type=1&is_filter_search=0&from_group_id=&offset=0&count=10&need_filter_settings=1&list_type=single&pc_client_type=1&cookie_enabled=true`,
+      {
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+          'cache-control': 'no-cache',
+        },
+      }
+    )
+      .then(r => r.json())
+      .then(r => {
+        // @ts-ignore
+        const allIds = r.data.filter(v => v.type === 1).map(v => v.provider_doc_id_str)
+        return allIds
+      })
   }
   if (location.pathname.startsWith('/search')) {
     // .xgplayer-page-full-screen
@@ -100,8 +115,15 @@ function __$inject() {
               }
             }
             localStorage.setItem('__clicked__', JSON.stringify(clicked))
-            const url = 'https://www.douyin.com/search/' + titleText
-            location.href = url
+            searchByKeyword(titleText).then(ids => {
+              let url = 'https://www.douyin.com/search/' + titleText
+              if (ids && ids.length) {
+                url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
+              }
+              location.href = url
+            })
+            // const url = 'https://www.douyin.com/search/' + titleText
+            // location.href = url
             evt.stopPropagation()
             evt.preventDefault()
           }
@@ -120,6 +142,32 @@ function __$inject() {
         }
       })
     }, 200)
+  }
+  if (location.pathname.startsWith('/share/video/')) {
+    const button = document.createElement('button')
+    button.textContent = '切换'
+    button.id = 'change-video'
+    button.style.fontSize = '18px'
+    button.style.borderRadius = '30px'
+    button.style.padding = '10px'
+    button.style.border = '0 none'
+    button.style.outline = 'none'
+    button.style.opacity = '0.8'
+    if (!document.getElementById(button.id)) {
+      document.querySelector('.right-con')?.appendChild(button)
+      button.addEventListener('click', () => {
+        const ids = location.hash.slice(1).split(',')
+        const id = location.pathname.split('/').pop()
+        // @ts-ignore
+        const index = ids.indexOf(id)
+        if (index === ids.length - 1) {
+          alert('暂无')
+        } else if (index !== -1) {
+          const nid = ids[index + 1]
+          location.href = location.origin + '/share/video/' + nid + location.hash
+        }
+      })
+    }
   }
 }
 
@@ -182,8 +230,31 @@ export default function Douyin() {
         .LinkSeatsLayout + a {
           display: none !important;
         }
+        /* --- */
+        .adapt-login-header,
+        .img-button,
+        .open-app,
+        .end-model-info {
+          display: none !important;
+        }
+        .video-container {
+          height: 100% !important;
+          width: 100% !important;
+          display: block !important;
+          margin-top: 0 !important;
+        }
+        .footer-info-con + img {
+          display: none !important;
+        }
+        .d-icon,
+        .d-icon + p {
+          display: none !important;
+        }
+        .right-con {
+          bottom: 120px !important;
+        }
       `}
-      // forbiddenUrls={['activity.baidu.com/mbox', 'wappass.baidu.com']}
+      forbiddenUrls={['z.douyin.com']}
     ></WebView>
   )
 }
