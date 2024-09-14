@@ -4,6 +4,7 @@ import React, { useCallback } from 'react'
 import {
   ActivityIndicator,
   BackHandler,
+  Linking,
   Platform,
   Share,
   StyleSheet,
@@ -170,6 +171,10 @@ export default function WebView(props: {
             Share.share({
               message: `${data.payload.title}\n${data.payload.url}`,
             })
+          }
+          if (data.type === 'download-douyin-video') {
+            ToastAndroid.show('请在浏览器中下载', ToastAndroid.SHORT)
+            Linking.openURL(data.payload.url)
           }
         }}
       />
