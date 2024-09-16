@@ -3,6 +3,7 @@ import React from 'react'
 import { Button, Text, TextInput, View } from 'react-native'
 
 import WebView from '@/components/WebView'
+import { TabsName } from '@/constants/Tabs'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { SimpleCrypto } from '@/utils'
 
@@ -60,6 +61,7 @@ export default function Li() {
 
   return (
     <WebView
+      name={TabsName.li}
       css={`
         .tgme_widget_message_bubble {
           margin: 0;

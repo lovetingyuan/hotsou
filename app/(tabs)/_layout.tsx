@@ -3,6 +3,7 @@ import React from 'react'
 import { Pressable, Text } from 'react-native'
 
 import { Colors } from '@/constants/Colors'
+import { TabsList } from '@/constants/Tabs'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 
@@ -22,7 +23,7 @@ const getTabBarLabel = (props: { focused: boolean; color: string; children: stri
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
-  const { reloadAllTab } = useStore()
+  const { reloadAllTab, setReloadTab } = useStore()
 
   const tabBarIconStyle = {
     width: 0,
@@ -30,32 +31,7 @@ export default function TabLayout() {
     padding: 0,
     margin: 0,
   }
-  const tabs = [
-    {
-      name: 'index',
-      title: '微博',
-    },
-    {
-      name: 'baidu',
-      title: '百度',
-    },
-    {
-      name: 'toutiao',
-      title: '头条',
-    },
-    {
-      name: 'douyin',
-      title: '抖音',
-    },
-    {
-      name: 'zhihu',
-      title: '知乎',
-    },
-    {
-      name: 'li',
-      title: '木子',
-    },
-  ].map(item => {
+  const tabs = TabsList.map(item => {
     const tabBarButton = (
       props: import('@react-navigation/bottom-tabs').BottomTabBarButtonProps
     ) => {
@@ -65,6 +41,9 @@ export default function TabLayout() {
         <Pressable
           onPress={evt => {
             props.onPress?.(evt)
+          }}
+          onLongPress={() => {
+            setReloadTab([item.name])
           }}
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >

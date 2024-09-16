@@ -4,6 +4,7 @@ import { createAtomicContext, useAtomicContext } from 'react-atomic-context'
 export const getAppValue = () => {
   return {
     reloadAllTab: 0,
+    reloadTab: [''],
   }
 }
 

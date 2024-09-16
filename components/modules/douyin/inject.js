@@ -110,8 +110,8 @@ function __$inject() {
             'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
             'cache-control': 'no-cache',
           },
-          referrer: 'https://www.douyin.com/search/' + keyword,
-          referrerPolicy: 'strict-origin-when-cross-origin',
+          // referrer: 'https://www.douyin.com/search/' + keyword,
+          // referrerPolicy: 'strict-origin-when-cross-origin',
           body: null,
           method: 'GET',
           mode: 'cors',
@@ -235,7 +235,6 @@ function __$inject() {
           const nid = ids[index + 1]
           history.replaceState({}, '', '/share/video/' + nid + location.hash)
           location.reload()
-          // location.href = location.origin + '/share/video/' + nid + location.hash
         }
       } else if (index === 0) {
         alert('暂无上一个')
@@ -243,7 +242,6 @@ function __$inject() {
         const nid = ids[index - 1]
         history.replaceState({}, '', '/share/video/' + nid + location.hash)
         location.reload()
-        // location.href = location.origin + '/share/video/' + nid + location.hash
       }
     }
 

@@ -1,4 +1,5 @@
 import WebView from '@/components/WebView'
+import { TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   const root = document.getElementById('root')
@@ -20,6 +21,9 @@ function __$inject() {
 export default function Zhihu() {
   return (
     <WebView
+      name={TabsName.zhihu}
+      url={'https://www.zhihu.com/billboard'}
+      forbiddenUrls={['zhihu-web-analytics.zhihu.com', 'datahub.zhihu.com', 'apm.zhihu.com']}
       css={`
         .OpenInAppButton,
         .OpenInApp,
@@ -40,7 +44,6 @@ export default function Zhihu() {
         }
       `}
       js={`(${__$inject})()`}
-      url={'https://www.zhihu.com/billboard'}
-    ></WebView>
+    />
   )
 }

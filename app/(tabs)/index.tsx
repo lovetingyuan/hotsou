@@ -1,4 +1,5 @@
 import WebView from '@/components/WebView'
+import { TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (!location.pathname.startsWith('/p/106003')) {
@@ -42,11 +43,13 @@ function __$inject() {
 }
 
 export default function Weibo() {
+  // https://s.weibo.com/top/summary?cate=realtimehot
   return (
     <WebView
+      name={TabsName.weibo}
       url={'https://m.weibo.cn/p/106003type=25&t=3&disable_hot=1&filter_type=realtimehot'}
       css={`
-        div.card.m-panel.card4:has(img[src*='point_orange']) {
+        div.card.m-panel.card4:has(img[src*='search_point_orange']) {
           display: none;
         }
         div.card.m-panel.card4:has(img[src*='search_stick']) {
@@ -54,7 +57,6 @@ export default function Weibo() {
         }
         iframe,
         .main .card .wrap,
-        /* .npage-bg, */
         .nav-left,
         .m-tab-bar.m-bar-panel.m-container-max {
           display: none !important;

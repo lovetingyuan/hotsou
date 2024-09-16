@@ -1,6 +1,6 @@
 import Constants from 'expo-constants'
 import { useFocusEffect } from 'expo-router'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import {
   ActivityIndicator,
   BackHandler,
@@ -59,6 +59,7 @@ function __$inject() {
 }
 
 export default function WebView(props: {
+  name: string
   url: string
   js?: string
   css?: string
@@ -67,7 +68,7 @@ export default function WebView(props: {
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const canGoBackRef = React.useRef(false)
-  const { reloadAllTab, setReloadAllTab } = useStore()
+  const { reloadAllTab, setReloadAllTab, reloadTab } = useStore()
 
   const showReloadButton = props.showReloadButton === undefined ? true : !!props.showReloadButton
   useFocusEffect(
@@ -88,6 +89,12 @@ export default function WebView(props: {
       }
     }, [])
   )
+
+  useEffect(() => {
+    if (reloadTab[0] === props.name) {
+      webViewRef.current?.reload()
+    }
+  }, [props.name, reloadTab])
 
   return (
     <>
