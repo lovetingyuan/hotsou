@@ -1,6 +1,7 @@
 import * as Application from 'expo-application'
+import * as Updates from 'expo-updates'
 import React from 'react'
-import { Linking, Text, ToastAndroid, View } from 'react-native'
+import { Image, Linking, Pressable, Text, ToastAndroid, View } from 'react-native'
 
 import { HelloWave } from '@/components/HelloWave'
 import { ThemedText } from '@/components/ThemedText'
@@ -51,6 +52,7 @@ export default function About() {
     version: string
     downloadUrl: string
   }>(null)
+
   const [checking, setChecking] = React.useState(false)
   const [helloKey, setHelloKey] = React.useState(1)
   const currentVersion = Application.nativeApplicationVersion
@@ -92,21 +94,43 @@ export default function About() {
   )
   return (
     <ThemedView style={{ flex: 1, padding: 20, gap: 20 }}>
-      <ThemedView style={{ flexDirection: 'row', marginTop: 20 }}>
-        <ThemedText
-          style={{ fontSize: 20 }}
+      <ThemedView style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
+        <View style={{ flexDirection: 'row' }}>
+          <ThemedText
+            style={{ fontSize: 20 }}
+            onPress={() => {
+              setHelloKey(helloKey + 1)
+            }}
+          >
+            欢迎使用本应用{' '}
+          </ThemedText>
+          <HelloWave key={helloKey}></HelloWave>
+        </View>
+        <Pressable
           onPress={() => {
-            setHelloKey(helloKey + 1)
+            Linking.openURL('https://github.com/lovetingyuan/hotsou')
           }}
         >
-          欢迎使用本应用{' '}
-        </ThemedText>
-        <HelloWave key={helloKey}></HelloWave>
+          <Image
+            source={{ uri: 'https://github.githubassets.com/favicons/favicon.png' }}
+            style={{
+              width: 20,
+              height: 20,
+              marginHorizontal: 5,
+            }}
+          ></Image>
+        </Pressable>
       </ThemedView>
-      <ThemedText>聚合一些媒体的热搜热点，仅供展示和浏览。</ThemedText>
+      <ThemedText>聚合一些媒体的热搜热点信息，仅供展示和浏览，请勿轻易相信或传播。</ThemedText>
       <ThemedText>如果使用过程中遇到问题，请及时更新版本。</ThemedText>
-      <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }}>
-        <ThemedText>当前版本：{currentVersion}</ThemedText>
+      <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+        <ThemedText>
+          📊 当前版本：{currentVersion}
+          {'    '}
+          {Updates.createdAt
+            ? Updates.createdAt.toLocaleDateString() + ' ' + Updates.createdAt.toLocaleTimeString()
+            : ''}
+        </ThemedText>
         {latestVersion ? fetchedVersion : noFetchedVersion}
       </View>
     </ThemedView>
