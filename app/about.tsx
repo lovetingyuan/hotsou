@@ -46,7 +46,6 @@ function checkAppUpdate() {
       }
     })
 }
-
 export default function About() {
   const [latestVersion, setLatestVersion] = React.useState<null | {
     version: string
@@ -86,7 +85,7 @@ export default function About() {
       <Text style={{ fontSize: 16, color: '#555' }}>暂无更新</Text>
     )
   const noFetchedVersion = checking ? (
-    <Text style={{ fontSize: 16, color: '#555', fontStyle: 'italic' }}>正在检查...</Text>
+    <Text style={{ fontSize: 16, color: '#555', fontStyle: 'italic' }}>⏳ 正在检查...</Text>
   ) : (
     <Text style={{ color: '#0065da', fontSize: 16 }} onPress={handleCheckAppUpdate}>
       检查更新

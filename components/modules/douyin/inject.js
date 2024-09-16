@@ -29,75 +29,7 @@ function __$inject() {
 
     return '刚刚'
   }
-  // eslint-disable-next-line sonarjs/no-commented-code
-  // if (location.pathname.startsWith('/search')) {
-  //   // .xgplayer-page-full-screen
-  //   document.body.style.opacity = '0.01'
-  //   const loader = document.createElement('div')
-  //   loader.style.position = 'fixed'
-  //   loader.style.inset = '0'
-  //   loader.style.pointerEvents = 'none'
-  //   loader.setAttribute('inert', '')
-  //   loader.innerHTML = `
-  //   <div class="loader"></div>
-  //   <style>
-  //     html {
-  //         overflow: hidden;
-  //     }
-  //       .loader {
-  //         width: 120px;
-  //         position: fixed;
-  //         inset: 0;
-  //         --b: 8px;
-  //         top: 45%;
-  //         margin: 0 auto;
-  //         aspect-ratio: 1;
-  //         border-radius: 50%;
-  //         padding: 1px;
-  //         background: conic-gradient(#0000 10%,#f03355) content-box;
-  //         -webkit-mask:
-  //           repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
-  //           radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
-  //         -webkit-mask-composite: destination-in;
-  //                 mask-composite: intersect;
-  //         animation:l4 1s infinite steps(10);
-  //       }
-  //       @keyframes l4 {to{transform: rotate(1turn)}}
-  //   </style>
-  //   `
-  //   document.documentElement.appendChild(loader)
-  //   const timer = setInterval(() => {
-  //     const fullScreen = document.querySelector('.xgplayer-page-full-screen .xgplayer-icon')
-  //     if (fullScreen) {
-  //
-  //       fullScreen.click()
-  //       clearInterval(timer)
-  //       const volumes = document.querySelectorAll(
-  //         '.xgplayer-volume[data-state="mute"] .xgplayer-icon'
-  //       )
-  //       volumes.forEach(v => {
-  //
-  //         v.click()
-  //       })
-  //       document.querySelectorAll('video').forEach(v => {
-  //         v.muted = false
-  //       })
-  //       setTimeout(() => {
-  //         document.body.style.opacity = '1'
-  //         loader.remove()
-  //       }, 1000)
-  //     }
-  //   }, 200)
-  //   setInterval(() => {
-  //     const close = document.querySelector('.related-video-card-login-guide__footer-close')
-  //     if (close) {
-  //       // clearInterval(timer2)
-  //
-  //       close.click()
-  //     }
-  //     document.title = decodeURIComponent(location.pathname.split('/')[2]) + ' - 抖音'
-  //   }, 200)
-  // }
+
   if (location.pathname === '/share/billboard') {
     history.scrollRestoration = 'auto'
     const searchByKeyword = word => {
@@ -368,13 +300,14 @@ function __$inject() {
       }
       .comment-item { border-bottom: 1px solid #eee; margin: 20px 0;padding-bottom: 12px;}
       .comment-header { margin-bottom: 10px; display: flex; justify-content: space-between;}
-      .comment-user-name { font-weight: bold; }
+      .comment-user-name { font-weight: 500; }
       .comment-user-ip { color: gray; margin-left: 12px; font-size: 13px; }
       .comment-user-ip::before { content: '@'; font-size: 14px;}
       .comment-body {line-height: 24px; margin-left: 10px;}
-      .comment-like { font-size: 13px; color: #ee6f00; font-weight: 300; }
+      .comment-body-text { color: #555; }
+      .comment-like { font-size: 12px; color: #ee6f00; font-weight: 300; }
       .comment-like::before {content: '👍'; margin-left: 18px; font-size: 14px;}
-      .comment-time { font-style: italic; color: gray; font-size: 13px; font-weight: 300; }
+      .comment-time { font-style: italic; color: gray; font-size: 12px; font-weight: 300; }
     </style>
     <div class="comments-overlay" id="comments-overlay">
       <div class="comments-popup" id="comments-popup">
@@ -410,11 +343,18 @@ function __$inject() {
     const commentItemTemplate = document.getElementById('comment-item-template')
     const close = document.getElementById('comment-popup-close')
     const openPopup = () => {
+      window.history.pushState({ popup: 'open' }, 'open popup')
       overlay.classList.add('show-comments-popup')
       setTimeout(() => {
         popup.classList.add('slide-up-comments-popup')
       }, 10)
     }
+
+    window.addEventListener('popstate', evt => {
+      if (evt.state.popup === 'open' || typeof evt.state.idx === 'number') {
+        closePopup()
+      }
+    })
 
     const closePopup = () => {
       popup.classList.remove('slide-up-comments-popup')
@@ -445,12 +385,11 @@ function __$inject() {
           }
         }
         if (evt.target.tagName === 'IMG' && evt.target.className === 'comments') {
+          openPopup()
           getVideoComments().then(({ comments, total }) => {
             // console.log(comments)
-            openPopup()
             document.getElementById('comment-popup-title').textContent = `评论(${total}条)`
             const fragment = document.createDocumentFragment()
-
             comments.forEach(comment => {
               const commentItem = commentItemTemplate.content.cloneNode(true)
               commentItem.querySelector('.comment-item').dataset.cid = comment.cid
