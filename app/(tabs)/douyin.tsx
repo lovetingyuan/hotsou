@@ -8,7 +8,7 @@ export default function Douyin() {
       url={'https://www.douyin.com/share/billboard'}
       js={jsCode}
       css={cssCode}
-      forbiddenUrls={['z.douyin.com']}
-    ></WebView>
+      forbiddenUrls={['z.douyin.com', 'zijieapi.com']}
+    />
   )
 }

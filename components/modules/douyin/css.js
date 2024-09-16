@@ -1,9 +1,9 @@
 export default `
 .loader {
-  width: 60px;
+  width: 45px;
   display: inline-block;
   aspect-ratio: 2;
-  --_g: no-repeat radial-gradient(circle closest-side, #eee 90%, #0000);
+  --_g: no-repeat radial-gradient(circle closest-side, #fff 90%, #0000);
   background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
   background-size: calc(100% / 3) 50%;
   animation: l3 0.6s infinite linear;
@@ -30,6 +30,23 @@ body {
 .body-content > .hot-title .banner-block {
   display: none !important;
 }
+.word .sentence {
+  font-size: 15px!important;
+}
+.hot-list .list-tab {
+  border: none!important;
+}
+#root .word-item .left-block .top-three {
+  color: rgb(253 129 37);
+}
+.hot-list {
+  filter: invert(100%) hue-rotate(180deg);
+  background: #000000;
+}
+.word .label {
+  filter: invert(100%) hue-rotate(180deg) contrast(100%);
+}
+/* --- */
 #video-info-wrap {
   zoom: 2.6;
   position: absolute;
@@ -39,13 +56,7 @@ body {
 xg-inner-controls {
   zoom: 2.6;
 }
-.hot-list {
-  filter: invert(100%) hue-rotate(180deg);
-  background: #000000;
-}
-.word .label {
-  filter: invert(100%) hue-rotate(180deg) contrast(100%);
-}
+
 #sliderVideo {
   display: flex;
 }
@@ -75,11 +86,18 @@ div#searchSideCard,
 .LinkSeatsLayout + a {
   display: none !important;
 }
+
 /* --- */
 .adapt-login-header,
 .img-button,
 .open-app,
-.end-model-info {
+.end-model-info,
+.footer-info-con + img,
+.bottom-btn-con,
+.extra,
+.follow,
+.d-icon,
+.d-icon + p  {
   display: none !important;
 }
 .video-container {
@@ -88,15 +106,10 @@ div#searchSideCard,
   display: block !important;
   margin-top: 0 !important;
 }
-.footer-info-con + img {
-  display: none !important;
-}
-.extra,
-.d-icon,
-.d-icon + p {
-  display: none !important;
-}
 .right-con {
   bottom: 120px !important;
+}
+.footer {
+  bottom: 0!important;
 }
 `

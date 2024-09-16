@@ -52,7 +52,7 @@ export default function RootLayout() {
       <AppContextProvider value={appValue}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="about" options={{ title: '关于' }} />
+          <Stack.Screen name="about" options={{ title: '关于Hotsou' }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       </AppContextProvider>

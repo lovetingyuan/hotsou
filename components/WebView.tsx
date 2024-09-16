@@ -102,16 +102,28 @@ export default function WebView(props: {
         mixedContentMode={'always'}
         originWhitelist={['*']}
         webviewDebuggingEnabled={__DEV__}
-        thirdPartyCookiesEnabled={false}
+        // thirdPartyCookiesEnabled={false}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
-        injectedJavaScript={`(${__$inject
-          .toString()
-          .replace('CSS_CODE', JSON.stringify(props.css || ''))})();${props.js || ''};true;
-        `}
+        injectedJavaScript={`(function(){
+          if (document.body.dataset.injected) return;
+          document.body.dataset.injected = 'true';
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i];
+            const eqPos = cookie.indexOf("=");
+            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+          }
+          ${props.js || ''};
+          })();true;`}
         onRenderProcessGone={syntheticEvent => {
-          ToastAndroid.show('请刷新下页面', ToastAndroid.SHORT)
+          ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
         }}
-        // injectedJavaScriptBeforeContentLoaded
+        injectedJavaScriptBeforeContentLoaded={`
+          document.addEventListener('DOMContentLoaded', () => {
+            (${__$inject.toString().replace('CSS_CODE', JSON.stringify(props.css || ''))})();
+          });
+          true;`}
         renderLoading={() => (
           <View
             style={{
