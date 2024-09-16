@@ -307,7 +307,7 @@ function __$inject() {
       .comment-body-text { color: #555; }
       .comment-like { font-size: 12px; color: #ee6f00; font-weight: 300; }
       .comment-like::before {content: '👍'; margin-left: 18px; font-size: 14px;}
-      .comment-time { font-style: italic; color: gray; font-size: 12px; font-weight: 300; }
+      .comment-time { color: gray; font-size: 12px; font-weight: 300; }
     </style>
     <div class="comments-overlay" id="comments-overlay">
       <div class="comments-popup" id="comments-popup">
@@ -352,11 +352,14 @@ function __$inject() {
 
     window.addEventListener('popstate', evt => {
       if (evt.state.popup === 'open' || typeof evt.state.idx === 'number') {
-        closePopup()
+        closePopup(true)
       }
     })
 
-    const closePopup = () => {
+    const closePopup = state => {
+      if (!state) {
+        history.back()
+      }
       popup.classList.remove('slide-up-comments-popup')
       setTimeout(() => {
         overlay.classList.remove('show-comments-popup')
@@ -397,7 +400,9 @@ function __$inject() {
               commentItem.querySelector('.comment-user-ip').textContent = comment.ip_label
               commentItem.querySelector('.comment-time').textContent = comment.create_time
               commentItem.querySelector('.comment-body-text').textContent = comment.text
-              commentItem.querySelector('.comment-like').textContent = comment.digg_count
+              if (comment.digg_count) {
+                commentItem.querySelector('.comment-like').textContent = comment.digg_count
+              }
               fragment.appendChild(commentItem)
             })
             document.getElementById('comment-popup-body').appendChild(fragment)
