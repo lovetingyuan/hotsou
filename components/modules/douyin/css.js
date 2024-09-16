@@ -57,7 +57,7 @@ body {
 .extra,
 .follow,
 .d-icon,
-.d-icon + p  {
+.d-icon + p {
   display: none !important;
 }
 .video-container {
@@ -68,8 +68,5 @@ body {
 }
 .right-con {
   bottom: 120px !important;
-}
-.footer {
-  bottom: 0!important;
 }
 `

@@ -19,15 +19,28 @@ import { useStore } from '@/store'
 import { FloatingButton } from './FloatingButton'
 
 function __$inject() {
-  let style = document.querySelector('style[data-inject]')
-  if (!style) {
-    style = document.createElement('style')
-    // @ts-ignore
-    style.dataset.inject = 'true'
-    document.head.appendChild(style)
-  }
   // @ts-ignore
-  style.textContent = CSS_CODE
+  window.__injectCss = () => {
+    let style = document.querySelector('style[data-inject]')
+    if (!style) {
+      style = document.createElement('style')
+      // @ts-ignore
+      style.dataset.inject = 'true'
+      document.head.appendChild(style)
+    }
+    // @ts-ignore
+    style.textContent = CSS_CODE
+  }
+  if (document.head) {
+    // @ts-ignore
+    window.__injectCss()
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      // @ts-ignore
+      window.__injectCss()
+    })
+  }
+
   setInterval(() => {
     if (document.getElementById('__keep-alive__')) {
       document.getElementById('__keep-alive__')?.remove()
@@ -39,9 +52,11 @@ function __$inject() {
       div.style.height = '1px'
       div.style.fontSize = '0'
       div.style.position = 'fixed'
-      document.body.appendChild(div)
+      if (document.body) {
+        document.body.appendChild(div)
+      }
     }
-  }, 5000)
+  }, 4000)
   // @ts-ignore
   window.__handleShare = function () {
     const url = location.hostname === 'm.douyin.com' ? location.href.split('#')[0] : location.href
@@ -114,6 +129,7 @@ export default function WebView(props: {
         injectedJavaScript={`(function(){
           if (document.body.dataset.injected) return;
           document.body.dataset.injected = 'true';
+          if (window.__injectCss) {window.__injectCss()}
           const cookies = document.cookie.split(";");
           for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i];
@@ -126,11 +142,11 @@ export default function WebView(props: {
         onRenderProcessGone={syntheticEvent => {
           ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
         }}
-        injectedJavaScriptBeforeContentLoaded={`
-          document.addEventListener('DOMContentLoaded', () => {
-            (${__$inject.toString().replace('CSS_CODE', JSON.stringify(props.css || ''))})();
-          });
-          true;`}
+        // (${__$inject.toString().replace('CSS_CODE', JSON.stringify(props.css || ''))})();
+
+        injectedJavaScriptBeforeContentLoaded={`(${__$inject
+          .toString()
+          .replace('CSS_CODE', JSON.stringify(props.css || ''))})();true;`}
         renderLoading={() => (
           <View
             style={{
