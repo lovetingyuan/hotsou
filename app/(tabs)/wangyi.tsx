@@ -3,6 +3,7 @@ import { TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname.includes('newsapp/hot-content/')) {
+    history.scrollRestoration = 'auto'
     const tabsConfig = [
       {
         name: '热议榜',
@@ -58,6 +59,8 @@ function __$inject() {
         evt.preventDefault()
       }
     })
+    // @ts-ignore
+    window.__keepScrollPosition?.('.swiper-slide-active .rank-container')
 
     const tabs = document.getElementById('tabContainer')
     if (tabs) {
@@ -70,7 +73,11 @@ function __$inject() {
               const tabName = active.innerText
               const version = tabsConfig.find(v => v.name === tabName)?.version
               if (version) {
-                history.replaceState({}, '', location.pathname + '?version=' + version)
+                history.replaceState(
+                  {},
+                  '',
+                  location.pathname + '?version=' + version + '&__main_page'
+                )
               }
             }
             break
@@ -93,7 +100,7 @@ export default function Wangyi() {
   return (
     <WebView
       name={TabsName.wangyi}
-      url="https://wp.m.163.com/163/html/newsapp/hot-content/index.html?version=searchFirstTab"
+      url="https://wp.m.163.com/163/html/newsapp/hot-content/index.html?version=searchFirstTab&__main_page"
       css={`
         .footer-container,
         .js-open-newsapp,

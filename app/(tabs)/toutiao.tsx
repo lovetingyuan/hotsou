@@ -5,8 +5,10 @@ export default function Toutiao() {
   return (
     <WebView
       name={TabsName.toutiao}
-      url={'https://api.toutiaoapi.com/feoffline/hotspot_and_local/html/hot_list/index.html'}
-      js={"history.scrollRestoration = 'auto'"}
+      url={
+        'https://api.toutiaoapi.com/feoffline/hotspot_and_local/html/hot_list/index.html?__main_page'
+      }
+      js={'true;'}
       css={`
         .float-activate-button-container,
         #top-banner-container {

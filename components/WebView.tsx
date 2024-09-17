@@ -19,6 +19,54 @@ import { useStore } from '@/store'
 import { FloatingButton } from './FloatingButton'
 
 function __$inject() {
+  const sendClick = () => {
+    // @ts-ignore
+    window.ReactNativeWebView.postMessage(
+      JSON.stringify({
+        type: 'user_click',
+        payload: null,
+      })
+    )
+  }
+  window.addEventListener('click', sendClick, true)
+  window.addEventListener('touchstart', sendClick, true)
+
+  // @ts-ignore
+  window.__keepScrollPosition = selector => {
+    const saveScrollPosition = () => {
+      if (location.search.includes('__main_page')) {
+        const top = selector ? document.querySelector(selector).scrollTop : window.scrollY
+        localStorage.setItem('__scrollPosition', top + '')
+      }
+    }
+
+    const restoreScrollPosition = () => {
+      if (location.search.includes('__main_page')) {
+        const scrollPosition = localStorage.getItem('__scrollPosition')
+        if (scrollPosition && parseInt(scrollPosition)) {
+          setTimeout(() => {
+            if (selector) {
+              const dom = document.querySelector(selector)
+              if (dom) {
+                dom.scrollTop = parseInt(scrollPosition)
+              }
+            } else {
+              window.scrollTo(0, parseInt(scrollPosition))
+            }
+          }, 500)
+        }
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      restoreScrollPosition()
+    } else {
+      window.addEventListener('load', restoreScrollPosition)
+    }
+
+    window.addEventListener('beforeunload', saveScrollPosition)
+  }
+
   // @ts-ignore
   window.__markReaded = (containerClass, textClass, textsClass, onClick) => {
     const handleRankClick = () => {
@@ -155,9 +203,12 @@ export default function WebView(props: {
 
   useEffect(() => {
     if (reloadTab[0] === props.name) {
+      webViewRef.current?.injectJavaScript('localStorage.removeItem("__scrollPosition");true;')
       webViewRef.current?.reload()
     }
   }, [props.name, reloadTab])
+
+  const [fabKey, setFabKey] = React.useState(0)
 
   return (
     <>
@@ -259,10 +310,14 @@ export default function WebView(props: {
             ToastAndroid.show('请在浏览器中下载', ToastAndroid.SHORT)
             Linking.openURL(data.payload.url)
           }
+          if (data.type === 'user_click') {
+            setFabKey(fabKey + 1)
+          }
         }}
       />
       {showReloadButton ? (
         <FloatingButton
+          key={fabKey}
           color="#54bb00"
           style={{ bottom: 16, right: 18 }}
           onPress={action => {

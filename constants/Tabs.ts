@@ -6,6 +6,7 @@ export enum TabsName {
   zhihu = 'zhihu',
   wangyi = 'wangyi',
   muzi = 'muzi',
+  tengxun = 'tengxun',
 }
 
 export const TabsList = [
@@ -22,6 +23,11 @@ export const TabsList = [
   {
     name: TabsName.toutiao,
     title: '头条',
+    show: true,
+  },
+  {
+    name: TabsName.tengxun,
+    title: '腾讯',
     show: true,
   },
   {

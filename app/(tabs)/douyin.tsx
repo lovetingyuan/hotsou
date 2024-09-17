@@ -7,7 +7,7 @@ export default function Douyin() {
   return (
     <WebView
       name={TabsName.douyin}
-      url={'https://www.douyin.com/share/billboard'}
+      url={'https://www.douyin.com/share/billboard?__main_page'}
       js={jsCode}
       css={cssCode}
       forbiddenUrls={['z.douyin.com', 'zijieapi.com']}

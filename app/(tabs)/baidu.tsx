@@ -17,7 +17,7 @@ export default function Baidu() {
   return (
     <WebView
       name={TabsName.baidu}
-      url={'https://top.baidu.com/board?tab=realtime'}
+      url={'https://top.baidu.com/board?tab=realtime&__main_page'}
       js={`(${__$inject})()`}
       css={`
         #bdrainrwDragButton,

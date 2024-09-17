@@ -6,6 +6,8 @@ function __$inject() {
     history.scrollRestoration = 'auto'
     // @ts-ignore
     window.__markReaded?.('div[callback]', '.main-text', 'div[callback] .main-text')
+    // @ts-ignore
+    // window.__keepScrollPosition?.()
   }
 }
 
@@ -14,7 +16,9 @@ export default function Weibo() {
   return (
     <WebView
       name={TabsName.weibo}
-      url={'https://m.weibo.cn/p/106003type=25&t=3&disable_hot=1&filter_type=realtimehot'}
+      url={
+        'https://m.weibo.cn/p/106003type=25&t=3&disable_hot=1&filter_type=realtimehot?__main_page'
+      }
       css={`
         div.card.m-panel.card4:has(img[src*='search_point_orange']) {
           display: none;
@@ -30,7 +34,7 @@ export default function Weibo() {
         }
       `}
       js={`(${__$inject})()`}
-      forbiddenUrls={['passport.weibo.com']}
+      forbiddenUrls={['passport.weibo.com', 'm.weibo.cn/feature/applink']}
     />
   )
 }

@@ -15,7 +15,7 @@ export default function Zhihu() {
   return (
     <WebView
       name={TabsName.zhihu}
-      url={'https://www.zhihu.com/billboard'}
+      url={'https://www.zhihu.com/billboard?__main_page'}
       forbiddenUrls={['zhihu-web-analytics.zhihu.com', 'datahub.zhihu.com', 'apm.zhihu.com']}
       css={`
         .OpenInAppButton,
