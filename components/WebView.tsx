@@ -124,12 +124,14 @@ export default function WebView(props: {
         mixedContentMode={'always'}
         originWhitelist={['*']}
         webviewDebuggingEnabled={__DEV__}
-        // thirdPartyCookiesEnabled={false}
+        thirdPartyCookiesEnabled={false}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
         injectedJavaScript={`(function(){
-          if (document.body.dataset.injected) return;
-          document.body.dataset.injected = 'true';
-          if (window.__injectCss) {window.__injectCss()}
+          if (document.body) {
+            if (document.body.dataset.injected) return;
+            document.body.dataset.injected = 'true';
+          }
+          if (window.__injectCss) { window.__injectCss() }
           const cookies = document.cookie.split(";");
           for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i];
@@ -139,11 +141,9 @@ export default function WebView(props: {
           }
           ${props.js || ''};
           })();true;`}
-        onRenderProcessGone={syntheticEvent => {
+        onRenderProcessGone={() => {
           ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
         }}
-        // (${__$inject.toString().replace('CSS_CODE', JSON.stringify(props.css || ''))})();
-
         injectedJavaScriptBeforeContentLoaded={`(${__$inject
           .toString()
           .replace('CSS_CODE', JSON.stringify(props.css || ''))})();true;`}
@@ -216,7 +216,7 @@ export default function WebView(props: {
       {showReloadButton ? (
         <FloatingButton
           color="#54bb00"
-          style={{ opacity: 0.9, bottom: 16, right: 20 }}
+          style={{ bottom: 16, right: 18 }}
           onPress={action => {
             if (action === 'reload') {
               webViewRef.current?.reload()

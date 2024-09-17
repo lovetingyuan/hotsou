@@ -61,7 +61,7 @@ export default function Li() {
 
   return (
     <WebView
-      name={TabsName.li}
+      name={TabsName.muzi}
       css={`
         .tgme_widget_message_bubble {
           margin: 0;

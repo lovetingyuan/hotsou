@@ -1,13 +1,14 @@
 import { Entypo } from '@expo/vector-icons'
 import { Link, useFocusEffect } from 'expo-router'
 import React, { useCallback, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View, ViewProps } from 'react-native'
+import { StyleSheet, TouchableOpacity, ViewProps } from 'react-native'
 import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated'
 
 interface FloatingButtonProps extends ViewProps {
@@ -44,45 +45,30 @@ export function FloatingButton({
   })
 
   const reloadAnimatedStyle = useAnimatedStyle(() => {
-    const translateYAnimation = interpolate(animation.value, [0, 1], [0, -15], Extrapolation.CLAMP)
-
     return {
       transform: [
         {
-          scale: withSpring(animation.value),
-        },
-        {
-          translateY: withSpring(translateYAnimation),
+          scale: withTiming(animation.value),
         },
       ],
     }
   })
 
   const shareAnimatedStyle = useAnimatedStyle(() => {
-    const translateYAnimation = interpolate(animation.value, [0, 1], [0, -30], Extrapolation.CLAMP)
-
     return {
       transform: [
         {
-          scale: withSpring(animation.value),
-        },
-        {
-          translateY: withSpring(translateYAnimation),
+          scale: withTiming(animation.value),
         },
       ],
     }
   })
 
-  const heartAnimatedStyle = useAnimatedStyle(() => {
-    const translateYAnimation = interpolate(animation.value, [0, 1], [0, -45], Extrapolation.CLAMP)
-
+  const infoAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
         {
-          scale: withSpring(animation.value),
-        },
-        {
-          translateY: withSpring(translateYAnimation),
+          scale: withTiming(animation.value),
         },
       ],
     }
@@ -101,8 +87,15 @@ export function FloatingButton({
     }
   })
 
-  function toggleMenu() {
-    // onPress()
+  const gapAnimatedStyle = useAnimatedStyle(() => {
+    const gapAnimation = interpolate(animation.value, [0, 1], [0, 15], Extrapolation.CLAMP)
+
+    return {
+      gap: withSpring(gapAnimation),
+    }
+  })
+
+  const toggleMenu = () => {
     setIsOpen(current => {
       animation.value = current ? 0 : 1
       return !current
@@ -116,19 +109,19 @@ export function FloatingButton({
       }
     }, [animation])
   )
-  const infoBtn = (
-    <Animated.View
-      style={[styles.button, styles.secondary, heartAnimatedStyle, opacityAnimatedStyle]}
-    >
-      <Entypo name="info" size={24} color="#f02a4b" />
-    </Animated.View>
-  )
-  return (
-    <View style={[styles.container, style, { height: isOpen ? 233 : 52 }]} {...rest}>
-      {isOpen ? <Link href="/about">{infoBtn}</Link> : infoBtn}
+
+  const buttons = isOpen ? (
+    <>
+      <Link href="/about">
+        <Animated.View
+          style={[styles.button, styles.secondary, infoAnimatedStyle, opacityAnimatedStyle]}
+        >
+          <Entypo name="info" size={24} color="#f02a4b" />
+        </Animated.View>
+      </Link>
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={evt => {
+        onPress={() => {
           if (!isOpen) {
             return
           }
@@ -152,7 +145,7 @@ export function FloatingButton({
       </TouchableOpacity>
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={evt => {
+        onPress={() => {
           if (!isOpen) {
             return
           }
@@ -174,13 +167,17 @@ export function FloatingButton({
           <Entypo name="cw" size={24} color="#f02a4b" />
         </Animated.View>
       </TouchableOpacity>
-
+    </>
+  ) : null
+  return (
+    <Animated.View style={[styles.container, style, gapAnimatedStyle]} {...rest}>
+      {buttons}
       <TouchableOpacity activeOpacity={0.8} onPress={toggleMenu}>
-        <Animated.View style={[styles.button, styles.menu, colorStyle, rotationAnimatedStyle]}>
+        <Animated.View style={[styles.button, colorStyle, rotationAnimatedStyle]}>
           <Entypo name="plus" size={32} color="#ffffff" />
         </Animated.View>
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   )
 }
 
@@ -202,10 +199,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowOffset: { height: 10, width: 10 },
     elevation: 10,
+    opacity: 0.9,
   },
-  menu: {
-    backgroundColor: '#f02a4b',
-  },
+
   secondary: {
     width: 45,
     height: 45,

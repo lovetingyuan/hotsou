@@ -2,13 +2,6 @@ import WebView from '@/components/WebView'
 import { TabsName } from '@/constants/Tabs'
 
 function __$inject() {
-  const root = document.getElementById('root')
-  if (root) {
-    const title = document.createElement('h1')
-    title.className = 'zhihu-title'
-    title.textContent = '知乎热榜'
-    root.prepend(title)
-  }
   setInterval(() => {
     const btn = document.querySelector('.MobileModal-wrapper button')
     if (btn) {
@@ -34,13 +27,15 @@ export default function Zhihu() {
         .MBannerAd {
           display: none !important;
         }
-        .zhihu-title {
-          text-align: center;
-          font-size: 20px;
-          padding: 10px;
-        }
         .Question-mainEntity > div:nth-of-type(2) {
           display: none !important;
+        }
+        main.App-main::before {
+          content: '知乎热榜';
+          display: block;
+          font-size: 22px;
+          line-height: 55px;
+          text-align: center;
         }
       `}
       js={`(${__$inject})()`}
