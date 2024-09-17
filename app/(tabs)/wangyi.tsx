@@ -40,35 +40,24 @@ function __$inject() {
         isExcute: !1,
       },
     ]
-    // setInterval(() => {
-    //   const reload = document.querySelector('.page-status-error .page-reload')
-    //   if (reload) {
-    //     // @ts-ignore
-    //     reload.click()
-    //   }
-    // }, 200)
-    const handleRankClick = () => {
-      document.body.addEventListener(
-        'click',
-        evt => {
-          // @ts-ignore
-          const item = evt.target.closest('.s-item-wrapper')
-          if (item) {
-            const text = item.querySelector('.s-text').textContent.trim()
-            const url = 'https://c.m.163.com/news/search?keyword=' + encodeURIComponent(text)
-            location.href = url
-          }
-        },
-        true
-      )
-    }
-    if (document.body) {
-      handleRankClick()
-    } else {
-      document.addEventListener('DOMContentLoaded', () => {
-        handleRankClick()
-      })
-    }
+    setInterval(() => {
+      const reload = document.querySelector('.page-status-error .page-reload')
+      if (reload) {
+        // @ts-ignore
+        reload.click()
+      }
+    }, 200)
+
+    // @ts-ignore
+    window.__markReaded?.('.s-item-wrapper', '.s-text', '.s-item-wrapper .s-text', (evt, title) => {
+      const text = title?.innerText
+      if (text) {
+        const url = 'https://c.m.163.com/news/search?keyword=' + encodeURIComponent(text)
+        location.href = url
+        evt.stopPropagation()
+        evt.preventDefault()
+      }
+    })
 
     const tabs = document.getElementById('tabContainer')
     if (tabs) {
@@ -111,11 +100,12 @@ export default function Wangyi() {
         .fixedOpenNewsapp,
         .openNewsapp,
         .js-bottom-container,
-        .logoTop {
+        .logoTop,
+        .page-status-error {
           display: none !important;
         }
         #tabContainer::before {
-          content: '网易热点';
+          content: '网易热榜';
           display: block;
           text-align: center;
           font-size: 22px;

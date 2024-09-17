@@ -20,6 +20,54 @@ import { FloatingButton } from './FloatingButton'
 
 function __$inject() {
   // @ts-ignore
+  window.__markReaded = (containerClass, textClass, textsClass, onClick) => {
+    const handleRankClick = () => {
+      document.body.addEventListener(
+        'click',
+        evt => {
+          // @ts-ignore
+          const itemElement = evt.target.closest(containerClass)
+          if (itemElement) {
+            const title = itemElement.querySelector(textClass)
+            if (title) {
+              const clicked = JSON.parse(localStorage.getItem('__clicked__') || '{}')
+              const titleText = title.innerText
+              const now = Date.now()
+              clicked[titleText] = now
+              for (const t in clicked) {
+                if (now - clicked[t] > 3 * 24 * 60 * 60 * 1000) {
+                  delete clicked[t]
+                }
+              }
+              localStorage.setItem('__clicked__', JSON.stringify(clicked))
+              onClick?.(evt, title)
+            }
+          }
+        },
+        true
+      )
+    }
+    if (document.body) {
+      handleRankClick()
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        handleRankClick()
+      })
+    }
+
+    setInterval(() => {
+      const clicked = JSON.parse(localStorage.getItem('__clicked__') || '{}')
+      const items = document.querySelectorAll(textsClass)
+      items.forEach(ele => {
+        // @ts-ignore
+        if (ele.innerText in clicked) {
+          // @ts-ignore
+          ele.style.opacity = 0.5
+        }
+      })
+    }, 200)
+  }
+  // @ts-ignore
   window.__injectCss = () => {
     let style = document.querySelector('style[data-inject]')
     if (!style) {

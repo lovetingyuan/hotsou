@@ -67,49 +67,26 @@ function __$inject() {
         })
     }
 
-    document.body.addEventListener(
-      'click',
-      evt => {
-        const itemElement = evt.target.closest('.list-container .word-item')
-        if (itemElement) {
-          const title = itemElement.querySelector('.word')
-          if (title) {
-            const clicked = JSON.parse(localStorage.getItem('__clicked__') || '{}')
-            const titleText = title.innerText
-            const now = Date.now()
-            clicked[titleText] = now
-            for (const t in clicked) {
-              if (now - clicked[t] > 3 * 24 * 60 * 60 * 1000) {
-                delete clicked[t]
-              }
-            }
-            localStorage.setItem('__clicked__', JSON.stringify(clicked))
-            const loading = document.createElement('div')
-            loading.className = 'loader'
-            title.appendChild(loading)
-            searchByKeyword(titleText).then(ids => {
-              let url = 'https://www.douyin.com/search/' + titleText
-              if (ids && ids.length) {
-                url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
-              }
-              location.href = url
-            })
-            evt.stopPropagation()
-            evt.preventDefault()
+    window.__markReaded?.(
+      '.list-container .word-item',
+      '.word',
+      '.list-container .word-item .word',
+      (evt, title) => {
+        const loading = document.createElement('div')
+        loading.className = 'loader'
+        title.appendChild(loading)
+        const titleText = title.innerText
+        searchByKeyword(titleText).then(ids => {
+          let url = 'https://www.douyin.com/search/' + titleText
+          if (ids && ids.length) {
+            url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
           }
-        }
-      },
-      true
+          location.href = url
+        })
+        evt.stopPropagation()
+        evt.preventDefault()
+      }
     )
-    setInterval(() => {
-      const clicked = JSON.parse(localStorage.getItem('__clicked__') || '{}')
-      const items = document.querySelectorAll('.list-container .word-item .word')
-      items.forEach(ele => {
-        if (ele.innerText in clicked) {
-          ele.style.opacity = 0.5
-        }
-      })
-    }, 200)
   }
   if (location.pathname.startsWith('/share/video/')) {
     const getVideoComments = () => {
@@ -122,9 +99,6 @@ function __$inject() {
             'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
             'cache-control': 'no-cache',
           },
-          // referrer:
-          //   `https://www.douyin.com/search/%E6%9E%97%E8%AF%97%E6%A0%8B4%3A1%E6%88%98%E8%83%9C%E7%8E%8B%E6%A5%9A%E9%92%A6%E6%99%8B%E7%BA%A7%E5%86%B3%E8%B5%9B?aid=f0f77743-5caa-4118-8d19-1e665c0e252e&modal_id=7414503773986508042&type=general`,
-          // referrerPolicy: 'strict-origin-when-cross-origin',
           body: null,
           method: 'GET',
           mode: 'cors',
@@ -390,7 +364,6 @@ function __$inject() {
         if (evt.target.tagName === 'IMG' && evt.target.className === 'comments') {
           openPopup()
           getVideoComments().then(({ comments, total }) => {
-            // console.log(comments)
             document.getElementById('comment-popup-title').textContent = `评论(${total}条)`
             const fragment = document.createDocumentFragment()
             comments.forEach(comment => {

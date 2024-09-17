@@ -79,6 +79,6 @@ export default function Li() {
         }
       `}
       url={ch.decrypt(process.env.EXPO_PUBLIC_LI_URL_MI_TEXT!)}
-    ></WebView>
+    />
   )
 }

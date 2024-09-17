@@ -35,6 +35,7 @@ export default function TabListSetting() {
               alignItems: 'center',
               borderBottomWidth: 1,
               borderBottomColor: '#ccc',
+              paddingVertical: 5,
             }}
           >
             <ThemedText
@@ -111,15 +112,6 @@ export default function TabListSetting() {
 }
 
 const styles = StyleSheet.create({
-  rowItem: {
-    height: 50,
-    width: '100%',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   text: {
     textAlign: 'left',
     fontSize: 18,

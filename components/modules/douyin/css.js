@@ -6,9 +6,9 @@ export default `
   --_g: no-repeat radial-gradient(circle closest-side, #fff 90%, #0000);
   background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
   background-size: calc(100% / 3) 50%;
-  animation: l3 0.6s infinite linear;
+  animation: loading 0.6s infinite linear;
 }
-@keyframes l3 {
+@keyframes loading {
   20% {
     background-position: 0% 0%, 50% 50%, 100% 50%;
   }
@@ -24,7 +24,7 @@ export default `
 }
 html,
 body {
-  background: white;
+  background-color: white!important;
 }
 .body-content > .header,
 .body-content > .hot-title .banner-block {
