@@ -1,4 +1,4 @@
-import '@/components/modules/init'
+import './init'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFonts } from 'expo-font'
@@ -35,7 +35,7 @@ function App(props: React.PropsWithChildren) {
   const { setInitialed, initialed } = useStore()
   const methods = useMethods()
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   })
   useMounted(() => {
     Promise.all(

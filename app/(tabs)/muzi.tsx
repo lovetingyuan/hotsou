@@ -6,7 +6,7 @@ import { SimpleCrypto } from '@/utils'
 
 const ch = new SimpleCrypto(process.env.EXPO_PUBLIC_LI_URL_ENC_KEY!)
 
-export default function Li() {
+export default function Muzi() {
   return (
     <WebView
       name={TabsName.muzi}

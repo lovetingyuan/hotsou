@@ -7,6 +7,7 @@ export enum TabsName {
   wangyi = 'wangyi',
   muzi = 'muzi',
   tengxun = 'tengxun',
+  xinlang = 'xinlang',
 }
 
 export const TabsList = [
@@ -33,6 +34,11 @@ export const TabsList = [
   {
     name: TabsName.douyin,
     title: '抖音',
+    show: true,
+  },
+  {
+    name: TabsName.xinlang,
+    title: '新浪',
     show: true,
   },
   {

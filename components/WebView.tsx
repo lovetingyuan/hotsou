@@ -110,7 +110,7 @@ function __$inject() {
         // @ts-ignore
         if (ele.innerText in clicked) {
           // @ts-ignore
-          ele.style.opacity = 0.5
+          ele.style.opacity = 0.4
         }
       })
     }, 200)
@@ -174,14 +174,12 @@ export default function WebView(props: {
   url: string
   js?: string
   css?: string
-  showReloadButton?: boolean
   forbiddenUrls?: (string | RegExp)[]
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const canGoBackRef = React.useRef(false)
   const { reloadAllTab, setReloadAllTab, reloadTab } = useStore()
 
-  const showReloadButton = props.showReloadButton === undefined ? true : !!props.showReloadButton
   useFocusEffect(
     useCallback(() => {
       const onAndroidBackPress = () => {
@@ -315,26 +313,25 @@ export default function WebView(props: {
           }
         }}
       />
-      {showReloadButton ? (
-        <FloatingButton
-          key={fabKey}
-          color="#54bb00"
-          style={{ bottom: 16, right: 18 }}
-          onPress={action => {
-            if (action === 'reload') {
-              webViewRef.current?.reload()
-            }
-            if (action === 'share') {
-              webViewRef.current?.injectJavaScript('window.__handleShare();')
-            }
-          }}
-          onLongPress={action => {
-            if (action === 'reload') {
-              setReloadAllTab(reloadAllTab + 1)
-            }
-          }}
-        ></FloatingButton>
-      ) : null}
+
+      <FloatingButton
+        key={fabKey}
+        color="#54bb00"
+        style={{ bottom: 16, right: 18 }}
+        onPress={action => {
+          if (action === 'reload') {
+            webViewRef.current?.reload()
+          }
+          if (action === 'share') {
+            webViewRef.current?.injectJavaScript('window.__handleShare();')
+          }
+        }}
+        onLongPress={action => {
+          if (action === 'reload') {
+            setReloadAllTab(reloadAllTab + 1)
+          }
+        }}
+      />
     </>
   )
 }
