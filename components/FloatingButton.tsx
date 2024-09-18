@@ -11,6 +11,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 
+import { useAppStateChange } from '@/hooks/useAppState'
+
 interface FloatingButtonProps extends ViewProps {
   onPress: (action?: string) => void
   onLongPress?: (action?: string) => void
@@ -33,6 +35,12 @@ export function FloatingButton({
         backgroundColor: color,
       }
     : null
+
+  useAppStateChange(state => {
+    if (state === 'background') {
+      setIsOpen(false)
+    }
+  })
 
   const rotationAnimatedStyle = useAnimatedStyle(() => {
     return {

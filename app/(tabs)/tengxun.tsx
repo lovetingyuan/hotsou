@@ -25,7 +25,8 @@ export default function Tengxun() {
         div[class*='downloader-floating-bar'],
         div[class*='bottom-bar_buttonWrap'],
         [dt-eid='em_pull_news'],
-        div[dt-eid]:has(img[src*='ranking-top.png']) {
+        div[dt-eid]:has(img[src*='ranking-top.png']),
+        [id^='App_WAP_share'] {
           display: none !important;
         }
       `}

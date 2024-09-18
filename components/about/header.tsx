@@ -9,7 +9,7 @@ export default function AboutHeader() {
   const [helloKey, setHelloKey] = React.useState(1)
 
   return (
-    <ThemedView style={{ gap: 20 }}>
+    <ThemedView style={{ gap: 16 }}>
       <ThemedView style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
         <View style={{ flexDirection: 'row' }}>
           <ThemedText

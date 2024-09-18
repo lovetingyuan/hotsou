@@ -34,8 +34,10 @@ export default function TabListSetting() {
               justifyContent: 'space-between',
               alignItems: 'center',
               borderBottomWidth: 1,
-              borderBottomColor: '#ccc',
+              borderBottomColor: '#e2e2e2',
               paddingVertical: 5,
+              borderTopColor: '#e2e2e2',
+              borderTopWidth: index ? 0 : 1,
             }}
           >
             <ThemedText
@@ -46,7 +48,7 @@ export default function TabListSetting() {
                 }
               }}
             >
-              {tab.title}
+              {index + 1}. {tab.title}
             </ThemedText>
             {tab.name === TabsName.muzi && showInput ? (
               <TextInput

@@ -108,7 +108,11 @@ export default function Wangyi() {
         .openNewsapp,
         .js-bottom-container,
         .logoTop,
-        .page-status-error {
+        .page-status-error,
+        .ad,
+        .js-ad,
+        .comment-top-ad,
+        .js-comment-top-ad {
           display: none !important;
         }
         #tabContainer::before {
@@ -120,6 +124,9 @@ export default function Wangyi() {
         }
         .g-body-wrap .container {
           top: 0 !important;
+        }
+        .m-news-list.search-list-wrap {
+          margin-top: 25px;
         }
       `}
       js={`(${__$inject})();true;`}

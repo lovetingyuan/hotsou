@@ -8,6 +8,7 @@ import { ProviderOnChangeType } from 'react-atomic-context'
 import { Alert } from 'react-native'
 
 import { TabsList } from '@/constants/Tabs'
+import useMounted from '@/hooks/useMounted'
 import {
   AppContextProvider,
   AppContextValueType,
@@ -36,7 +37,7 @@ function App(props: React.PropsWithChildren) {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   })
-  useEffect(() => {
+  useMounted(() => {
     Promise.all(
       storedKeys.map(k => {
         const key = k as StoredKeys
@@ -62,7 +63,7 @@ function App(props: React.PropsWithChildren) {
     ).then(() => {
       setInitialed(true)
     })
-  }, [setInitialed, methods])
+  })
 
   useEffect(() => {
     if (loaded && initialed) {
@@ -80,20 +81,20 @@ function App(props: React.PropsWithChildren) {
 export default function InitApp(props: React.PropsWithChildren) {
   const appValue = useAppValue()
 
-  useEffect(() => {
+  useMounted(() => {
     AsyncStorage.getItem('__First_Usage_Time').then(r => {
       if (!r) {
         AsyncStorage.setItem('__First_Usage_Time', Date.now().toString())
         Alert.alert(
-          '欢迎使用Hotsou',
+          '欢迎使用 Hotsou',
           [
             '本应用简单聚合国内主流媒体的热搜信息，感谢使用',
-            '仅做展示和浏览用，不会对信息做任何变动也不对任何信息真实性或后果负责，请勿轻易相信或传播。',
+            '仅做展示和浏览用，不会对信息做任何变动也不对任何信息真实性或后果负责，请勿轻易相信或传播😀。',
           ].join('\n')
         )
       }
     })
-  }, [])
+  })
 
   return (
     <AppContextProvider value={appValue} onChange={onChange}>
