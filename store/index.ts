@@ -12,6 +12,7 @@ export const getAppValue = () => {
     initialed: false,
     reloadAllTab: 0,
     reloadTab: [''],
+    showMuziToggle: false,
     $liKey: '',
     $tabsList: [...TabsList],
   }
