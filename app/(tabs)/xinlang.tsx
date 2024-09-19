@@ -18,6 +18,7 @@ export default function Xinlang() {
       js={`(${__$inject})();true;`}
       css={`
         .callup-component,
+        .call_up_banner,
         #float-btn,
         #faiz_top_banner_swiper,
         .sina_sliders_pos,

@@ -1,5 +1,13 @@
 import React from 'react'
-import { StyleSheet, Switch, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native'
+import {
+  StyleSheet,
+  Switch,
+  TextInput,
+  ToastAndroid,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from 'react-native'
 
 import { TabsName } from '@/constants/Tabs'
 import { useStore } from '@/store'
@@ -93,6 +101,13 @@ export default function TabListSetting() {
                   const list = [...$tabsList]
                   const index = list.findIndex(v => v.name === tab.name)
                   const toShow = !list[index].show
+                  if (!toShow) {
+                    const showedCount = list.filter(v => v.show).length
+                    if (showedCount === 1) {
+                      ToastAndroid.show('不支持关闭全部', ToastAndroid.SHORT)
+                      return
+                    }
+                  }
                   if (list[index].name === TabsName.muzi && toShow && !liValid) {
                     set$liKey(liKey)
                   } else {
