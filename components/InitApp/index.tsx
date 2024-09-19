@@ -51,8 +51,7 @@ function App(props: React.PropsWithChildren) {
             // eslint-disable-next-line sonarjs/no-nested-functions
             const tablist = TabsList.map(tab => {
               const item = list.find(v => v.name === tab.name)
-              tab.show = item ? item.show : true
-              return { ...tab }
+              return { ...tab, show: item?.show ?? true }
             })
             methods.set$tabsList(tablist)
           } else {

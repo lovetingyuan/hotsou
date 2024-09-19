@@ -38,6 +38,12 @@ export default function TabLayout() {
       ) => {
         // @ts-ignore
         const textNode = props.children.props.children[1]
+        const text = (
+          <Text {...textNode.props} adjustsFontSizeToFit numberOfLines={2}>
+            {' '}
+            {textNode.props.children}{' '}
+          </Text>
+        )
         return (
           <Pressable
             onPress={evt => {
@@ -48,7 +54,7 @@ export default function TabLayout() {
             }}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
           >
-            {textNode}
+            {text}
           </Pressable>
         )
       }
