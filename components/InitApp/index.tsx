@@ -1,8 +1,11 @@
 import './init'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as Sentry from '@sentry/react-native'
+import { isRunningInExpoGo } from 'expo'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
+import { Slot, useNavigationContainerRef } from 'expo-router'
 import React, { useEffect } from 'react'
 import { ProviderOnChangeType } from 'react-atomic-context'
 import { Alert } from 'react-native'
@@ -18,6 +21,22 @@ import {
   useMethods,
   useStore,
 } from '@/store'
+
+// Construct a new instrumentation instance. This is needed to communicate between the integration and React
+const routingInstrumentation = Sentry.reactNavigationIntegration()
+
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  debug: false, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+  integrations: [
+    Sentry.reactNativeTracingIntegration({
+      // Pass instrumentation to be used as `routingInstrumentation`
+      routingInstrumentation,
+      enableNativeFramesTracking: !isRunningInExpoGo(),
+      // ...
+    }),
+  ],
+})
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -77,7 +96,14 @@ function App(props: React.PropsWithChildren) {
   return props.children
 }
 
-export default function InitApp(props: React.PropsWithChildren) {
+function RootLayout() {
+  const ref = useNavigationContainerRef()
+
+  useEffect(() => {
+    if (ref) {
+      routingInstrumentation.registerNavigationContainer(ref)
+    }
+  }, [ref])
   const appValue = useAppValue()
 
   useMounted(() => {
@@ -97,7 +123,12 @@ export default function InitApp(props: React.PropsWithChildren) {
 
   return (
     <AppContextProvider value={appValue} onChange={onChange}>
-      <App>{props.children}</App>
+      <App>
+        <Slot></Slot>
+      </App>
     </AppContextProvider>
   )
+  // return <Slot />
 }
+
+export default Sentry.wrap(RootLayout)
