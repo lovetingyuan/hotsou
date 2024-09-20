@@ -60,7 +60,7 @@ function __$inject() {
       }
     })
     // @ts-ignore
-    window.__keepScrollPosition?.('.swiper-slide-active .rank-container')
+    // window.__keepScrollPosition?.('.swiper-slide-active .rank-container')
 
     const tabs = document.getElementById('tabContainer')
     if (tabs) {

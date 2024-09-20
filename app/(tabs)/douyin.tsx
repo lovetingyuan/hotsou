@@ -10,7 +10,7 @@ export default function Douyin() {
       url={'https://www.douyin.com/share/billboard?__main_page'}
       js={jsCode}
       css={cssCode}
-      forbiddenUrls={['z.douyin.com', 'zijieapi.com']}
+      forbiddenUrls={['z.douyin.com', 'zijieapi.com', '/log-sdk/collect/']}
     />
   )
 }

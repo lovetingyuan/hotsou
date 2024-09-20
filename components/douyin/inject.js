@@ -1,6 +1,5 @@
 /* eslint-env browser */
 
-// injectedJavascript may execute twice
 function __$inject() {
   const timeAgo = timestamp => {
     const seconds = Math.floor((new Date() - timestamp * 1000) / 1000)
@@ -76,11 +75,14 @@ function __$inject() {
         loading.className = 'loader'
         title.appendChild(loading)
         const titleText = title.innerText
+        console.log(33, titleText)
         searchByKeyword(titleText).then(ids => {
           let url = 'https://www.douyin.com/search/' + titleText
           if (ids && ids.length) {
             url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
           }
+          console.log(33, url)
+
           location.href = url
         })
         evt.stopPropagation()
@@ -211,179 +213,182 @@ function __$inject() {
         }
       })
     }
-    const commentContainer = document.createElement('div')
-    commentContainer.innerHTML = `
-    <style>
-      .comments-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none;
-        z-index: 1000;
-      }
-      .comments-popup {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 70%;
-        background-color: white;
-        border-radius: 20px 20px 0 0;
-        transform: translateY(100%);
-        transition: transform 0.2s ease-out;
-        z-index: 1001;
-      }
-      .comment-popup-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        user-select: none;
-        background-color: white;
-        position: sticky;
-        top: 0;
-        padding: 15px 0 10px 0;
-      }
-      .comments-popup-content {
-        font-size: 16px;
-        padding: 0 20px 10px 20px;
-        overflow-y: auto;
-        height: 100%;
-      }
-      .show-comments-popup {
-        display: block;
-      }
-      .slide-up-comments-popup {
-        transform: translateY(0);
-      }
-      #comment-popup-title {
-        font-size: 18px;
-      }
-      #comment-popup-close {
-        padding: 10px;
-      }
-      #comment-popup-body::after {
-        content: "只显示前30条";
-        display: block;
-        text-align: center;
-        font-size: 14px;
-        color: gray;
-        font-weight: 300;
-      }
-      .comment-item { border-bottom: 1px solid #eee; margin: 20px 0;padding-bottom: 12px;}
-      .comment-header { margin-bottom: 10px; display: flex; justify-content: space-between;}
-      .comment-user-name { font-weight: 500; }
-      .comment-user-ip { color: gray; margin-left: 12px; font-size: 13px; }
-      .comment-user-ip::before { content: '@'; font-size: 14px;}
-      .comment-body {line-height: 24px; margin-left: 10px;}
-      .comment-body-text { color: #555; }
-      .comment-like { font-size: 12px; color: #ee6f00; font-weight: 300; }
-      .comment-like::before {content: '👍'; margin-left: 18px; font-size: 14px;}
-      .comment-time { color: gray; font-size: 12px; font-weight: 300; }
-    </style>
-    <div class="comments-overlay" id="comments-overlay">
-      <div class="comments-popup" id="comments-popup">
-        <div class="comments-popup-content">
-          <div class="comment-popup-header">
-            <h2 id="comment-popup-title"></h2>
-            <div id="comment-popup-close">✕</div>
-          </div>
-          <div id="comment-popup-body">
-            <template id="comment-item-template">
-              <div class="comment-item">
-                <div class="comment-header">
-                  <span>
-                    <span class="comment-user-name"></span>
-                    <span class="comment-user-ip"></span>
-                  </span>
-                  <span class="comment-time"></span>
+    window.__waitBody(() => {
+      const commentContainer = document.createElement('div')
+      commentContainer.innerHTML = `
+      <style>
+        .comments-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: none;
+          z-index: 1000;
+        }
+        .comments-popup {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 70%;
+          background-color: white;
+          border-radius: 20px 20px 0 0;
+          transform: translateY(100%);
+          transition: transform 0.2s ease-out;
+          z-index: 1001;
+        }
+        .comment-popup-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          user-select: none;
+          background-color: white;
+          position: sticky;
+          top: 0;
+          padding: 15px 0 10px 0;
+        }
+        .comments-popup-content {
+          font-size: 16px;
+          padding: 0 20px 10px 20px;
+          overflow-y: auto;
+          height: 100%;
+        }
+        .show-comments-popup {
+          display: block;
+        }
+        .slide-up-comments-popup {
+          transform: translateY(0);
+        }
+        #comment-popup-title {
+          font-size: 18px;
+        }
+        #comment-popup-close {
+          padding: 10px;
+        }
+        #comment-popup-body::after {
+          content: "只显示前30条";
+          display: block;
+          text-align: center;
+          font-size: 14px;
+          color: gray;
+          font-weight: 300;
+        }
+        .comment-item { border-bottom: 1px solid #eee; margin: 20px 0;padding-bottom: 12px;}
+        .comment-header { margin-bottom: 10px; display: flex; justify-content: space-between;}
+        .comment-user-name { font-weight: 500; }
+        .comment-user-ip { color: gray; margin-left: 12px; font-size: 13px; }
+        .comment-user-ip::before { content: '@'; font-size: 14px;}
+        .comment-body {line-height: 24px; margin-left: 10px;}
+        .comment-body-text { color: #555; }
+        .comment-like { font-size: 12px; color: #ee6f00; font-weight: 300; }
+        .comment-like::before {content: '👍'; margin-left: 18px; font-size: 14px;}
+        .comment-time { color: gray; font-size: 12px; font-weight: 300; }
+      </style>
+      <div class="comments-overlay" id="comments-overlay">
+        <div class="comments-popup" id="comments-popup">
+          <div class="comments-popup-content">
+            <div class="comment-popup-header">
+              <h2 id="comment-popup-title"></h2>
+              <div id="comment-popup-close">✕</div>
+            </div>
+            <div id="comment-popup-body">
+              <template id="comment-item-template">
+                <div class="comment-item">
+                  <div class="comment-header">
+                    <span>
+                      <span class="comment-user-name"></span>
+                      <span class="comment-user-ip"></span>
+                    </span>
+                    <span class="comment-time"></span>
+                  </div>
+                  <div class="comment-body">
+                    <span class="comment-body-text"></span>
+                    <span class="comment-like"></span>
+                  </div>
                 </div>
-                <div class="comment-body">
-                  <span class="comment-body-text"></span>
-                  <span class="comment-like"></span>
-                </div>
-              </div>
-            </template>
+              </template>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    `
-    document.body.appendChild(commentContainer)
-    const overlay = document.getElementById('comments-overlay')
-    const popup = document.getElementById('comments-popup')
-    const commentItemTemplate = document.getElementById('comment-item-template')
-    const close = document.getElementById('comment-popup-close')
-    const openPopup = () => {
-      window.history.pushState({ popup: 'open' }, 'open popup')
-      overlay.classList.add('show-comments-popup')
-      setTimeout(() => {
-        popup.classList.add('slide-up-comments-popup')
-      }, 10)
-    }
-
-    window.addEventListener('popstate', evt => {
-      if (evt.state.popup === 'open' || typeof evt.state.idx === 'number') {
-        closePopup(true)
+      `
+      document.body.appendChild(commentContainer)
+      const overlay = document.getElementById('comments-overlay')
+      const popup = document.getElementById('comments-popup')
+      const commentItemTemplate = document.getElementById('comment-item-template')
+      const close = document.getElementById('comment-popup-close')
+      const openPopup = () => {
+        window.history.pushState({ popup: 'open' }, 'open popup')
+        overlay.classList.add('show-comments-popup')
+        setTimeout(() => {
+          popup.classList.add('slide-up-comments-popup')
+        }, 10)
       }
-    })
 
-    const closePopup = state => {
-      if (!state) {
-        history.back()
+      window.addEventListener('popstate', evt => {
+        if (evt.state.popup === 'open' || typeof evt.state.idx === 'number') {
+          closePopup(true)
+        }
+      })
+
+      const closePopup = state => {
+        if (!state) {
+          history.back()
+        }
+        popup.classList.remove('slide-up-comments-popup')
+        setTimeout(() => {
+          overlay.classList.remove('show-comments-popup')
+        }, 300)
       }
-      popup.classList.remove('slide-up-comments-popup')
-      setTimeout(() => {
-        overlay.classList.remove('show-comments-popup')
-      }, 300)
-    }
 
-    overlay.addEventListener('click', event => {
-      if (event.target === overlay) {
+      overlay.addEventListener('click', event => {
+        if (event.target === overlay) {
+          closePopup()
+        }
+      })
+      close.addEventListener('click', () => {
         closePopup()
-      }
-    })
-    close.addEventListener('click', () => {
-      closePopup()
-    })
-    document.addEventListener(
-      'click',
-      evt => {
-        if (evt.target.closest('.avatar-container')) {
-          try {
-            const id =
-              window._ROUTER_DATA.loaderData['video_(id)/page'].videoInfoRes.item_list[0].author
-                .sec_uid
-            location.href = 'https://m.douyin.com/share/user/' + id
-          } catch (e) {
-            Object(e)
+      })
+      document.addEventListener(
+        'click',
+        evt => {
+          if (evt.target.closest('.avatar-container')) {
+            try {
+              const id =
+                window._ROUTER_DATA.loaderData['video_(id)/page'].videoInfoRes.item_list[0].author
+                  .sec_uid
+              location.href = 'https://m.douyin.com/share/user/' + id
+            } catch (e) {
+              Object(e)
+            }
           }
-        }
-        if (evt.target.tagName === 'IMG' && evt.target.className === 'comments') {
-          openPopup()
-          getVideoComments().then(({ comments, total }) => {
-            document.getElementById('comment-popup-title').textContent = `评论(${total}条)`
-            const fragment = document.createDocumentFragment()
-            comments.forEach(comment => {
-              const commentItem = commentItemTemplate.content.cloneNode(true)
-              commentItem.querySelector('.comment-item').dataset.cid = comment.cid
-              commentItem.querySelector('.comment-user-name').textContent = comment.name
-              commentItem.querySelector('.comment-user-ip').textContent = comment.ip_label
-              commentItem.querySelector('.comment-time').textContent = comment.create_time
-              commentItem.querySelector('.comment-body-text').textContent = comment.text
-              if (comment.digg_count) {
-                commentItem.querySelector('.comment-like').textContent = comment.digg_count
-              }
-              fragment.appendChild(commentItem)
+          if (evt.target.tagName === 'IMG' && evt.target.className === 'comments') {
+            openPopup()
+            getVideoComments().then(({ comments, total }) => {
+              document.getElementById('comment-popup-title').textContent = `评论(${total}条)`
+              const fragment = document.createDocumentFragment()
+              // eslint-disable-next-line sonarjs/no-nested-functions
+              comments.forEach(comment => {
+                const commentItem = commentItemTemplate.content.cloneNode(true)
+                commentItem.querySelector('.comment-item').dataset.cid = comment.cid
+                commentItem.querySelector('.comment-user-name').textContent = comment.name
+                commentItem.querySelector('.comment-user-ip').textContent = comment.ip_label
+                commentItem.querySelector('.comment-time').textContent = comment.create_time
+                commentItem.querySelector('.comment-body-text').textContent = comment.text
+                if (comment.digg_count) {
+                  commentItem.querySelector('.comment-like').textContent = comment.digg_count
+                }
+                fragment.appendChild(commentItem)
+              })
+              document.getElementById('comment-popup-body').appendChild(fragment)
             })
-            document.getElementById('comment-popup-body').appendChild(fragment)
-          })
-        }
-      },
-      true
-    )
+          }
+        },
+        true
+      )
+    })
   }
 }
 const jsCode = `(${__$inject})()`

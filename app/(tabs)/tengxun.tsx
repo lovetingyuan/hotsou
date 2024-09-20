@@ -3,7 +3,7 @@ import { TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname === '/ranking') {
-    // history.scrollRestoration = 'auto'
+    history.scrollRestoration = 'auto'
     // @ts-ignore
     window.__markReaded?.(
       '[dt-eid="em_item_article"]',
@@ -11,7 +11,7 @@ function __$inject() {
       '[dt-eid="em_item_article"] [class^="ranking-item_text"]'
     )
     // @ts-ignore
-    window.__keepScrollPosition?.()
+    // window.__keepScrollPosition?.()
   }
 }
 
