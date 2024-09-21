@@ -1,27 +1,21 @@
 import React from 'react'
 import { Image, Linking, Pressable, View } from 'react-native'
 
-import { useStore } from '@/store'
-
 import { HelloWave } from '../HelloWave'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 
 export default function AboutHeader() {
   const [helloKey, setHelloKey] = React.useState(1)
-  const { setShowMuziToggle } = useStore()
 
   return (
-    <ThemedView style={{ gap: 16 }}>
-      <ThemedView style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
+    <ThemedView style={{ gap: 16, marginTop: 20 }}>
+      <ThemedView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'row' }}>
           <ThemedText
             style={{ fontSize: 20 }}
             onPress={() => {
               setHelloKey(helloKey + 1)
-              if (helloKey === 15) {
-                setShowMuziToggle(true)
-              }
             }}
           >
             欢迎使用本应用{' '}

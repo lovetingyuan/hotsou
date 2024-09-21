@@ -7,10 +7,10 @@ function __$inject() {
   }
   window.__injected = true
   window.__waitBody = callback => {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', callback)
-    } else {
+    if (document.body) {
       callback()
+    } else {
+      document.addEventListener('DOMContentLoaded', callback)
     }
   }
   const sendClick = () => {
@@ -100,14 +100,12 @@ function __$inject() {
   }
 
   window.__injectCss = () => {
-    let style = document.querySelector('style[data-inject]')
+    let style = document.querySelector('style[data-css-inject]')
     if (!style) {
       style = document.createElement('style')
-
-      style.dataset.inject = 'true'
+      style.dataset.cssInject = 'true'
       document.head.appendChild(style)
     }
-
     // eslint-disable-next-line no-undef
     style.textContent = CSS_CODE
   }

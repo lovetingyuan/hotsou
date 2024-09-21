@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react-native'
 import { isRunningInExpoGo } from 'expo'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
-import { Slot, useNavigationContainerRef } from 'expo-router'
+import { useNavigationContainerRef } from 'expo-router'
 import React, { useEffect } from 'react'
 import { ProviderOnChangeType } from 'react-atomic-context'
 import { Alert } from 'react-native'
@@ -23,13 +23,13 @@ import {
 } from '@/store'
 
 // Construct a new instrumentation instance. This is needed to communicate between the integration and React
-const routingInstrumentation = Sentry.reactNavigationIntegration()
+const routingInstrumentation = new Sentry.ReactNavigationInstrumentation()
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   debug: false, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
   integrations: [
-    Sentry.reactNativeTracingIntegration({
+    new Sentry.ReactNativeTracing({
       // Pass instrumentation to be used as `routingInstrumentation`
       routingInstrumentation,
       enableNativeFramesTracking: !isRunningInExpoGo(),
@@ -58,25 +58,30 @@ function App(props: React.PropsWithChildren) {
   })
   useMounted(() => {
     Promise.all(
-      storedKeys.map(k => {
+      storedKeys.map(async k => {
         const key = k as StoredKeys
         const setKey = `set${key}` as const
-        return AsyncStorage.getItem(key).then(data => {
-          if (!data) {
-            return
-          }
-          if (key === '$tabsList') {
-            const list = JSON.parse(data) as AppContextValueType['$tabsList']
+        const data = await AsyncStorage.getItem(key)
+
+        if (!data) {
+          return
+        }
+        if (key === '$tabsList') {
+          let list = JSON.parse(data) as AppContextValueType['$tabsList']
+
+          list = list.filter(v => {
             // eslint-disable-next-line sonarjs/no-nested-functions
-            const tablist = TabsList.map(tab => {
-              const item = list.find(v => v.name === tab.name)
-              return { ...tab, show: item?.show ?? true }
-            })
-            methods.set$tabsList(tablist)
-          } else {
-            methods[setKey](JSON.parse(data))
-          }
-        })
+            return TabsList.find(t => t.name === v.name)
+          })
+          const newAdded = TabsList.filter(t => {
+            // eslint-disable-next-line sonarjs/no-nested-functions
+            return !list.find(v => v.name === t.name)
+          })
+          list.push(...JSON.parse(JSON.stringify(newAdded)))
+          methods.set$tabsList(list)
+        } else {
+          methods[setKey](JSON.parse(data))
+        }
       })
     ).then(() => {
       setInitialed(true)
@@ -96,9 +101,8 @@ function App(props: React.PropsWithChildren) {
   return props.children
 }
 
-function RootLayout() {
+function RootLayout(props: React.PropsWithChildren<{}>) {
   const ref = useNavigationContainerRef()
-
   useEffect(() => {
     if (ref) {
       routingInstrumentation.registerNavigationContainer(ref)
@@ -123,12 +127,9 @@ function RootLayout() {
 
   return (
     <AppContextProvider value={appValue} onChange={onChange}>
-      <App>
-        <Slot></Slot>
-      </App>
+      <App>{props.children}</App>
     </AppContextProvider>
   )
-  // return <Slot />
 }
 
 export default Sentry.wrap(RootLayout)

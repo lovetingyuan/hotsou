@@ -1,5 +1,5 @@
 import WebView from '@/components/WebView'
-import { TabsName } from '@/constants/Tabs'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname === '/ranking') {
@@ -19,7 +19,7 @@ export default function Tengxun() {
   return (
     <WebView
       name={TabsName.tengxun}
-      url="https://view.inews.qq.com/ranking?rankingtabtype=1&__main_page"
+      url={getTabUrl(TabsName.tengxun)!}
       js={`(${__$inject})()`}
       css={`
         div[class*='downloader-floating-bar'],

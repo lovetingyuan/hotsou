@@ -1,5 +1,5 @@
 import WebView from '@/components/WebView'
-import { TabsName } from '@/constants/Tabs'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   // @ts-ignore
@@ -14,7 +14,7 @@ export default function Xinlang() {
   return (
     <WebView
       name={TabsName.xinlang}
-      url="https://sinanews.sina.cn/h5/top_news_list.d.html?__main_page"
+      url={getTabUrl(TabsName.xinlang)!}
       js={`(${__$inject})();true;`}
       css={`
         .callup-component,

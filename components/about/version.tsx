@@ -92,12 +92,20 @@ export default function Version() {
   )
   return (
     <ThemedView style={{ flexDirection: 'row', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
-      <ThemedText>
+      <ThemedText
+        onPress={() => {
+          if (Updates.createdAt) {
+            ToastAndroid.show(
+              '更新时间：' +
+                Updates.createdAt.toLocaleDateString() +
+                ' ' +
+                Updates.createdAt.toLocaleTimeString(),
+              ToastAndroid.SHORT
+            )
+          }
+        }}
+      >
         📊 当前版本：{currentVersion}
-        {'    '}
-        {Updates.createdAt
-          ? Updates.createdAt.toLocaleDateString() + ' ' + Updates.createdAt.toLocaleTimeString()
-          : ''}
       </ThemedText>
       {latestVersion ? fetchedVersion : noFetchedVersion}
     </ThemedView>

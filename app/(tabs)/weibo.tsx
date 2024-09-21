@@ -1,5 +1,5 @@
 import WebView from '@/components/WebView'
-import { TabsName } from '@/constants/Tabs'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname.startsWith('/p/106003')) {
@@ -16,9 +16,7 @@ export default function Weibo() {
   return (
     <WebView
       name={TabsName.weibo}
-      url={
-        'https://m.weibo.cn/p/106003type=25&t=3&disable_hot=1&filter_type=realtimehot?__main_page'
-      }
+      url={getTabUrl(TabsName.weibo)!}
       css={`
         div.card.m-panel.card4:has(img[src*='search_point_orange']) {
           display: none;

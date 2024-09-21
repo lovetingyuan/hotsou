@@ -1,5 +1,5 @@
 import WebView from '@/components/WebView'
-import { TabsName } from '@/constants/Tabs'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname.includes('newsapp/hot-content/')) {
@@ -100,7 +100,7 @@ export default function Wangyi() {
   return (
     <WebView
       name={TabsName.wangyi}
-      url="https://wp.m.163.com/163/html/newsapp/hot-content/index.html?version=searchFirstTab&__main_page"
+      url={getTabUrl(TabsName.wangyi)!}
       css={`
         .footer-container,
         .js-open-newsapp,

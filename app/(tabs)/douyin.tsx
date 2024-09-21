@@ -1,13 +1,13 @@
 import cssCode from '@/components/douyin/css'
 import jsCode from '@/components/douyin/inject'
 import WebView from '@/components/WebView'
-import { TabsName } from '@/constants/Tabs'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 export default function Douyin() {
   return (
     <WebView
       name={TabsName.douyin}
-      url={'https://www.douyin.com/share/billboard?__main_page'}
+      url={getTabUrl(TabsName.douyin)!}
       js={jsCode}
       css={cssCode}
       forbiddenUrls={['z.douyin.com', 'zijieapi.com', '/log-sdk/collect/']}

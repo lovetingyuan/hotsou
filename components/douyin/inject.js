@@ -75,14 +75,11 @@ function __$inject() {
         loading.className = 'loader'
         title.appendChild(loading)
         const titleText = title.innerText
-        console.log(33, titleText)
         searchByKeyword(titleText).then(ids => {
           let url = 'https://www.douyin.com/search/' + titleText
           if (ids && ids.length) {
             url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
           }
-          console.log(33, url)
-
           location.href = url
         })
         evt.stopPropagation()

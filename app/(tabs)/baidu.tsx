@@ -1,5 +1,5 @@
 import WebView from '@/components/WebView'
-import { TabsName } from '@/constants/Tabs'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.hostname === 'top.baidu.com') {
@@ -17,11 +17,13 @@ export default function Baidu() {
   return (
     <WebView
       name={TabsName.baidu}
-      url={'https://top.baidu.com/board?tab=realtime&__main_page'}
+      url={getTabUrl(TabsName.baidu)!}
       js={`(${__$inject})()`}
       css={`
         #bdrainrwDragButton,
-        #page-copyright {
+        #page-copyright,
+        .invokeAppBtnWrapper,
+        .newHeadDeflectorWrapper {
           display: none !important;
         }
         .row-start-center:has(img[src*='redtop']) {

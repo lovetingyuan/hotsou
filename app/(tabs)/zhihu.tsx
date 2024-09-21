@@ -1,5 +1,5 @@
 import WebView from '@/components/WebView'
-import { TabsName } from '@/constants/Tabs'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   setInterval(() => {
@@ -15,7 +15,7 @@ export default function Zhihu() {
   return (
     <WebView
       name={TabsName.zhihu}
-      url={'https://www.zhihu.com/billboard?__main_page'}
+      url={getTabUrl(TabsName.zhihu)!}
       forbiddenUrls={['zhihu-web-analytics.zhihu.com', 'datahub.zhihu.com', 'apm.zhihu.com']}
       css={`
         .OpenInAppButton,
