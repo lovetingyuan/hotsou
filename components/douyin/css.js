@@ -1,5 +1,5 @@
 export default `
-.loader {
+.douyin-title-click-loader {
   width: 45px;
   display: inline-block;
   aspect-ratio: 2;

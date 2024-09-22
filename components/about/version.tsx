@@ -1,7 +1,7 @@
 import * as Application from 'expo-application'
 import * as Updates from 'expo-updates'
 import React from 'react'
-import { Linking, Text, ToastAndroid } from 'react-native'
+import { Linking, Text, ToastAndroid, TouchableOpacity } from 'react-native'
 
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
@@ -35,7 +35,6 @@ function checkAppUpdate() {
     }
   })
 }
-
 export default function Version() {
   const [latestVersion, setLatestVersion] = React.useState<null | {
     version: string
@@ -62,24 +61,26 @@ export default function Version() {
   }
   const fetchedVersion =
     latestVersion?.version !== currentVersion ? (
-      <Text
-        style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}
+      <TouchableOpacity
+        activeOpacity={0.5}
         onPress={() => {
           Linking.openURL(latestVersion!.downloadUrl)
           ToastAndroid.show('请在浏览器中下载', ToastAndroid.SHORT)
         }}
       >
-        🎉 有更新：{latestVersion?.version}, 点击下载
-      </Text>
+        <Text style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}>
+          🎉 有更新：{latestVersion?.version}, 点击下载
+        </Text>
+      </TouchableOpacity>
     ) : (
-      <Text style={{ fontSize: 16, color: '#555' }}>暂无更新</Text>
+      <Text style={{ fontSize: 16, color: '#888' }}>暂无更新</Text>
     )
   const noFetchedVersion = checking ? (
-    <Text style={{ fontSize: 16, color: '#555', fontStyle: 'italic' }}>⏳ 正在检查...</Text>
+    <Text style={{ fontSize: 16, color: '#888', fontStyle: 'italic' }}>⏳ 正在检查...</Text>
   ) : (
-    <Text style={{ color: '#0065da', fontSize: 16 }} onPress={handleCheckAppUpdate}>
-      检查更新
-    </Text>
+    <TouchableOpacity activeOpacity={0.5} onPress={handleCheckAppUpdate}>
+      <Text style={{ color: '#0065da', fontSize: 16 }}>检查更新</Text>
+    </TouchableOpacity>
   )
   return (
     <ThemedView style={{ flexDirection: 'row', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>

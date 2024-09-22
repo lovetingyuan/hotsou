@@ -9,7 +9,7 @@ export default function AboutHeader() {
   const [helloKey, setHelloKey] = React.useState(1)
 
   return (
-    <ThemedView style={{ gap: 16, marginTop: 20 }}>
+    <ThemedView style={{ gap: 16 }}>
       <ThemedView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'row' }}>
           <ThemedText
@@ -37,8 +37,8 @@ export default function AboutHeader() {
           ></Image>
         </Pressable>
       </ThemedView>
-      <ThemedText>聚合一些媒体的热搜热点信息，仅供展示和浏览，请勿轻易相信或传播。</ThemedText>
-      <ThemedText>如果使用过程中遇到问题，请及时更新版本。</ThemedText>
+      <ThemedText>📣 聚合一些媒体的热搜热点信息，仅供展示和浏览，请勿轻易相信或传播。</ThemedText>
+      <ThemedText>💡 如果使用过程中遇到问题，请及时更新版本。</ThemedText>
     </ThemedView>
   )
 }

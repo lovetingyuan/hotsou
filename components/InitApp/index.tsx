@@ -113,13 +113,21 @@ function RootLayout(props: React.PropsWithChildren<{}>) {
   useMounted(() => {
     AsyncStorage.getItem('__First_Usage_Time').then(r => {
       if (!r) {
-        AsyncStorage.setItem('__First_Usage_Time', Date.now().toString())
         Alert.alert(
           '欢迎使用 Hotsou',
           [
             '本应用简单聚合国内主流媒体的热搜信息，感谢使用',
             '仅做展示和浏览用，不会对信息做任何变动也不对任何信息真实性或后果负责，请勿轻易相信或传播😀。',
-          ].join('\n')
+          ].join('\n'),
+          [
+            {
+              text: '同意',
+              isPreferred: true,
+              onPress: () => {
+                AsyncStorage.setItem('__First_Usage_Time', Date.now().toString())
+              },
+            },
+          ]
         )
       }
     })

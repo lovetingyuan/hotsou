@@ -65,25 +65,28 @@ function __$inject() {
           return allIds
         })
     }
-
     window.__markReaded?.(
       '.list-container .word-item',
       '.word',
       '.list-container .word-item .word',
       (evt, title) => {
-        const loading = document.createElement('div')
-        loading.className = 'loader'
-        title.appendChild(loading)
-        const titleText = title.innerText
-        searchByKeyword(titleText).then(ids => {
-          let url = 'https://www.douyin.com/search/' + titleText
-          if (ids && ids.length) {
-            url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
-          }
-          location.href = url
-        })
         evt.stopPropagation()
         evt.preventDefault()
+        if (!document.querySelector('.douyin-title-click-loader')) {
+          const loading = document.createElement('div')
+          loading.className = 'douyin-title-click-loader'
+          title.appendChild(loading)
+          const titleText = title.innerText
+          searchByKeyword(titleText).then(ids => {
+            let url = 'https://www.douyin.com/search/' + titleText
+            if (ids && ids.length) {
+              url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
+            }
+            location.href = url
+          })
+          return
+        }
+        return false
       }
     )
   }

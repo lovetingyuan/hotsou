@@ -80,7 +80,7 @@ function TabItem(
               }}
             >
               <ThemedText style={[styles.text, { color: '#0969da' }]}>
-                {props.index + 1}. {props.tab.title}
+                {props.index + 1}. {props.tab.title} ✎
               </ThemedText>
             </TouchableOpacity>
           ) : (
@@ -147,13 +147,13 @@ function TabItem(
     )
   }
   return (
-    <View style={{ flexDirection: 'row', gap: 10 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <ThemedTextInput
         placeholder="名称"
         style={[styles.input, { flexGrow: 1 }]}
         value={title}
         onChangeText={setTitle}
-      ></ThemedTextInput>
+      />
       <ThemedTextInput
         style={[styles.input, { flexGrow: 4 }]}
         placeholder="网址(https://)"
@@ -161,7 +161,23 @@ function TabItem(
         keyboardType="url"
         value={url}
         onChangeText={setUrl}
-      ></ThemedTextInput>
+      />
+      <ThemedText
+        style={{
+          fontSize: 20,
+          width: 24,
+          textAlign: 'center',
+          height: 24,
+          lineHeight: 26,
+        }}
+        onPress={() => {
+          setTitle(props.tab.title)
+          setUrl(props.tab.url)
+          props.setEditingName('')
+        }}
+      >
+        ✕
+      </ThemedText>
       <Button title=" 保存 " onPress={handleSaveSub}></Button>
     </View>
   )

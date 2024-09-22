@@ -23,7 +23,8 @@ export default function Xinlang() {
         #faiz_top_banner_swiper,
         .sina_sliders_pos,
         [sax-type='proxy'],
-        [sax-type='sax_5'] {
+        [sax-type='sax_5'],
+        [sax-type='blogbf'] {
           display: none !important;
         }
       `}

@@ -71,6 +71,10 @@ function __$inject() {
         if (itemElement) {
           const title = itemElement.querySelector(textClass)
           if (title) {
+            const ret = onClick?.(evt, title)
+            if (ret === false) {
+              return
+            }
             const clicked = JSON.parse(localStorage.getItem('__clicked__') || '{}')
             const titleText = title.innerText
             const now = Date.now()
@@ -81,7 +85,6 @@ function __$inject() {
               }
             }
             localStorage.setItem('__clicked__', JSON.stringify(clicked))
-            onClick?.(evt, title)
           }
         }
       },

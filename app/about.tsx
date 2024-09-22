@@ -9,7 +9,9 @@ import { ThemedView } from '@/components/ThemedView'
 export default function About() {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
-      <ThemedView style={{ flex: 1, minHeight: '100%', padding: 20, gap: 20 }}>
+      <ThemedView
+        style={{ flex: 1, minHeight: '100%', paddingHorizontal: 20, paddingVertical: 30, gap: 20 }}
+      >
         <AboutHeader></AboutHeader>
         <Version></Version>
         <TabListSetting></TabListSetting>
