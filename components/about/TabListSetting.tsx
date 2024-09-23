@@ -150,12 +150,12 @@ function TabItem(
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <ThemedTextInput
         placeholder="名称"
-        style={[styles.input, { flexGrow: 1 }]}
+        style={[styles.input, { flexGrow: 1, flexShrink: 1, minWidth: 40 }]}
         value={title}
         onChangeText={setTitle}
       />
       <ThemedTextInput
-        style={[styles.input, { flexGrow: 4 }]}
+        style={[styles.input, { flexGrow: 4, flexShrink: 1 }]}
         placeholder="网址(https://)"
         inputMode="url"
         keyboardType="url"
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
     fontSize: 16,
   },
 })

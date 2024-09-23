@@ -69,7 +69,7 @@ export default function Version() {
         }}
       >
         <Text style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}>
-          🎉 有更新：{latestVersion?.version}, 点击下载
+          🎉 有更新：{latestVersion?.version} 点击下载⬇
         </Text>
       </TouchableOpacity>
     ) : (

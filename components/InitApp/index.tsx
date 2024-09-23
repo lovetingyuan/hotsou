@@ -50,6 +50,32 @@ const onChange: ProviderOnChangeType<AppContextValueType> = ({ key, value }, ctx
   }
 }
 
+const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
+  return Promise.all(
+    storedKeys.map(async k => {
+      const key = k as StoredKeys
+      const setKey = `set${key}` as const
+      const data = await AsyncStorage.getItem(key)
+      if (!data) {
+        return
+      }
+      if (key === '$tabsList') {
+        let list = JSON.parse(data) as AppContextValueType['$tabsList']
+        list = list.filter(v => {
+          return TabsList.find(t => t.name === v.name)
+        })
+        const newAdded = TabsList.filter(t => {
+          return !list.find(v => v.name === t.name)
+        })
+        list.push(...JSON.parse(JSON.stringify(newAdded)))
+        methods.set$tabsList(list)
+      } else {
+        methods[setKey](JSON.parse(data))
+      }
+    })
+  )
+}
+
 function App(props: React.PropsWithChildren) {
   const { setInitialed, initialed } = useStore()
   const methods = useMethods()
@@ -57,33 +83,7 @@ function App(props: React.PropsWithChildren) {
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   })
   useMounted(() => {
-    Promise.all(
-      storedKeys.map(async k => {
-        const key = k as StoredKeys
-        const setKey = `set${key}` as const
-        const data = await AsyncStorage.getItem(key)
-
-        if (!data) {
-          return
-        }
-        if (key === '$tabsList') {
-          let list = JSON.parse(data) as AppContextValueType['$tabsList']
-
-          list = list.filter(v => {
-            // eslint-disable-next-line sonarjs/no-nested-functions
-            return TabsList.find(t => t.name === v.name)
-          })
-          const newAdded = TabsList.filter(t => {
-            // eslint-disable-next-line sonarjs/no-nested-functions
-            return !list.find(v => v.name === t.name)
-          })
-          list.push(...JSON.parse(JSON.stringify(newAdded)))
-          methods.set$tabsList(list)
-        } else {
-          methods[setKey](JSON.parse(data))
-        }
-      })
-    ).then(() => {
+    fulfillStoreKeys(methods).then(() => {
       setInitialed(true)
     })
   })
