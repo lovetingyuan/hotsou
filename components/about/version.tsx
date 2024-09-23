@@ -35,6 +35,9 @@ function checkAppUpdate() {
     }
   })
 }
+// @ts-ignore
+const gitHash = typeof GIT_HASH === 'string' ? GIT_HASH : 'N/A'
+
 export default function Version() {
   const [latestVersion, setLatestVersion] = React.useState<null | {
     version: string
@@ -91,7 +94,9 @@ export default function Version() {
               '更新时间：' +
                 Updates.createdAt.toLocaleDateString() +
                 ' ' +
-                Updates.createdAt.toLocaleTimeString(),
+                Updates.createdAt.toLocaleTimeString() +
+                ' ' +
+                gitHash,
               ToastAndroid.SHORT
             )
           }
