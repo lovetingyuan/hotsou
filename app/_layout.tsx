@@ -15,7 +15,9 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="about"
-            options={{ title: '关于Hotsou', headerShown: true, headerShadowVisible: true }}
+            options={{
+              title: '关于Hotsou',
+            }}
           />
           <Stack.Screen name="+not-found" />
         </Stack>

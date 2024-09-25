@@ -3,12 +3,13 @@ import './init'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Sentry from '@sentry/react-native'
 import { isRunningInExpoGo } from 'expo'
+import * as Application from 'expo-application'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
 import { useNavigationContainerRef } from 'expo-router'
 import React, { useEffect } from 'react'
 import { ProviderOnChangeType } from 'react-atomic-context'
-import { Alert } from 'react-native'
+import { Alert, Linking, ToastAndroid } from 'react-native'
 
 import { TabsList } from '@/constants/Tabs'
 import useMounted from '@/hooks/useMounted'
@@ -21,6 +22,7 @@ import {
   useMethods,
   useStore,
 } from '@/store'
+import checkAppUpdate from '@/utils/checkAppUpdate'
 
 // Construct a new instrumentation instance. This is needed to communicate between the integration and React
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation()
@@ -77,7 +79,7 @@ const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
 }
 
 function App(props: React.PropsWithChildren) {
-  const { setInitialed, initialed } = useStore()
+  const { setInitialed, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime } = useStore()
   const methods = useMethods()
   const [loaded] = useFonts({
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
@@ -92,13 +94,37 @@ function App(props: React.PropsWithChildren) {
     if (loaded && initialed) {
       SplashScreen.hideAsync()
     }
-  }, [loaded, initialed])
+    if (initialed && Date.now() - get$checkAppUpdateTime() > 7 * 24 * 60 * 60 * 1000) {
+      checkAppUpdate().then(r => {
+        const currentVersion = Application.nativeApplicationVersion
+        set$checkAppUpdateTime(Date.now())
+        if (r && r.version !== currentVersion) {
+          Alert.alert('有新版本🎉', `\n${currentVersion} 更新到 ${r.version} (*^_^*)`, [
+            {
+              text: '取消',
+            },
+            {
+              text: '下载',
+              onPress: () => {
+                ToastAndroid.show('在浏览器中下载并安装', ToastAndroid.SHORT)
+                Linking.openURL(r.downloadUrl)
+              },
+            },
+          ])
+        }
+      })
+    }
+  }, [loaded, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime])
 
   if (!initialed || !loaded) {
     return null
   }
 
   return props.children
+}
+
+const getFirstUsageTime = () => {
+  return AsyncStorage.getItem('__First_Usage_Time')
 }
 
 function RootLayout(props: React.PropsWithChildren<{}>) {
@@ -111,25 +137,26 @@ function RootLayout(props: React.PropsWithChildren<{}>) {
   const appValue = useAppValue()
 
   useMounted(() => {
-    AsyncStorage.getItem('__First_Usage_Time').then(r => {
-      if (!r) {
-        Alert.alert(
-          '欢迎使用 Hotsou',
-          [
-            '本应用简单聚合国内主流媒体的热搜信息，感谢使用',
-            '仅做展示和浏览用，不会对信息做任何变动也不对任何信息真实性或后果负责，请勿轻易相信或传播😀。',
-          ].join('\n'),
-          [
-            {
-              text: '同意',
-              isPreferred: true,
-              onPress: () => {
-                AsyncStorage.setItem('__First_Usage_Time', Date.now().toString())
-              },
-            },
-          ]
-        )
+    getFirstUsageTime().then(r => {
+      if (r) {
+        return
       }
+      Alert.alert(
+        '欢迎使用 Hotsou',
+        [
+          '本应用简单聚合国内主流媒体的热搜信息，感谢使用',
+          '仅做展示和浏览用，不会对信息做任何变动也不对任何信息真实性或后果负责，请勿轻易相信或传播😀。',
+        ].join('\n'),
+        [
+          {
+            text: '同意',
+            isPreferred: true,
+            onPress: () => {
+              AsyncStorage.setItem('__First_Usage_Time', Date.now().toString())
+            },
+          },
+        ]
+      )
     })
   })
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Button,
+  Modal,
   StyleSheet,
   Switch,
   Text,
@@ -37,14 +38,109 @@ function TabItem(
     set$tabsList(newList)
   }
 
-  const [title, setTitle] = React.useState(props.tab.title)
-  const [url, setUrl] = React.useState(props.tab.url)
+  return (
+    <View style={[styles.item, { borderTopWidth: props.index ? 0 : 1 }]}>
+      <View>
+        {props.tab.name.startsWith('zidingyi') ? (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => {
+              props.setEditingName(props.tab.name)
+            }}
+          >
+            <ThemedText style={[styles.text, { color: '#0969da' }]}>
+              {props.index + 1}. {props.tab.title} ✎
+            </ThemedText>
+          </TouchableOpacity>
+        ) : (
+          <ThemedText style={styles.text}>
+            {props.index + 1}. {props.tab.title}
+          </ThemedText>
+        )}
+      </View>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        {props.index === 0 ? null : (
+          <TouchableOpacity
+            onPress={() => {
+              handleMove('up')
+            }}
+          >
+            <ThemedText style={styles.arrow}>⬆</ThemedText>
+          </TouchableOpacity>
+        )}
+        {props.last ? (
+          <Text style={styles.arrow}> </Text>
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              handleMove('down')
+            }}
+          >
+            <ThemedText style={styles.arrow}>⬇</ThemedText>
+          </TouchableOpacity>
+        )}
+        <Switch
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          thumbColor={props.tab.show ? '#80f43e' : '#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          value={props.tab.show}
+          onValueChange={() => {
+            const list = [...get$tabsList()]
+            const index = list.findIndex(v => v.name === props.tab.name)
+            const toShow = !list[index].show
+            if (!toShow) {
+              const showedCount = list.filter(v => v.show).length
+              if (showedCount === 1) {
+                ToastAndroid.show('不支持关闭全部', ToastAndroid.SHORT)
+                return
+              }
+            }
+            if (toShow) {
+              if (list[index].name.startsWith('zidingyi') && list[index].url === 'https://') {
+                ToastAndroid.show('请先点击名称编辑', ToastAndroid.SHORT)
+                return
+              }
+            }
+
+            const newItem = {
+              ...list[index],
+              show: toShow,
+            }
+            list[index] = newItem
+            set$tabsList(list)
+          }}
+        />
+      </View>
+    </View>
+  )
+}
+
+function EditingModal(props: { name: string; visible: boolean; closeModal: () => void }) {
+  const { get$tabsList, set$tabsList } = useStore()
+
+  const tabList = get$tabsList()
+  const tab = tabList.find(v => v.name === props.name)
+  const [title, setTitle] = React.useState(tab?.title ?? '')
+  const [url, setUrl] = React.useState(tab?.url ?? '')
+  React.useEffect(() => {
+    if (tab) {
+      setTitle(tab.title)
+    }
+    if (tab) {
+      setUrl(tab.url)
+    }
+  }, [tab])
+  if (!props.name || !tab) {
+    return null
+  }
+
   const handleSaveSub = () => {
     if (!title.trim()) {
       ToastAndroid.show('名称不能为空', ToastAndroid.SHORT)
       return
     }
-    if (TabsList.find(v => v.title === title.trim() && v.name !== props.tab.name)) {
+    if (TabsList.find(v => v.title === title.trim() && v.name !== tab.name)) {
       ToastAndroid.show('请换一个名称', ToastAndroid.SHORT)
       return
     }
@@ -57,7 +153,7 @@ function TabItem(
       return
     }
     const newList = [...get$tabsList()]
-    const index = newList.findIndex(v => v.name === props.tab.name)
+    const index = newList.findIndex(v => v.name === tab.name)
     if (index >= 0) {
       newList[index] = {
         ...newList[index],
@@ -66,120 +162,51 @@ function TabItem(
       }
     }
     set$tabsList(newList)
-    props.setEditingName('')
+    props.closeModal()
   }
-  if (props.editingName !== props.tab.name) {
-    return (
-      <>
-        <View>
-          {props.tab.name.startsWith('zidingyi') ? (
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => {
-                props.setEditingName(props.tab.name)
-              }}
-            >
-              <ThemedText style={[styles.text, { color: '#0969da' }]}>
-                {props.index + 1}. {props.tab.title} ✎
-              </ThemedText>
-            </TouchableOpacity>
-          ) : (
-            <ThemedText style={styles.text}>
-              {props.index + 1}. {props.tab.title}
-            </ThemedText>
-          )}
-        </View>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          {props.index === 0 ? null : (
-            <TouchableOpacity
-              onPress={() => {
-                handleMove('up')
-              }}
-            >
-              <ThemedText style={styles.arrow}>⬆</ThemedText>
-            </TouchableOpacity>
-          )}
-          {props.last ? (
-            <Text style={styles.arrow}> </Text>
-          ) : (
-            <TouchableOpacity
-              onPress={() => {
-                handleMove('down')
-              }}
-            >
-              <ThemedText style={styles.arrow}>⬇</ThemedText>
-            </TouchableOpacity>
-          )}
-          <Switch
-            trackColor={{ false: '#767577', true: '#81b0ff' }}
-            thumbColor={props.tab.show ? '#80f43e' : '#f4f3f4'}
-            ios_backgroundColor="#3e3e3e"
-            value={props.tab.show}
-            onValueChange={() => {
-              const list = [...get$tabsList()]
-              const index = list.findIndex(v => v.name === props.tab.name)
-              const toShow = !list[index].show
-              if (!toShow) {
-                const showedCount = list.filter(v => v.show).length
-                if (showedCount === 1) {
-                  ToastAndroid.show('不支持关闭全部', ToastAndroid.SHORT)
-                  return
-                }
-              }
-              if (toShow) {
-                if (list[index].name.startsWith('zidingyi') && list[index].url === 'https://') {
-                  ToastAndroid.show('请先点击名称编辑', ToastAndroid.SHORT)
-                  return
-                }
-              }
-
-              const newItem = {
-                ...list[index],
-                show: toShow,
-              }
-              list[index] = newItem
-              set$tabsList(list)
-            }}
-          />
-        </View>
-      </>
-    )
+  const handleCancel = () => {
+    setTitle(tab?.title ?? '')
+    setUrl(tab?.url ?? '')
+    props.closeModal()
   }
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-      <ThemedTextInput
-        placeholder="名称"
-        style={[styles.input, { flexGrow: 1, flexShrink: 1, minWidth: 40 }]}
-        value={title}
-        onChangeText={setTitle}
-      />
-      <ThemedTextInput
-        style={[styles.input, { flexGrow: 4, flexShrink: 1 }]}
-        placeholder="网址(https://)"
-        inputMode="url"
-        keyboardType="url"
-        value={url}
-        onChangeText={setUrl}
-      />
-      <ThemedText
-        style={{
-          fontSize: 20,
-          width: 24,
-          textAlign: 'center',
-          height: 24,
-          lineHeight: 26,
-        }}
-        onPress={() => {
-          setTitle(props.tab.title)
-          setUrl(props.tab.url)
-          props.setEditingName('')
-        }}
-      >
-        ✕
-      </ThemedText>
-      <Button title=" 保存 " onPress={handleSaveSub}></Button>
-    </View>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={props.visible}
+      onRequestClose={() => {
+        props.closeModal()
+      }}
+    >
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>编辑站点</ThemedText>
+          <ThemedTextInput
+            placeholder="名称"
+            autoFocus
+            style={styles.input}
+            value={title}
+            onChangeText={setTitle}
+          />
+          <ThemedTextInput
+            style={styles.input}
+            placeholder="网址(https://)"
+            inputMode="url"
+            keyboardType="url"
+            value={url}
+            numberOfLines={3}
+            multiline
+            onChangeText={setUrl}
+          />
+          <View
+            style={{ flexDirection: 'row', gap: 30, marginTop: 20, justifyContent: 'flex-end' }}
+          >
+            <Button title=" 取消 " color={'#888'} onPress={handleCancel}></Button>
+            <Button title=" 保存 " onPress={handleSaveSub}></Button>
+          </View>
+        </View>
+      </View>
+    </Modal>
   )
 }
 
@@ -192,36 +219,39 @@ export default function TabListSetting() {
     <ThemedView style={{ marginTop: 15 }}>
       {$tabsList.map((tab, index, _list) => {
         return (
-          <View
+          <TabItem
             key={tab.name}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              borderBottomWidth: 1,
-              borderBottomColor: '#e2e2e2',
-              paddingVertical: 5,
-              paddingHorizontal: 5,
-              borderTopColor: '#e2e2e2',
-              borderTopWidth: index ? 0 : 1,
-              height: 50,
-            }}
-          >
-            <TabItem
-              tab={tab}
-              index={index}
-              last={index === _list.length - 1}
-              editingName={editingName}
-              setEditingName={setEditingName}
-            />
-          </View>
+            tab={tab}
+            index={index}
+            last={index === _list.length - 1}
+            editingName={editingName}
+            setEditingName={setEditingName}
+          />
         )
       })}
+      <EditingModal
+        name={editingName}
+        visible={!!editingName}
+        closeModal={() => {
+          setEditingName('')
+        }}
+      />
     </ThemedView>
   )
 }
 
 const styles = StyleSheet.create({
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e2e2',
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    borderTopColor: '#e2e2e2',
+    height: 50,
+  },
   text: {
     textAlign: 'left',
     fontSize: 18,
@@ -238,5 +268,29 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingHorizontal: 4,
     fontSize: 16,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingVertical: 25,
+    paddingHorizontal: 20,
+    width: '70%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    flexDirection: 'column',
+    gap: 20,
   },
 })

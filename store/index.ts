@@ -13,6 +13,7 @@ export const getAppValue = () => {
     reloadAllTab: 0,
     reloadTab: [''],
     $tabsList: JSON.parse(JSON.stringify(TabsList)) as typeof TabsList,
+    $checkAppUpdateTime: 0,
   }
 }
 
