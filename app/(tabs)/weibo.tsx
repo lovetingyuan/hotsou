@@ -9,6 +9,41 @@ function __$inject() {
     // @ts-ignore
     // window.__keepScrollPosition?.()
   }
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting && entry.target.tagName === 'VIDEO') {
+          // @ts-ignore
+          entry.target.pause()
+        }
+      })
+    },
+    {
+      root: null,
+      threshold: 0,
+    }
+  )
+
+  window.addEventListener(
+    'loadstart',
+    e => {
+      // @ts-ignore
+      if (!e.target.id && e.target.tagName === 'VIDEO' && e.target.src) {
+        // @ts-ignore
+        e.target.muted = false
+        // @ts-ignore
+        e.target.setAttribute('controls', '')
+        // @ts-ignore
+        if (!e.target.dataset.observed) {
+          // @ts-ignore
+          e.target.dataset.observed = 'true'
+          // @ts-ignore
+          observer.observe(e.target)
+        }
+      }
+    },
+    true
+  )
 }
 
 export default function Weibo() {
