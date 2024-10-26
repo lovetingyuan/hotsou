@@ -117,7 +117,6 @@ export default function WebView(props: {
         }}
         pullToRefreshEnabled
         onShouldStartLoadWithRequest={request => {
-          // console.log(request.url)
           if (!request.url.startsWith('http')) {
             return false
           }
@@ -165,6 +164,9 @@ export default function WebView(props: {
           if (data.type === 'user_click') {
             setFabKey(fabKey + 1)
           }
+          if (data.type === 'reload') {
+            webViewRef.current?.reload()
+          }
         }}
       />
 
@@ -188,7 +190,13 @@ export default function WebView(props: {
             const { url, title } = currentNavigationStateRef.current
             Alert.alert('当前页面：' + title, 'URL: \n' + url, [
               {
-                text: '复制',
+                text: '浏览器打开',
+                onPress: () => {
+                  Linking.openURL(url)
+                },
+              },
+              {
+                text: '复制链接',
                 onPress() {
                   Clipboard.setStringAsync(url).then(() => {
                     ToastAndroid.show('已复制', ToastAndroid.SHORT)
@@ -197,6 +205,8 @@ export default function WebView(props: {
                 style: 'destructive',
               },
               {
+                //https://m.weibo.cn/profile/5309465204
+                //https://m.weibo.cn/u/5309465204
                 text: '确定',
                 isPreferred: true,
               },

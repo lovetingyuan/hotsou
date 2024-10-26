@@ -2,6 +2,18 @@ import WebView from '@/components/WebView'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
+  setInterval(() => {
+    if (location.href.startsWith('https://m.weibo.cn/profile/')) {
+      history.replaceState({}, '', location.href.replace('/profile/', '/u/'))
+      // @ts-ignore
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({
+          type: 'reload',
+          payload: {},
+        })
+      )
+    }
+  }, 200)
   if (location.pathname.startsWith('/p/106003')) {
     history.scrollRestoration = 'auto'
     // @ts-ignore
