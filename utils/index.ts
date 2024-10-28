@@ -50,7 +50,6 @@ let nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/
  * @param {String} string
  * @return {Boolean}
  */
-
 export function isHttpUrl(string: string) {
   if (typeof string !== 'string') {
     return false

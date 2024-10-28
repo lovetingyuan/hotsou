@@ -48,7 +48,10 @@ const onChange: ProviderOnChangeType<AppContextValueType> = ({ key, value }, ctx
     return
   }
   if (key.startsWith('$')) {
-    AsyncStorage.setItem(key, JSON.stringify(value))
+    AsyncStorage.setItem(key, JSON.stringify(value)).catch(err => {
+      ToastAndroid.show('抱歉，应用发生了错误', ToastAndroid.SHORT)
+      throw err
+    })
   }
 }
 
@@ -85,16 +88,21 @@ function App(props: React.PropsWithChildren) {
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   })
   useMounted(() => {
-    fulfillStoreKeys(methods).then(() => {
-      setInitialed(true)
-    })
+    fulfillStoreKeys(methods)
+      .then(() => {
+        setInitialed(true)
+      })
+      .catch(err => {
+        ToastAndroid.show('抱歉，应用发生了错误!', ToastAndroid.SHORT)
+        throw err
+      })
   })
 
   useEffect(() => {
     if (loaded && initialed) {
       SplashScreen.hideAsync()
     }
-    if (initialed && Date.now() - get$checkAppUpdateTime() > 7 * 24 * 60 * 60 * 1000) {
+    if (initialed && Date.now() - get$checkAppUpdateTime() > 5 * 24 * 60 * 60 * 1000) {
       checkAppUpdate().then(r => {
         const currentVersion = Application.nativeApplicationVersion
         set$checkAppUpdateTime(Date.now())
@@ -106,7 +114,7 @@ function App(props: React.PropsWithChildren) {
             {
               text: '下载',
               onPress: () => {
-                ToastAndroid.show('在浏览器中下载并安装', ToastAndroid.SHORT)
+                ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
                 Linking.openURL(r.downloadUrl)
               },
             },
@@ -123,10 +131,6 @@ function App(props: React.PropsWithChildren) {
   return props.children
 }
 
-const getFirstUsageTime = () => {
-  return AsyncStorage.getItem('__First_Usage_Time')
-}
-
 function RootLayout(props: React.PropsWithChildren<{}>) {
   const ref = useNavigationContainerRef()
   useEffect(() => {
@@ -137,7 +141,7 @@ function RootLayout(props: React.PropsWithChildren<{}>) {
   const appValue = useAppValue()
 
   useMounted(() => {
-    getFirstUsageTime().then(r => {
+    AsyncStorage.getItem('__First_Usage_Time').then(r => {
       if (r) {
         return
       }

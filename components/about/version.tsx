@@ -21,19 +21,25 @@ export default function Version() {
   const currentVersion = Application.nativeApplicationVersion
   const handleCheckAppUpdate = () => {
     setChecking(true)
-    checkAppUpdate().then(res => {
-      if (res) {
-        setLatestVersion(res)
-        if (res.version === currentVersion) {
-          ToastAndroid.show('暂无更新', ToastAndroid.SHORT)
+    checkAppUpdate()
+      .then(res => {
+        if (res) {
+          setLatestVersion(res)
+          if (res.version === currentVersion) {
+            ToastAndroid.show('暂无更新', ToastAndroid.SHORT)
+          } else {
+            ToastAndroid.show('有更新 ' + res.version, ToastAndroid.SHORT)
+          }
         } else {
-          ToastAndroid.show('有更新 ' + res.version, ToastAndroid.SHORT)
+          ToastAndroid.show('检查更新失败', ToastAndroid.SHORT)
         }
-      } else {
-        ToastAndroid.show('检查更新失败', ToastAndroid.SHORT)
-      }
-      setChecking(false)
-    })
+        setChecking(false)
+      })
+      .catch(err => {
+        setChecking(false)
+        ToastAndroid.show('检查更新失败!', ToastAndroid.SHORT)
+        throw err
+      })
   }
   const fetchedVersion =
     latestVersion?.version !== currentVersion ? (
