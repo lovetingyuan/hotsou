@@ -30,6 +30,7 @@ export default function WebView(props: {
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const { reloadAllTab, setReloadAllTab, reloadTab } = useStore()
+  const [webviewKey, setWebviewKey] = React.useState(0)
 
   useFocusEffect(
     useCallback(() => {
@@ -54,6 +55,7 @@ export default function WebView(props: {
     if (reloadTab[0] === props.name) {
       webViewRef.current?.injectJavaScript('localStorage.removeItem("__scrollPosition");true;')
       webViewRef.current?.reload()
+      setWebviewKey(k => k + 1)
     }
   }, [props.name, reloadTab])
 
@@ -72,6 +74,7 @@ export default function WebView(props: {
     <>
       <RNWebView
         ref={webViewRef}
+        key={'webview_' + props.name + webviewKey}
         style={styles.container}
         allowsBackForwardNavigationGestures
         startInLoadingState

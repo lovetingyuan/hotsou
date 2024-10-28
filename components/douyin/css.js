@@ -6,7 +6,7 @@ export default `
   --_g: no-repeat radial-gradient(circle closest-side, #fff 90%, #0000);
   background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
   background-size: calc(100% / 3) 50%;
-  animation: loading342 0.6s infinite linear;
+  animation: loading342 0.8s infinite linear;
 }
 @keyframes loading342 {
   20% {
@@ -57,6 +57,7 @@ body {
 .extra,
 .follow,
 .d-icon,
+.bottom-btn-con-new,
 .d-icon + p {
   display: none !important;
 }
