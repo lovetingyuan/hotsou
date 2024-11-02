@@ -1,9 +1,27 @@
+import Entypo from '@expo/vector-icons/Entypo'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { Stack } from 'expo-router'
 import React from 'react'
+import { Share } from 'react-native'
 
 import InitApp from '@/components/InitApp'
 import { useColorScheme } from '@/hooks/useColorScheme'
+
+const headerRight = () => {
+  return (
+    <Entypo
+      name="share"
+      size={20}
+      onPress={() => {
+        Share.share({
+          title: '欢迎使用Hotsou',
+          message: '欢迎使用Hotsou\n下载：https://github.com/lovetingyuan/hotsou/releases/latest',
+          // url: 'https://github.com/lovetingyuan/hotsou/releases/latest',
+        })
+      }}
+    ></Entypo>
+  )
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
@@ -17,6 +35,7 @@ export default function RootLayout() {
             name="about"
             options={{
               title: '关于Hotsou',
+              headerRight,
             }}
           />
           <Stack.Screen name="+not-found" />

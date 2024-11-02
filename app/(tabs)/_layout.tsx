@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router'
+import { Tabs, usePathname } from 'expo-router'
 import React from 'react'
 import { Pressable, Text } from 'react-native'
 
@@ -22,8 +22,8 @@ const getTabBarLabel = (props: { focused: boolean; color: string; children: stri
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
-  const { reloadAllTab, setReloadTab, $tabsList } = useStore()
-
+  const pathname = usePathname()
+  const { reloadAllTab, setReloadTab, $tabsList, setClickTab } = useStore()
   const tabBarIconStyle = {
     width: 0,
     height: 0,
@@ -48,11 +48,18 @@ export default function TabLayout() {
           <Pressable
             onPress={evt => {
               props.onPress?.(evt)
+              if (pathname.endsWith(item.name)) {
+                setClickTab(item.name + '_' + Date.now())
+              }
             }}
             onLongPress={() => {
               setReloadTab([item.name])
             }}
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             {text}
           </Pressable>

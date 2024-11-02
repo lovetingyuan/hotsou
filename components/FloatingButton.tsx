@@ -1,4 +1,4 @@
-import { Entypo } from '@expo/vector-icons'
+import Entypo from '@expo/vector-icons/Entypo'
 import { Link, useFocusEffect } from 'expo-router'
 import React, { useCallback, useState } from 'react'
 import { StyleSheet, TouchableOpacity, ViewProps } from 'react-native'

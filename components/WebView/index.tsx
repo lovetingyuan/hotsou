@@ -29,7 +29,7 @@ export default function WebView(props: {
   forbiddenUrls?: (string | RegExp)[]
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
-  const { reloadAllTab, setReloadAllTab, reloadTab } = useStore()
+  const { reloadAllTab, setReloadAllTab, reloadTab, clickTab } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
 
   useFocusEffect(
@@ -58,6 +58,19 @@ export default function WebView(props: {
       setWebviewKey(k => k + 1)
     }
   }, [props.name, reloadTab])
+
+  useEffect(() => {
+    const [name] = clickTab.split('_')
+    if (name === props.name && webViewRef.current) {
+      webViewRef.current.injectJavaScript(`
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+       true;
+      `)
+    }
+  }, [props.name, clickTab])
 
   const [fabKey, setFabKey] = React.useState(0)
   const currentNavigationStateRef = React.useRef<{
