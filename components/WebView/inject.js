@@ -23,6 +23,8 @@ function __$inject() {
   }
   window.addEventListener('click', sendClick, true)
   window.addEventListener('touchstart', sendClick, true)
+  window.addEventListener('scroll', sendClick, true)
+  window.addEventListener('popstate', sendClick, true)
 
   window.__keepScrollPosition = selector => {
     const saveScrollPosition = () => {

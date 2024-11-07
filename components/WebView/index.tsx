@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   BackHandler,
+  Button,
   Linking,
   Platform,
   Share,
@@ -16,9 +17,11 @@ import {
 } from 'react-native'
 import { WebView as RNWebView } from 'react-native-webview'
 
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 import { useStore } from '@/store'
 
 import { FloatingButton } from '../FloatingButton'
+import { ThemedView } from '../ThemedView'
 import { beforeLoadedInject, injectJS } from './inject'
 
 export default function WebView(props: {
@@ -62,13 +65,20 @@ export default function WebView(props: {
   useEffect(() => {
     const [name] = clickTab.split('_')
     if (name === props.name && webViewRef.current) {
-      webViewRef.current.injectJavaScript(`
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-       true;
-      `)
+      const code = `
+      if (location.href.split('?')[0] === "${getTabUrl(TabsName.wangyi)?.split('?')[0]}") {
+        document.querySelector('.swiper-slide-active .rank-container')?.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } else {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+      `
+      webViewRef.current.injectJavaScript(code + ';true;')
     }
   }, [props.name, clickTab])
 
@@ -111,7 +121,7 @@ export default function WebView(props: {
           JSON.stringify(props.css || '')
         )}
         renderLoading={() => (
-          <View
+          <ThemedView
             style={{
               flex: 1,
               position: 'absolute',
@@ -122,7 +132,7 @@ export default function WebView(props: {
             }}
           >
             <ActivityIndicator size="large" style={{ transform: [{ scale: 1.8 }] }} />
-          </View>
+          </ThemedView>
         )}
         onNavigationStateChange={navState => {
           currentNavigationStateRef.current = {
@@ -130,6 +140,7 @@ export default function WebView(props: {
             title: navState.title,
             url: navState.url,
           }
+          setFabKey(fabKey + 1)
         }}
         pullToRefreshEnabled
         onShouldStartLoadWithRequest={request => {
@@ -158,9 +169,29 @@ export default function WebView(props: {
         }}
         renderError={errorName => {
           return (
-            <Text style={{ padding: 10, fontSize: 16, color: '#de4600' }}>
-              抱歉，网页加载失败 😔 {errorName}
-            </Text>
+            <View
+              style={{
+                paddingVertical: 24,
+                paddingHorizontal: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: '#de4600',
+                }}
+              >
+                抱歉，网页加载失败 😔 {errorName} {'  '}
+              </Text>
+              <Button
+                title="刷新重试"
+                onPress={() => {
+                  webViewRef.current?.reload()
+                }}
+              ></Button>
+            </View>
           )
         }}
         source={{
@@ -221,8 +252,6 @@ export default function WebView(props: {
                 style: 'destructive',
               },
               {
-                //https://m.weibo.cn/profile/5309465204
-                //https://m.weibo.cn/u/5309465204
                 text: '确定',
                 isPreferred: true,
               },

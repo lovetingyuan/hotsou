@@ -12,10 +12,12 @@ const headerRight = () => {
     <Entypo
       name="share"
       size={20}
+      style={{ padding: 8 }}
       onPress={() => {
         Share.share({
           title: '欢迎使用Hotsou',
-          message: '欢迎使用Hotsou\n下载：https://github.com/lovetingyuan/hotsou/releases/latest',
+          message:
+            '欢迎使用Hotsou，来看各种热搜\n下载：https://github.com/lovetingyuan/hotsou/releases/latest',
           // url: 'https://github.com/lovetingyuan/hotsou/releases/latest',
         })
       }}

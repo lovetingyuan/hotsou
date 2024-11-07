@@ -9,6 +9,8 @@ function __$inject() {
       btn.click()
     }
   }, 200)
+  // @ts-ignore
+  window.__markReaded?.('.HotList-item', '.HotList-itemTitle', '.HotList-item .HotList-itemTitle')
 }
 
 export default function Zhihu() {
