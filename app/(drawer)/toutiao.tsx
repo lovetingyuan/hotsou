@@ -26,6 +26,9 @@ export default function Toutiao() {
         .m-top-padding {
           display: none !important;
         }
+        .hot-list-footer {
+          padding: 24px 0 !important;
+        }
       `}
       forbiddenUrls={['zijieapi.com']}
     />

@@ -32,11 +32,12 @@ export default function Zhihu() {
         .Question-mainEntity > div:nth-of-type(2) {
           display: none !important;
         }
-        main.App-main::before {
-          content: '知乎热榜';
+        main.App-main::after {
+          content: '暂无更多';
           display: block;
-          font-size: 22px;
-          line-height: 55px;
+          font-size: 16px;
+          margin: 10px 0;
+          color: #888;
           text-align: center;
         }
       `}

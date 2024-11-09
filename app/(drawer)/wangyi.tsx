@@ -115,13 +115,16 @@ export default function Wangyi() {
         .js-comment-top-ad {
           display: none !important;
         }
-        #tabContainer::before {
-          content: '网易热榜';
-          display: block;
-          text-align: center;
-          font-size: 22px;
-          line-height: 55px;
+        .hot-container-outapp .rank-container {
+          padding: 0 !important;
         }
+        // #tabContainer::before {
+        //   content: '网易热榜';
+        //   display: block;
+        //   text-align: center;
+        //   font-size: 22px;
+        //   line-height: 55px;
+        // }
         .g-body-wrap .container {
           top: 0 !important;
         }
