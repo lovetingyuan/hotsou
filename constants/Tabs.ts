@@ -46,6 +46,7 @@ export const TabsList = [
     title: '抖音',
     show: true,
     url: 'https://www.douyin.com/share/billboard',
+    icon: 'https://logo.clearbit.com/douyin.com',
   },
   {
     name: TabsName.xinlang,
@@ -68,31 +69,31 @@ export const TabsList = [
   {
     name: TabsName.zidingyi1,
     title: '自定义1',
-    url: 'https://',
+    url: '',
     show: false,
   },
   {
     name: TabsName.zidingyi2,
     title: '自定义2',
-    url: 'https://',
+    url: '',
     show: false,
   },
   {
     name: TabsName.zidingyi3,
     title: '自定义3',
-    url: 'https://',
+    url: '',
     show: false,
   },
   {
     name: TabsName.zidingyi4,
     title: '自定义4',
-    url: 'https://',
+    url: '',
     show: false,
   },
   {
     name: TabsName.zidingyi5,
     title: '自定义5',
-    url: 'https://',
+    url: '',
     show: false,
   },
 ]

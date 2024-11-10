@@ -19,6 +19,7 @@ import { WebView as RNWebView } from 'react-native-webview'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
 import { useStore } from '@/store'
 
+import { ThemedText } from '../ThemedText'
 // import { FloatingButton } from '../FloatingButton'
 import { ThemedView } from '../ThemedView'
 import { beforeLoadedInject, injectJS } from './inject'

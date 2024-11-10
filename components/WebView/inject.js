@@ -6,6 +6,12 @@ function __$inject() {
     return
   }
   window.__injected = true
+
+  const noDragCss = document.createElement('style')
+  noDragCss.innerText = `
+  user-drag: none;
+  -webkit-user-drag: none;`
+  document.head?.append(noDragCss)
   window.__waitBody = callback => {
     if (document.body) {
       callback()
@@ -13,6 +19,9 @@ function __$inject() {
       document.addEventListener('DOMContentLoaded', callback)
     }
   }
+  window.__waitBody(() => {
+    document.head.append(noDragCss)
+  })
   const sendClick = () => {
     window.ReactNativeWebView.postMessage(
       JSON.stringify({

@@ -5,10 +5,11 @@ import {
 } from '@react-navigation/drawer'
 import { usePathname } from 'expo-router'
 import Drawer from 'expo-router/drawer'
-import { TouchableOpacity } from 'react-native'
+import { ImageSourcePropType, TouchableOpacity } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import HeaderRight from '@/components/HeaderRight'
+import Image2 from '@/components/Image2'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { TabsList } from '@/constants/Tabs'
@@ -28,6 +29,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           onPress={() => {
             // props.navigation.navigate('about')
             setReloadAllTab(Date.now())
+            props.navigation.closeDrawer()
           }}
         >
           <ThemedText style={{ padding: 20, textAlign: 'right' }}>刷新全部</ThemedText>
@@ -36,6 +38,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           activeOpacity={0.8}
           onPress={() => {
             props.navigation.navigate('about')
+            props.navigation.closeDrawer()
           }}
         >
           <ThemedText style={{ padding: 20, textAlign: 'right' }}>关于</ThemedText>
@@ -65,16 +68,59 @@ export default function Layout() {
       ></ThemedText>
     )
   }
+  const getDrawerIcon = (page: (typeof TabsList)[0]) => {
+    const defaultIcon = require('../../assets/images/favicon.png')
+    let icon: ImageSourcePropType
+    if (page.icon) {
+      icon = { uri: page.icon }
+    } else if (page.url) {
+      try {
+        const { hostname } = new URL(page.url)
+        icon = { uri: `https://icon.horse/icon/${hostname}` }
+        // eslint-disable-next-line sonarjs/no-ignored-exceptions
+      } catch (err) {
+        icon = defaultIcon
+      }
+    } else {
+      icon = defaultIcon
+    }
+
+    return (
+      <Image2
+        fallbackSource={defaultIcon}
+        source={icon}
+        defaultSource={defaultIcon}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+        }}
+      ></Image2>
+    )
+  }
+  const getDrawerLabel = (
+    props: { color: string; focused: boolean },
+    page: (typeof TabsList)[0]
+  ) => {
+    return (
+      <ThemedText
+        style={{
+          fontSize: 18,
+          color: props.color,
+          fontWeight: props.focused ? '600' : '500',
+        }}
+      >
+        {page.title}
+      </ThemedText>
+    )
+  }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
         key={reloadAllTab}
         screenOptions={{
           drawerStyle: {
-            width: '45%',
-          },
-          headerTitleStyle: {
-            // color: 'red',
+            width: '50%',
           },
           headerTitle: getTitle,
           headerRight: getHeaderRight,
@@ -93,8 +139,12 @@ export default function Layout() {
               key={page.name}
               name={page.name} // This is the name of the page and must match the url from root
               options={{
-                drawerLabel: page.title,
+                drawerItemStyle: {
+                  // borderWidth: 1,
+                },
+                drawerLabel: props => getDrawerLabel(props, page),
                 title: page.title,
+                drawerIcon: () => getDrawerIcon(page),
               }}
             />
           )
