@@ -23,25 +23,26 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
-      <ThemedView style={{ flexDirection: 'row' }}>
+      <ThemedView style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#ddd' }}>
         <TouchableOpacity
           activeOpacity={0.8}
+          style={{ flexGrow: 1, padding: 20 }}
           onPress={() => {
-            // props.navigation.navigate('about')
             setReloadAllTab(Date.now())
             props.navigation.closeDrawer()
           }}
         >
-          <ThemedText style={{ padding: 20, textAlign: 'right' }}>刷新全部</ThemedText>
+          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>刷新全部</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.8}
+          style={{ flexGrow: 1, padding: 20 }}
           onPress={() => {
             props.navigation.navigate('about')
             props.navigation.closeDrawer()
           }}
         >
-          <ThemedText style={{ padding: 20, textAlign: 'right' }}>关于</ThemedText>
+          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>关于</ThemedText>
         </TouchableOpacity>
       </ThemedView>
     </ThemedView>
@@ -49,7 +50,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 }
 
 export default function Layout() {
-  const { setClickTab, reloadAllTab } = useStore()
+  const { setClickTab, reloadAllTab, $tabsList } = useStore()
   const info = usePathname()
   const getDrawerContent = (props: DrawerContentComponentProps) => {
     return <CustomDrawerContent {...props} />
@@ -102,6 +103,7 @@ export default function Layout() {
     props: { color: string; focused: boolean },
     page: (typeof TabsList)[0]
   ) => {
+    const title = page.builtIn ? page.title : $tabsList.find(v => v.name === page.name)?.title
     return (
       <ThemedText
         style={{
@@ -110,7 +112,7 @@ export default function Layout() {
           fontWeight: props.focused ? '600' : '500',
         }}
       >
-        {page.title}
+        {title}
       </ThemedText>
     )
   }
@@ -124,8 +126,9 @@ export default function Layout() {
           },
           headerTitle: getTitle,
           headerRight: getHeaderRight,
-          // swipeEdgeWidth: 100,
-          // swipeMinDistance: 20,
+          swipeEdgeWidth: 200,
+          swipeMinDistance: 30,
+          // drawerType: 'slide',
           drawerLabelStyle: {
             fontSize: 18,
             paddingHorizontal: 10,
@@ -134,6 +137,7 @@ export default function Layout() {
         drawerContent={getDrawerContent}
       >
         {TabsList.map(page => {
+          const title = page.builtIn ? page.title : $tabsList.find(v => v.name === page.name)?.title
           return (
             <Drawer.Screen
               key={page.name}
@@ -143,7 +147,7 @@ export default function Layout() {
                   // borderWidth: 1,
                 },
                 drawerLabel: props => getDrawerLabel(props, page),
-                title: page.title,
+                title,
                 drawerIcon: () => getDrawerIcon(page),
               }}
             />
