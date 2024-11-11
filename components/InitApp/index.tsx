@@ -57,6 +57,7 @@ const onChange: ProviderOnChangeType<AppContextValueType> = ({ key, value }, ctx
 
 const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
   return Promise.all(
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     storedKeys.map(async k => {
       const key = k as StoredKeys
       const setKey = `set${key}` as const
@@ -83,6 +84,9 @@ const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
           }
           if (item.url === 'https://') {
             item.url = ''
+          }
+          if (item.builtIn) {
+            Object.assign(item, tab)
           }
         }
         methods.set$tabsList(list)

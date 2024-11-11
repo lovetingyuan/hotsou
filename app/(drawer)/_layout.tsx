@@ -67,7 +67,7 @@ export default function Layout() {
       <ThemedText
         {...props}
         onPress={() => {
-          setClickTab([pathname.slice(1) || 'weibo'])
+          setClickTab([pathname.slice(1) || 'index'])
         }}
         style={[props.style, { fontSize: 20, fontWeight: '600', flexShrink: 1, marginRight: 30 }]}
         numberOfLines={1}

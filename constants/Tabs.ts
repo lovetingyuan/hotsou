@@ -1,5 +1,5 @@
 export enum TabsName {
-  weibo = 'weibo',
+  weibo = 'index',
   baidu = 'baidu',
   toutiao = 'toutiao',
   douyin = 'douyin',
