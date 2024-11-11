@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 
 import { TabsList } from '@/constants/Tabs'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { isHttpUrl } from '@/utils'
 
@@ -40,16 +41,20 @@ function TabItem(
 
   return (
     <View style={[styles.item, { borderTopWidth: props.index ? 0 : 1 }]}>
-      <View>
-        {props.tab.name.startsWith('zidingyi') ? (
+      <View style={{ flexShrink: 1 }}>
+        {!props.tab.builtIn ? (
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
               props.setEditingName(props.tab.name)
             }}
           >
-            <ThemedText style={[styles.text, { color: '#0969da' }]}>
-              {props.index + 1}. {props.tab.title} ✎
+            <ThemedText
+              style={[styles.text, { color: '#0969da' }]}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {props.index + 1}. ✎ {props.tab.title}
             </ThemedText>
           </TouchableOpacity>
         ) : (
@@ -97,7 +102,7 @@ function TabItem(
               }
             }
             if (toShow) {
-              if (list[index].name.startsWith('zidingyi') && list[index].url === 'https://') {
+              if (!list[index].builtIn && !list[index].url) {
                 ToastAndroid.show('请先点击名称编辑', ToastAndroid.SHORT)
                 return
               }
@@ -118,7 +123,7 @@ function TabItem(
 
 function EditingModal(props: { name: string; visible: boolean; closeModal: () => void }) {
   const { get$tabsList, set$tabsList } = useStore()
-
+  const colorScheme = useColorScheme()
   const tabList = get$tabsList()
   const tab = tabList.find(v => v.name === props.name)
   const [title, setTitle] = React.useState(tab?.title ?? '')
@@ -179,7 +184,9 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
       }}
     >
       <View style={styles.centeredView}>
-        <View style={styles.modalView}>
+        <ThemedView
+          style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
+        >
           <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>编辑站点</ThemedText>
           <ThemedTextInput
             placeholder="名称"
@@ -204,7 +211,7 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
             <Button title=" 取消 " color={'#888'} onPress={handleCancel}></Button>
             <Button title=" 保存 " onPress={handleSaveSub}></Button>
           </View>
-        </View>
+        </ThemedView>
       </View>
     </Modal>
   )
@@ -273,16 +280,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    // marginTop: 22,
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     borderRadius: 10,
     paddingVertical: 25,
     paddingHorizontal: 20,
     width: '70%',
-    shadowColor: '#000',
+    // shadowColor: 'white',
     shadowOffset: {
       width: 0,
       height: 2,

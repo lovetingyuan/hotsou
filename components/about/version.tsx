@@ -1,10 +1,11 @@
 import * as Application from 'expo-application'
 import * as Updates from 'expo-updates'
 import React from 'react'
-import { Linking, Text, ToastAndroid, TouchableOpacity } from 'react-native'
+import { Text, ToastAndroid, TouchableOpacity } from 'react-native'
 
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
+import { ExternalLink } from '../ExternalLink'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 
@@ -41,29 +42,32 @@ export default function Version() {
         throw err
       })
   }
-  const fetchedVersion =
-    latestVersion?.version !== currentVersion ? (
-      <TouchableOpacity
-        activeOpacity={0.5}
-        onPress={() => {
-          Linking.openURL(latestVersion!.downloadUrl)
-          ToastAndroid.show('请在浏览器中下载', ToastAndroid.SHORT)
-        }}
-      >
-        <Text style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}>
-          🎉 有更新：{latestVersion?.version} 点击下载⬇
-        </Text>
-      </TouchableOpacity>
+  const versionView = () => {
+    if (latestVersion) {
+      return latestVersion?.version !== currentVersion ? (
+        <ExternalLink
+          href={latestVersion!.downloadUrl}
+          onPress={() => {
+            ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
+          }}
+        >
+          <Text style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}>
+            🎉 有更新：{latestVersion?.version} 点击下载⬇
+          </Text>
+        </ExternalLink>
+      ) : (
+        <Text style={{ fontSize: 16, color: '#888' }}>暂无更新</Text>
+      )
+    }
+    return checking ? (
+      <Text style={{ fontSize: 16, color: '#888', fontStyle: 'italic' }}>⏳ 正在检查...</Text>
     ) : (
-      <Text style={{ fontSize: 16, color: '#888' }}>暂无更新</Text>
+      <TouchableOpacity activeOpacity={0.5} onPress={handleCheckAppUpdate}>
+        <Text style={{ color: '#0065da', fontSize: 16 }}>检查更新</Text>
+      </TouchableOpacity>
     )
-  const noFetchedVersion = checking ? (
-    <Text style={{ fontSize: 16, color: '#888', fontStyle: 'italic' }}>⏳ 正在检查...</Text>
-  ) : (
-    <TouchableOpacity activeOpacity={0.5} onPress={handleCheckAppUpdate}>
-      <Text style={{ color: '#0065da', fontSize: 16 }}>检查更新</Text>
-    </TouchableOpacity>
-  )
+  }
+
   return (
     <ThemedView style={{ flexDirection: 'row', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
       <ThemedText
@@ -83,7 +87,7 @@ export default function Version() {
       >
         📊 当前版本：{currentVersion}
       </ThemedText>
-      {latestVersion ? fetchedVersion : noFetchedVersion}
+      {versionView()}
     </ThemedView>
   )
 }

@@ -1,14 +1,13 @@
-import Ionicons from '@expo/vector-icons/Ionicons'
-import { usePathname } from 'expo-router'
 import { TouchableOpacity } from 'react-native'
 
 import { useStore } from '@/store'
 
+import ThemedIcon from './ThemedIcon'
 import { ThemedView } from './ThemedView'
 
-export default function HeaderRight() {
-  const pathname = usePathname()
+export default function HeaderRight(props: { pathname: string }) {
   const { setReloadTab, setShowPageInfo } = useStore()
+  const { pathname } = props
   return (
     <ThemedView
       style={{
@@ -17,26 +16,29 @@ export default function HeaderRight() {
         alignItems: 'center',
         paddingHorizontal: 18,
         gap: 18,
+        backgroundColor: 'transparent',
       }}
     >
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.5}
         onLongPress={() => {
-          setReloadTab([pathname.slice(1), true])
+          setReloadTab([pathname.slice(1) || 'weibo', true])
         }}
         onPress={() => {
-          setReloadTab([pathname.slice(1), false])
+          setReloadTab([pathname.slice(1) || 'weibo', false])
         }}
+        style={{ padding: 5 }}
       >
-        <Ionicons name="reload" size={24} />
+        <ThemedIcon name="reload" size={24}></ThemedIcon>
       </TouchableOpacity>
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.5}
+        style={{ padding: 3 }}
         onPress={() => {
-          setShowPageInfo([pathname.slice(1)])
+          setShowPageInfo((pathname.slice(1) || 'weibo') + '_' + Date.now())
         }}
       >
-        <Ionicons name="information-circle-outline" size={28} />
+        <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon>
       </TouchableOpacity>
     </ThemedView>
   )

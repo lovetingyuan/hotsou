@@ -13,6 +13,7 @@ import Image2 from '@/components/Image2'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { TabsList } from '@/constants/Tabs'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
@@ -22,6 +23,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       {/* <ThemedText style={{ marginTop: 100 }}>热搜列表</ThemedText> */}
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
+        <ThemedView style={{ height: 20 }}></ThemedView>
       </DrawerContentScrollView>
       <ThemedView style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#ddd' }}>
         <TouchableOpacity
@@ -32,7 +34,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             props.navigation.closeDrawer()
           }}
         >
-          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>刷新全部</ThemedText>
+          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>🔄 刷新全部</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.8}
@@ -42,7 +44,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             props.navigation.closeDrawer()
           }}
         >
-          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>关于</ThemedText>
+          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>⚙️ 关于</ThemedText>
         </TouchableOpacity>
       </ThemedView>
     </ThemedView>
@@ -51,21 +53,24 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 export default function Layout() {
   const { setClickTab, reloadAllTab, $tabsList } = useStore()
-  const info = usePathname()
+  const pathname = usePathname()
+  // console.log(99, pathname)
+  const colorScheme = useColorScheme()
   const getDrawerContent = (props: DrawerContentComponentProps) => {
     return <CustomDrawerContent {...props} />
   }
   const getHeaderRight = () => {
-    return <HeaderRight />
+    return <HeaderRight pathname={pathname} />
   }
   const getTitle = (props: any) => {
     return (
       <ThemedText
         {...props}
         onPress={() => {
-          setClickTab([info.slice(1)])
+          setClickTab([pathname.slice(1) || 'weibo'])
         }}
-        style={{ fontSize: 20, fontWeight: '600' }}
+        style={[props.style, { fontSize: 20, fontWeight: '600', flexShrink: 1 }]}
+        numberOfLines={1}
       ></ThemedText>
     )
   }
@@ -95,6 +100,7 @@ export default function Layout() {
           width: 28,
           height: 28,
           borderRadius: 4,
+          alignSelf: 'flex-start',
         }}
       ></Image2>
     )
@@ -110,6 +116,7 @@ export default function Layout() {
           color: props.color,
           fontWeight: props.focused ? '600' : '500',
         }}
+        numberOfLines={3}
       >
         {page.title}
       </ThemedText>
@@ -121,36 +128,38 @@ export default function Layout() {
         key={reloadAllTab}
         screenOptions={{
           drawerStyle: {
-            width: '50%',
+            width: '60%',
           },
           headerTitle: getTitle,
           headerRight: getHeaderRight,
           swipeEdgeWidth: 200,
+          headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
           swipeMinDistance: 30,
           // drawerType: 'slide',
-          drawerLabelStyle: {
-            fontSize: 18,
-            paddingHorizontal: 10,
-          },
         }}
         drawerContent={getDrawerContent}
       >
-        {$tabsList.map(page => {
-          return (
-            <Drawer.Screen
-              key={page.name}
-              name={page.name} // This is the name of the page and must match the url from root
-              options={{
-                drawerItemStyle: {
-                  // borderWidth: 1,
-                },
-                drawerLabel: props => getDrawerLabel(props, page),
-                title: page.title,
-                drawerIcon: () => getDrawerIcon(page),
-              }}
-            />
-          )
-        })}
+        {$tabsList
+          .map(page => {
+            if (!page.show) {
+              return null
+            }
+            return (
+              <Drawer.Screen
+                key={page.name}
+                name={page.name} // This is the name of the page and must match the url from root
+                options={{
+                  drawerItemStyle: {
+                    // borderWidth: 1,
+                  },
+                  drawerLabel: props => getDrawerLabel(props, page),
+                  title: page.title,
+                  drawerIcon: () => getDrawerIcon(page),
+                }}
+              />
+            )
+          })
+          .filter(Boolean)}
       </Drawer>
     </GestureHandlerRootView>
   )

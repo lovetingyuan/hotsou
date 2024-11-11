@@ -1,3 +1,5 @@
+import React from 'react'
+
 import WebView from '@/components/WebView'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
 

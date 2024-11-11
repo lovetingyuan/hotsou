@@ -81,6 +81,9 @@ const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
               item[key] = tab[key]
             }
           }
+          if (item.url === 'https://') {
+            item.url = ''
+          }
         }
         methods.set$tabsList(list)
       } else {

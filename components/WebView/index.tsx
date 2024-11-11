@@ -64,8 +64,13 @@ export default function WebView(props: {
   }, [props.name, reloadTab])
 
   useEffect(() => {
-    if (props.name === showPageInfo[0]) {
-      const { url, title } = currentNavigationStateRef.current
+    const [name] = showPageInfo.split('_')
+    if (props.name === name) {
+      const { url, title, init } = currentNavigationStateRef.current
+      if (init) {
+        currentNavigationStateRef.current.init = false
+        return
+      }
       Alert.alert('当前页面：' + title, 'URL: \n' + url, [
         {
           text: '浏览器打开',
@@ -115,10 +120,12 @@ export default function WebView(props: {
     canGoBack: boolean
     title: string
     url: string
+    init?: boolean
   }>({
     canGoBack: false,
     title: '',
     url: '',
+    init: true,
   })
 
   return (
@@ -214,6 +221,7 @@ export default function WebView(props: {
             </Text>
             <Button
               title="刷新重试"
+              color={'transparent'}
               onPress={() => {
                 webViewRef.current?.reload()
               }}
@@ -231,8 +239,8 @@ export default function WebView(props: {
             message: `${data.payload.title}\n${data.payload.url}`,
           })
         }
-        if (data.type === 'download-douyin-video') {
-          ToastAndroid.show('请在浏览器中下载', ToastAndroid.SHORT)
+        if (data.type === 'download-video') {
+          ToastAndroid.show('请在浏览器中下载（点击视频右下方三个小点）', ToastAndroid.SHORT)
           Linking.openURL(data.payload.url)
         }
         if (data.type === 'user_click') {

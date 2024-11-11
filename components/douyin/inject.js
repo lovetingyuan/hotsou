@@ -204,7 +204,7 @@ function __$inject() {
         if (video && video.src) {
           window.ReactNativeWebView.postMessage(
             JSON.stringify({
-              type: 'download-douyin-video',
+              type: 'download-video',
               payload: {
                 url: video.src,
               },
