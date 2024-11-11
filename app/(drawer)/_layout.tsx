@@ -103,7 +103,6 @@ export default function Layout() {
     props: { color: string; focused: boolean },
     page: (typeof TabsList)[0]
   ) => {
-    const title = page.builtIn ? page.title : $tabsList.find(v => v.name === page.name)?.title
     return (
       <ThemedText
         style={{
@@ -112,7 +111,7 @@ export default function Layout() {
           fontWeight: props.focused ? '600' : '500',
         }}
       >
-        {title}
+        {page.title}
       </ThemedText>
     )
   }
@@ -136,8 +135,7 @@ export default function Layout() {
         }}
         drawerContent={getDrawerContent}
       >
-        {TabsList.map(page => {
-          const title = page.builtIn ? page.title : $tabsList.find(v => v.name === page.name)?.title
+        {$tabsList.map(page => {
           return (
             <Drawer.Screen
               key={page.name}
@@ -147,7 +145,7 @@ export default function Layout() {
                   // borderWidth: 1,
                 },
                 drawerLabel: props => getDrawerLabel(props, page),
-                title,
+                title: page.title,
                 drawerIcon: () => getDrawerIcon(page),
               }}
             />

@@ -73,6 +73,15 @@ const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
           return !list.find(v => v.name === t.name)
         })
         list.push(...JSON.parse(JSON.stringify(newAdded)))
+        for (const item of list) {
+          const tab = TabsList.find(t => t.name === item.name)
+          for (const key in tab) {
+            if (!(key in item)) {
+              // @ts-ignore
+              item[key] = tab[key]
+            }
+          }
+        }
         methods.set$tabsList(list)
       } else {
         methods[setKey](JSON.parse(data))
