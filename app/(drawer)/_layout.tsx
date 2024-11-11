@@ -69,7 +69,7 @@ export default function Layout() {
         onPress={() => {
           setClickTab([pathname.slice(1) || 'weibo'])
         }}
-        style={[props.style, { fontSize: 20, fontWeight: '600', flexShrink: 1 }]}
+        style={[props.style, { fontSize: 20, fontWeight: '600', flexShrink: 1, marginRight: 30 }]}
         numberOfLines={1}
       ></ThemedText>
     )

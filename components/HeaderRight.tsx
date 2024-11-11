@@ -15,8 +15,9 @@ export default function HeaderRight(props: { pathname: string }) {
         flexShrink: 0,
         alignItems: 'center',
         paddingHorizontal: 18,
-        gap: 18,
+        gap: 14,
         backgroundColor: 'transparent',
+        // borderWidth: 1,
       }}
     >
       <TouchableOpacity
@@ -27,13 +28,13 @@ export default function HeaderRight(props: { pathname: string }) {
         onPress={() => {
           setReloadTab([pathname.slice(1) || 'weibo', false])
         }}
-        style={{ padding: 5 }}
+        style={{ paddingVertical: 3, paddingHorizontal: 5, width: 36 }}
       >
         <ThemedIcon name="reload" size={24}></ThemedIcon>
       </TouchableOpacity>
       <TouchableOpacity
         activeOpacity={0.5}
-        style={{ padding: 3 }}
+        style={{ paddingVertical: 1, paddingHorizontal: 4, width: 36 }}
         onPress={() => {
           setShowPageInfo((pathname.slice(1) || 'weibo') + '_' + Date.now())
         }}

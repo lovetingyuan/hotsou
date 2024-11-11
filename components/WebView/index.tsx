@@ -221,7 +221,6 @@ export default function WebView(props: {
             </Text>
             <Button
               title="刷新重试"
-              color={'transparent'}
               onPress={() => {
                 webViewRef.current?.reload()
               }}
