@@ -6,6 +6,7 @@ import {
   Alert,
   BackHandler,
   Button,
+  Image,
   Linking,
   Platform,
   Share,
@@ -18,6 +19,7 @@ import { WebView as RNWebView } from 'react-native-webview'
 
 import { getTabUrl, TabsName } from '@/constants/Tabs'
 import { useStore } from '@/store'
+import { getPageIcon } from '@/utils'
 
 // import { FloatingButton } from '../FloatingButton'
 import { ThemedView } from '../ThemedView'
@@ -31,8 +33,10 @@ export default function WebView(props: {
   forbiddenUrls?: (string | RegExp)[]
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
-  const { reloadTab, showPageInfo, clickTab, clearSelection } = useStore()
+  const { reloadTab, showPageInfo, clickTab, clearSelection, $tabsList } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
+  const page = $tabsList.find(t => t.name === props.name)
+  const pageIcon = getPageIcon(page)
 
   useFocusEffect(
     useCallback(() => {
@@ -169,7 +173,14 @@ export default function WebView(props: {
             alignItems: 'center',
           }}
         >
-          <ActivityIndicator size="large" style={{ transform: [{ scale: 1.8 }] }} />
+          <Image
+            source={pageIcon}
+            style={{ width: 80, height: 80, position: 'relative', top: -120 }}
+          ></Image>
+          <ActivityIndicator
+            size="large"
+            style={{ transform: [{ scale: 1.8 }], position: 'relative', top: -50 }}
+          />
         </ThemedView>
       )}
       onNavigationStateChange={navState => {

@@ -6,7 +6,7 @@ import {
 import { usePathname } from 'expo-router'
 import Drawer from 'expo-router/drawer'
 import React from 'react'
-import { ImageSourcePropType, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import HeaderRight from '@/components/HeaderRight'
@@ -16,9 +16,11 @@ import { ThemedView } from '@/components/ThemedView'
 import { TabsList } from '@/constants/Tabs'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
+import { getPageIcon } from '@/utils'
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { setReloadAllTab } = useStore()
+  const colorScheme = useColorScheme()
   return (
     <ThemedView style={{ flex: 1 }}>
       {/* <ThemedText style={{ marginTop: 100 }}>热搜列表</ThemedText> */}
@@ -29,7 +31,29 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         <DrawerItemList {...props} />
         <ThemedView style={{ height: 20 }}></ThemedView>
       </DrawerContentScrollView>
-      <ThemedView style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#ddd' }}>
+      <ThemedView
+        style={{
+          flexDirection: 'row',
+          // borderTopWidth: 1,
+          // borderTopColor: '#ddd',
+          // iOS 阴影
+
+          // iOS 超强阴影
+          shadowColor: colorScheme === 'dark' ? '#fff' : '#000',
+          shadowOffset: {
+            width: 0,
+            height: -10,
+          },
+          shadowOpacity: 0.8, // 非常不透明
+          shadowRadius: 20, // 大范围阴影
+
+          // Android 最大阴影
+          elevation: 24,
+
+          // 确保阴影可见
+          // marginTop: 25,
+        }}
+      >
         <TouchableOpacity
           activeOpacity={0.8}
           style={{ flexGrow: 1, padding: 20 }}
@@ -79,22 +103,8 @@ export default function Layout() {
     )
   }
   const getDrawerIcon = (page: (typeof TabsList)[0]) => {
+    const icon = getPageIcon(page)
     const defaultIcon = require('../../assets/images/favicon.png')
-    let icon: ImageSourcePropType
-    if (page.icon) {
-      icon = { uri: page.icon }
-    } else if (page.url) {
-      try {
-        const { hostname } = new URL(page.url)
-        icon = { uri: `https://icon.horse/icon/${hostname}` }
-        // eslint-disable-next-line sonarjs/no-ignored-exceptions
-      } catch (err) {
-        icon = defaultIcon
-      }
-    } else {
-      icon = defaultIcon
-    }
-
     return (
       <Image2
         fallbackSource={defaultIcon}
@@ -105,6 +115,8 @@ export default function Layout() {
           height: 28,
           borderRadius: 4,
           alignSelf: 'flex-start',
+          position: 'relative',
+          top: 2,
         }}
       ></Image2>
     )
@@ -133,7 +145,7 @@ export default function Layout() {
         key={reloadAllTab}
         screenOptions={{
           drawerStyle: {
-            width: '60%',
+            width: '62%',
           },
           headerTitle: getTitle,
           headerRight: getHeaderRight,

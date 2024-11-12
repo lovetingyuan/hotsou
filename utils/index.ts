@@ -1,3 +1,7 @@
+import { ImageSourcePropType } from 'react-native'
+
+import { TabsList } from '@/constants/Tabs'
+
 export class SimpleCrypto {
   private key: string
 
@@ -72,4 +76,26 @@ export function isHttpUrl(string: string) {
     localhostDomainRE.test(everythingAfterProtocol) ||
     nonLocalhostDomainRE.test(everythingAfterProtocol)
   )
+}
+
+export function getPageIcon(page?: (typeof TabsList)[0]) {
+  const defaultIcon = require('../assets/images/favicon.png')
+  if (!page) {
+    return defaultIcon
+  }
+  let icon: ImageSourcePropType
+  if (page.icon) {
+    icon = { uri: page.icon }
+  } else if (page.url) {
+    try {
+      const { hostname } = new URL(page.url)
+      icon = { uri: `https://icon.horse/icon/${hostname}` }
+      // eslint-disable-next-line sonarjs/no-ignored-exceptions
+    } catch (err) {
+      icon = defaultIcon
+    }
+  } else {
+    icon = defaultIcon
+  }
+  return icon
 }
