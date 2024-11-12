@@ -18,6 +18,7 @@ import {
 import { WebView as RNWebView } from 'react-native-webview'
 
 import { getTabUrl, TabsName } from '@/constants/Tabs'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { getPageIcon } from '@/utils'
 
@@ -37,7 +38,7 @@ export default function WebView(props: {
   const [webviewKey, setWebviewKey] = React.useState(0)
   const page = $tabsList.find(t => t.name === props.name)
   const pageIcon = getPageIcon(page)
-
+  const colorScheme = useColorScheme()
   useFocusEffect(
     useCallback(() => {
       const onAndroidBackPress = () => {
@@ -149,6 +150,7 @@ export default function WebView(props: {
       mixedContentMode={'always'}
       originWhitelist={['*']}
       webviewDebuggingEnabled={__DEV__}
+      forceDarkOn={true} // Android only
       thirdPartyCookiesEnabled={false}
       // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
       onRenderProcessGone={() => {
@@ -160,7 +162,21 @@ export default function WebView(props: {
       ].join('\n')}
       injectedJavaScriptBeforeContentLoaded={beforeLoadedInject.replace(
         'CSS_CODE',
-        JSON.stringify(props.css || '')
+        JSON.stringify(`
+          ${props.css ?? ''}
+${
+  colorScheme === 'dark'
+    ? `
+ html, img, video {
+    filter: invert(1) hue-rotate(.5turn);
+}
+img {
+    opacity: .75;
+}
+  `
+    : ''
+}
+          `)
       )}
       renderLoading={() => (
         <ThemedView
