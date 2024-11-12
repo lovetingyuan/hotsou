@@ -5,6 +5,7 @@ import {
 } from '@react-navigation/drawer'
 import { usePathname } from 'expo-router'
 import Drawer from 'expo-router/drawer'
+import React from 'react'
 import { ImageSourcePropType, TouchableOpacity } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
@@ -22,6 +23,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
     <ThemedView style={{ flex: 1 }}>
       {/* <ThemedText style={{ marginTop: 100 }}>热搜列表</ThemedText> */}
       <DrawerContentScrollView {...props}>
+        <ThemedView style={{ marginTop: 10 }}>
+          <ThemedText style={{ marginLeft: 20, height: 30, fontSize: 18 }}># 频道</ThemedText>
+        </ThemedView>
         <DrawerItemList {...props} />
         <ThemedView style={{ height: 20 }}></ThemedView>
       </DrawerContentScrollView>
@@ -122,6 +126,7 @@ export default function Layout() {
       </ThemedText>
     )
   }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer

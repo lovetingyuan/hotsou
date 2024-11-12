@@ -31,7 +31,7 @@ export default function WebView(props: {
   forbiddenUrls?: (string | RegExp)[]
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
-  const { reloadTab, showPageInfo, clickTab } = useStore()
+  const { reloadTab, showPageInfo, clickTab, clearSelection } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
 
   useFocusEffect(
@@ -114,6 +114,10 @@ export default function WebView(props: {
       webViewRef.current.injectJavaScript(code + ';true;')
     }
   }, [props.name, clickTab])
+
+  useEffect(() => {
+    webViewRef.current?.injectJavaScript('window.getSelection().removeAllRanges();true;')
+  }, [props.name, clearSelection])
 
   const [fabKey, setFabKey] = React.useState(0)
   const currentNavigationStateRef = React.useRef<{

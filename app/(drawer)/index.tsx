@@ -1,7 +1,9 @@
+import { useDrawerStatus } from '@react-navigation/drawer'
 import React from 'react'
 
 import WebView from '@/components/WebView'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
+import { useStore } from '@/store'
 
 function __$inject() {
   setInterval(() => {
@@ -62,6 +64,23 @@ function __$inject() {
 
 export default function Weibo() {
   // https://s.weibo.com/top/summary?cate=realtimehot
+  const drawerStatus = useDrawerStatus()
+  const { setClearSelection } = useStore()
+  React.useEffect(() => {
+    if (drawerStatus === 'open') {
+      // eslint-disable-next-line sonarjs/pseudo-random
+      setClearSelection(Math.random())
+      setTimeout(() => {
+        setClearSelection(Date.now())
+      }, 100)
+      setTimeout(() => {
+        setClearSelection(Date.now())
+      }, 200)
+      setTimeout(() => {
+        setClearSelection(Date.now())
+      }, 300)
+    }
+  }, [drawerStatus, setClearSelection])
   return (
     <WebView
       name={TabsName.weibo}

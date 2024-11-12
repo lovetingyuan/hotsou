@@ -14,6 +14,7 @@ export const getAppValue = () => {
     reloadTab: ['', false] as [string, boolean],
     showPageInfo: '',
     clickTab: [''],
+    clearSelection: 0,
     $tabsList: JSON.parse(JSON.stringify(TabsList)) as typeof TabsList,
     $checkAppUpdateTime: 0,
   }
