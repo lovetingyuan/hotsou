@@ -58,6 +58,7 @@ body {
 .follow,
 .d-icon,
 .bottom-btn-con-new,
+.end-page-info,
 .d-icon + p {
   display: none !important;
 }

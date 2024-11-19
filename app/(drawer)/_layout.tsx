@@ -149,7 +149,7 @@ export default function Layout() {
           },
           headerTitle: getTitle,
           headerRight: getHeaderRight,
-          swipeEdgeWidth: 200,
+          swipeEdgeWidth: 80,
           headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
           swipeMinDistance: 30,
           // drawerType: 'slide',
