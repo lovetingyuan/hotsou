@@ -1,13 +1,18 @@
-import { TouchableOpacity } from 'react-native'
+import { Image, TouchableOpacity } from 'react-native'
 
 import { useStore } from '@/store'
+import { getPageIcon } from '@/utils'
 
 import ThemedIcon from './ThemedIcon'
 import { ThemedView } from './ThemedView'
 
 export default function HeaderRight(props: { pathname: string }) {
-  const { setReloadTab, setShowPageInfo } = useStore()
+  const { setReloadTab, setShowPageInfo, $tabsList } = useStore()
   const { pathname } = props
+
+  const page = $tabsList.find(t => t.name === pathname.slice(1))
+
+  const pageIcon = getPageIcon(page)
   return (
     <ThemedView
       style={{
@@ -17,13 +22,11 @@ export default function HeaderRight(props: { pathname: string }) {
         paddingHorizontal: 18,
         gap: 14,
         backgroundColor: 'transparent',
-        // borderWidth: 1,
       }}
     >
       <TouchableOpacity
         activeOpacity={0.5}
         onLongPress={() => {
-          console.log(99, pathname)
           setReloadTab([pathname.slice(1) || 'index', true])
         }}
         onPress={() => {
@@ -40,7 +43,14 @@ export default function HeaderRight(props: { pathname: string }) {
           setShowPageInfo((pathname.slice(1) || 'index') + '_' + Date.now())
         }}
       >
-        <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon>
+        {/* <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon> */}
+        <Image
+          source={pageIcon}
+          style={{
+            width: 24,
+            height: 24,
+          }}
+        ></Image>
       </TouchableOpacity>
     </ThemedView>
   )
