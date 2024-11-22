@@ -36,6 +36,7 @@ export const TabsList = [
     title: '头条热榜',
     show: true,
     url: 'https://api.toutiaoapi.com/feoffline/hotspot_and_local/html/hot_list/index.html',
+    icon: 'https://logo.clearbit.com/toutiao.com',
     builtIn: true,
   },
   {
@@ -66,6 +67,7 @@ export const TabsList = [
     show: true,
     url: 'https://wp.m.163.com/163/html/newsapp/hot-content/index.html?version=searchFirstTab',
     builtIn: true,
+    icon: 'https://logo.clearbit.com/163.com',
   },
   {
     name: TabsName.zhihu,

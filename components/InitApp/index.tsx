@@ -80,6 +80,17 @@ const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
             if (!(key in item)) {
               // @ts-ignore
               item[key] = tab[key]
+            } else if (tab.builtIn) {
+              if (key !== 'show') {
+                // @ts-ignore
+                item[key] = tab[key]
+              }
+            } else {
+              // eslint-disable-next-line sonarjs/no-lonely-if
+              if (key !== 'show' && key !== 'title' && key !== 'url') {
+                // @ts-ignore
+                item[key] = tab[key]
+              }
             }
           }
           if (item.url === 'https://') {

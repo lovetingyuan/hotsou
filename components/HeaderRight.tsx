@@ -10,8 +10,7 @@ export default function HeaderRight(props: { pathname: string }) {
   const { setReloadTab, setShowPageInfo, $tabsList } = useStore()
   const { pathname } = props
 
-  const page = $tabsList.find(t => t.name === pathname.slice(1))
-
+  const page = $tabsList.find(t => t.name === (pathname.slice(1) || 'index'))
   const pageIcon = getPageIcon(page)
   return (
     <ThemedView
