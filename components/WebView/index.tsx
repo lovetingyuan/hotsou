@@ -154,7 +154,8 @@ export default function WebView(props: {
       thirdPartyCookiesEnabled={false}
       // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
       onRenderProcessGone={() => {
-        ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
+        // ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
+        setWebviewKey(c => c + 1)
       }}
       injectedJavaScript={[
         beforeLoadedInject.replace('CSS_CODE', JSON.stringify(props.css || '')),

@@ -25,18 +25,6 @@ export default function HeaderRight(props: { pathname: string }) {
     >
       <TouchableOpacity
         activeOpacity={0.5}
-        onLongPress={() => {
-          setReloadTab([pathname.slice(1) || 'index', true])
-        }}
-        onPress={() => {
-          setReloadTab([pathname.slice(1) || 'index', false])
-        }}
-        style={{ paddingVertical: 3, paddingHorizontal: 5, width: 36 }}
-      >
-        <ThemedIcon name="reload" size={24}></ThemedIcon>
-      </TouchableOpacity>
-      <TouchableOpacity
-        activeOpacity={0.5}
         style={{ paddingVertical: 1, paddingHorizontal: 4, width: 36 }}
         onPress={() => {
           setShowPageInfo((pathname.slice(1) || 'index') + '_' + Date.now())
@@ -50,6 +38,18 @@ export default function HeaderRight(props: { pathname: string }) {
             height: 24,
           }}
         ></Image>
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onLongPress={() => {
+          setReloadTab([pathname.slice(1) || 'index', true])
+        }}
+        onPress={() => {
+          setReloadTab([pathname.slice(1) || 'index', false])
+        }}
+        style={{ paddingVertical: 3, paddingHorizontal: 5, width: 36 }}
+      >
+        <ThemedIcon name="reload" size={24}></ThemedIcon>
       </TouchableOpacity>
     </ThemedView>
   )

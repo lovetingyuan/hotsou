@@ -1,7 +1,7 @@
 import * as Application from 'expo-application'
 import * as Updates from 'expo-updates'
 import React from 'react'
-import { Text, ToastAndroid, TouchableOpacity } from 'react-native'
+import { Alert, Linking, Text, ToastAndroid, TouchableOpacity } from 'react-native'
 
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
@@ -29,7 +29,24 @@ export default function Version() {
           if (res.version === currentVersion) {
             ToastAndroid.show('暂无更新', ToastAndroid.SHORT)
           } else {
-            ToastAndroid.show('有更新 ' + res.version, ToastAndroid.SHORT)
+            Alert.alert(
+              '🎉 有新版',
+              `最新版 ${res.version} （当前：${currentVersion}）\n点击在浏览器下载`,
+              [
+                {
+                  text: '取消',
+                },
+                {
+                  text: '下载',
+                  isPreferred: true,
+                  onPress: () => {
+                    ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
+                    Linking.openURL(res.downloadUrl)
+                  },
+                },
+              ]
+            )
+            // ToastAndroid.show('有更新 ' + res.version, ToastAndroid.SHORT)
           }
         } else {
           ToastAndroid.show('检查更新失败', ToastAndroid.SHORT)
