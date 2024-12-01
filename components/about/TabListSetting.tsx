@@ -32,11 +32,13 @@ function TabItem(
       ToastAndroid.show('请先完成编辑', ToastAndroid.SHORT)
       return
     }
-    const _index = get$tabsList().findIndex(v => v.name === props.tab.name)
-    const newIndex = direction === 'up' ? _index - 1 : _index + 1
-    const newList = [...get$tabsList()]
-    ;[newList[_index], newList[newIndex]] = [newList[newIndex], newList[_index]]
-    set$tabsList(newList)
+    set$tabsList(list => {
+      const _index = list.findIndex(v => v.name === props.tab.name)
+      const newIndex = direction === 'up' ? _index - 1 : _index + 1
+      const newList = [...list]
+      ;[newList[_index], newList[newIndex]] = [newList[newIndex], newList[_index]]
+      return newList
+    })
   }
 
   return (
@@ -157,16 +159,18 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
       ToastAndroid.show('网址不合法', ToastAndroid.SHORT)
       return
     }
-    const newList = [...get$tabsList()]
-    const index = newList.findIndex(v => v.name === tab.name)
-    if (index >= 0) {
-      newList[index] = {
-        ...newList[index],
-        title: title.trim(),
-        url: url.trim(),
+    set$tabsList(list => {
+      const newList = [...list]
+      const index = newList.findIndex(v => v.name === tab.name)
+      if (index >= 0) {
+        newList[index] = {
+          ...newList[index],
+          title: title.trim(),
+          url: url.trim(),
+        }
       }
-    }
-    set$tabsList(newList)
+      return newList
+    })
     props.closeModal()
   }
   const handleCancel = () => {

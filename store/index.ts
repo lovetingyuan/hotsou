@@ -13,6 +13,7 @@ export const getAppValue = () => {
     reloadAllTab: 0,
     reloadTab: ['', false] as [string, boolean],
     showPageInfo: '',
+    shareInfo: '',
     clickTab: [''],
     clearSelection: 0,
     $tabsList: JSON.parse(JSON.stringify(TabsList)) as typeof TabsList,

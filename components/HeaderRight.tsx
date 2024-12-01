@@ -7,7 +7,7 @@ import ThemedIcon from './ThemedIcon'
 import { ThemedView } from './ThemedView'
 
 export default function HeaderRight(props: { pathname: string }) {
-  const { setReloadTab, setShowPageInfo, $tabsList } = useStore()
+  const { setReloadTab, setShowPageInfo, $tabsList, setShareInfo } = useStore()
   const { pathname } = props
 
   const page = $tabsList.find(t => t.name === (pathname.slice(1) || 'index'))
@@ -28,6 +28,9 @@ export default function HeaderRight(props: { pathname: string }) {
         style={{ paddingVertical: 1, paddingHorizontal: 4, width: 36 }}
         onPress={() => {
           setShowPageInfo((pathname.slice(1) || 'index') + '_' + Date.now())
+        }}
+        onLongPress={() => {
+          setShareInfo((pathname.slice(1) || 'index') + '_' + Date.now())
         }}
       >
         {/* <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon> */}

@@ -34,7 +34,7 @@ export default function WebView(props: {
   forbiddenUrls?: (string | RegExp)[]
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
-  const { reloadTab, showPageInfo, clickTab, clearSelection, $tabsList } = useStore()
+  const { reloadTab, showPageInfo, clickTab, clearSelection, $tabsList, shareInfo } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
   const page = $tabsList.find(t => t.name === props.name)
   const pageIcon = getPageIcon(page)
@@ -77,6 +77,12 @@ export default function WebView(props: {
         return
       }
       Alert.alert('当前页面：' + title, 'URL: \n' + url, [
+        // {
+        //   text: '浏览器打开我',
+        //   onPress: () => {
+        //     Linking.openURL(url)
+        //   },
+        // },
         {
           text: '浏览器打开',
           onPress: () => {
@@ -99,6 +105,19 @@ export default function WebView(props: {
       ])
     }
   }, [props.name, showPageInfo])
+
+  useEffect(() => {
+    const [name] = shareInfo.split('_')
+    if (props.name === name) {
+      const { url, title } = currentNavigationStateRef.current
+
+      Share.share({
+        title,
+        message: title + '\n' + url,
+        url,
+      })
+    }
+  }, [props.name, shareInfo])
 
   useEffect(() => {
     const [name] = clickTab
