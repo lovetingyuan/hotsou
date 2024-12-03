@@ -98,9 +98,6 @@ export default function Weibo() {
         .m-tab-bar.m-bar-panel.m-container-max {
           display: none !important;
         }
-        div:has(> div.m-top-bar) {
-          display: none;
-        }
       `}
       js={`(${__$inject})()`}
       forbiddenUrls={['passport.weibo.com', 'm.weibo.cn/feature/applink']}
