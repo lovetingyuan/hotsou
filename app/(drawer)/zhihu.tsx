@@ -18,7 +18,12 @@ export default function Zhihu() {
     <WebView
       name={TabsName.zhihu}
       url={getTabUrl(TabsName.zhihu)!}
-      forbiddenUrls={['zhihu-web-analytics.zhihu.com', 'datahub.zhihu.com', 'apm.zhihu.com']}
+      forbiddenUrls={[
+        'zhihu-web-analytics.zhihu.com',
+        'datahub.zhihu.com',
+        'apm.zhihu.com',
+        'www.zhihu.com/oia/answers/',
+      ]}
       css={`
         .OpenInAppButton,
         .OpenInApp,
@@ -26,7 +31,9 @@ export default function Zhihu() {
         .MHotFeedAd,
         .AdBelowMoreAnswers,
         .KfeCollection-VipRecommendCard,
-        .MBannerAd {
+        .MBannerAd,
+        .RelatedReadingsItem:has(.MRelateFeedAd),
+        .WeiboAd-wrap {
           display: none !important;
         }
         .Question-mainEntity > div:nth-of-type(2) {

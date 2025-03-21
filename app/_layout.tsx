@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { Stack } from 'expo-router'
+import { Stack, Slot, useNavigationContainerRef } from 'expo-router'
 import React from 'react'
 import { Share } from 'react-native'
 
@@ -7,7 +7,26 @@ import InitApp from '@/components/InitApp'
 import ThemedIcon from '@/components/ThemedIcon'
 import { useColorScheme } from '@/hooks/useColorScheme'
 
-export default function RootLayout() {
+import * as Sentry from '@sentry/react-native'
+import { isRunningInExpoGo } from 'expo'
+
+// Construct a new integration instance. This is needed to communicate between the integration and React
+const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
+})
+
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  debug: false, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
+  integrations: [
+    // Pass integration
+    navigationIntegration,
+  ],
+  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
+})
+
+function RootLayout() {
   const colorScheme = useColorScheme()
 
   const headerRight = () => {
@@ -27,6 +46,14 @@ export default function RootLayout() {
       ></ThemedIcon>
     )
   }
+  const ref = useNavigationContainerRef()
+
+  React.useEffect(() => {
+    if (ref?.current) {
+      navigationIntegration.registerNavigationContainer(ref)
+    }
+  }, [ref])
+
   return (
     <InitApp>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -39,9 +66,17 @@ export default function RootLayout() {
               headerRight,
             }}
           />
+          {/* <Stack.Screen
+            name="modal"
+            options={{
+              presentation: 'modal',
+            }}
+          /> */}
           <Stack.Screen name="+not-found" />
         </Stack>
       </ThemeProvider>
     </InitApp>
   )
 }
+
+export default Sentry.wrap(RootLayout)

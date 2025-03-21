@@ -89,7 +89,7 @@ function TabItem(
         )}
         <Switch
           trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={props.tab.show ? '#80f43e' : '#f4f3f4'}
+          thumbColor={props.tab.show ? '#819cff' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
           value={props.tab.show}
           onValueChange={() => {
@@ -228,6 +228,7 @@ export default function TabListSetting() {
 
   return (
     <ThemedView style={{ marginTop: 15 }}>
+      <ThemedText style={{ fontSize: 20, marginBottom: 14 }}>频道列表：</ThemedText>
       {$tabsList.map((tab, index, _list) => {
         return (
           <TabItem

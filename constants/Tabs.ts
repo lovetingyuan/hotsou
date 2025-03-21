@@ -23,6 +23,7 @@ export const TabsList = [
     show: true,
     url: 'https://m.weibo.cn/p/106003type=25&t=3&disable_hot=1&filter_type=realtimehot',
     builtIn: true,
+    icon: 'https://images.icon-icons.com/2699/PNG/512/weibo_logo_icon_169040.png',
   },
   {
     name: TabsName.baidu,
@@ -30,6 +31,7 @@ export const TabsList = [
     show: true,
     url: 'https://top.baidu.com/board?tab=realtime',
     builtIn: true,
+    icon: 'https://images.icon-icons.com/2699/PNG/512/baidu_logo_icon_170487.png',
   },
   {
     name: TabsName.toutiao,
@@ -45,13 +47,14 @@ export const TabsList = [
     show: true,
     url: 'https://view.inews.qq.com/ranking?rankingtabtype=1',
     builtIn: true,
+    icon: 'https://mat1.gtimg.com/qqcdn/qqindex2021/favicon.ico',
   },
   {
     name: TabsName.douyin,
     title: '抖音热点',
     show: true,
     url: 'https://www.douyin.com/share/billboard',
-    icon: 'https://logo.clearbit.com/douyin.com',
+    icon: 'https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/2025_0313_logo.png',
     builtIn: true,
   },
   {
@@ -60,6 +63,7 @@ export const TabsList = [
     show: true,
     url: 'https://sinanews.sina.cn/h5/top_news_list.d.html',
     builtIn: true,
+    icon: 'https://images.icon-icons.com/2037/PNG/512/media_social_weibo_icon_124251.png',
   },
   {
     name: TabsName.wangyi,
@@ -75,6 +79,7 @@ export const TabsList = [
     show: true,
     url: 'https://www.zhihu.com/billboard',
     builtIn: true,
+    icon: 'https://static.zhihu.com/heifetz/assets/apple-touch-icon-152.81060cab.png',
   },
   {
     name: TabsName.zidingyi1,

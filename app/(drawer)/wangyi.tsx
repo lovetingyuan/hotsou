@@ -103,7 +103,7 @@ export default function Wangyi() {
       url={getTabUrl(TabsName.wangyi)!}
       css={`
         .footer-container,
-        .js-open-newsapp,
+        a.js-open-newsapp,
         .fixedOpenNewsapp,
         .openNewsapp,
         .js-bottom-container,
@@ -112,24 +112,25 @@ export default function Wangyi() {
         .ad,
         .js-ad,
         .comment-top-ad,
-        .js-comment-top-ad {
+        [data-stat='o-motif-footer'],
+        .js-comment-top-ad,
+        .open-app-btn,
+        .endCover-open,
+        .comment .logoBottom {
           display: none !important;
         }
         .hot-container-outapp .rank-container {
           padding: 0 !important;
         }
-        // #tabContainer::before {
-        //   content: '网易热榜';
-        //   display: block;
-        //   text-align: center;
-        //   font-size: 22px;
-        //   line-height: 55px;
-        // }
+
         .g-body-wrap .container {
           top: 0 !important;
         }
         .m-news-list.search-list-wrap {
           margin-top: 25px;
+        }
+        #tabContainer {
+          padding-top: 12px;
         }
       `}
       js={`(${__$inject})();true;`}

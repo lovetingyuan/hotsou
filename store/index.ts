@@ -18,6 +18,7 @@ export const getAppValue = () => {
     clearSelection: 0,
     $tabsList: JSON.parse(JSON.stringify(TabsList)) as typeof TabsList,
     $checkAppUpdateTime: 0,
+    $enableTextSelect: false,
   }
 }
 

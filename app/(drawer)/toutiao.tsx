@@ -22,15 +22,18 @@ export default function Toutiao() {
       css={`
         .float-activate-button-container,
         #top-banner-container,
-        .arco-show-monitor :where(.m-top-container, .m-bottom-container, .m-index-tag),
-        .m-top-padding {
+        .arco-show-monitor
+          :where(.m-top-container, .m-bottom-container, .m-index-tag, .content-bottom),
+        .m-top-padding,
+        .m-bottom-bar,
+        .m-index-tag {
           display: none !important;
         }
         .hot-list-footer {
           padding: 24px 0 !important;
         }
       `}
-      forbiddenUrls={['zijieapi.com']}
+      forbiddenUrls={['zijieapi.com', 'artical.zlink.toutiao.com']}
     />
   )
 }

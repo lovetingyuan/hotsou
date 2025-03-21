@@ -29,6 +29,15 @@ function __$inject() {
   [data-testid="tweetText"] {
     text-indent: 3em;
   }
+    .tgme_widget_message_user, .tgme_widget_message_bubble_tail, .tgme_widget_message_inline_keyboard {
+    display: none;
+    }
+    .tgme_widget_message_bubble {
+    margin-left: 5px;
+    border-radius: 10px;
+    }
+.tgme_widget_message_wrap.js-widget_message_wrap {
+margin-top: 10px;}
   `
   document.head?.append(noDragCss)
   window.__waitBody = callback => {
@@ -181,6 +190,23 @@ function __$inject() {
       })
     )
   }
+
+  document.addEventListener(
+    'click',
+    e => {
+      if (location.hostname === 't.me') {
+        if (e.target.tagName === 'I' && e.target.classList.contains('link_preview_image')) {
+          e.preventDefault()
+          e.stopPropagation()
+          const bg = getComputedStyle(e.target).backgroundImage
+          if (bg.startsWith('url(')) {
+            window.open(bg.slice(5, -2))
+          }
+        }
+      }
+    },
+    true
+  )
 }
 
 export const beforeLoadedInject = `(${__$inject})();true;`

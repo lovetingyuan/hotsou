@@ -34,7 +34,15 @@ export default function WebView(props: {
   forbiddenUrls?: (string | RegExp)[]
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
-  const { reloadTab, showPageInfo, clickTab, clearSelection, $tabsList, shareInfo } = useStore()
+  const {
+    reloadTab,
+    showPageInfo,
+    clickTab,
+    clearSelection,
+    $tabsList,
+    shareInfo,
+    $enableTextSelect,
+  } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
   const page = $tabsList.find(t => t.name === props.name)
   const pageIcon = getPageIcon(page)
@@ -77,12 +85,6 @@ export default function WebView(props: {
         return
       }
       Alert.alert('当前页面：' + title, 'URL: \n' + url, [
-        // {
-        //   text: '浏览器打开我',
-        //   onPress: () => {
-        //     Linking.openURL(url)
-        //   },
-        // },
         {
           text: '浏览器打开',
           onPress: () => {
@@ -99,7 +101,7 @@ export default function WebView(props: {
           style: 'destructive',
         },
         {
-          text: '确定',
+          text: 'OK',
           isPreferred: true,
         },
       ])
@@ -188,15 +190,15 @@ ${
   colorScheme === 'dark'
     ? `
  html, img, video {
-    filter: invert(1) hue-rotate(.5turn);
+  filter: invert(1) hue-rotate(.5turn);
 }
 img {
-    opacity: .75;
+  opacity: .75;
 }
   `
     : ''
 }
-          `)
+${$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
       )}
       renderLoading={() => (
         <ThemedView

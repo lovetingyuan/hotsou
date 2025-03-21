@@ -5,6 +5,7 @@ import AboutHeader from '@/components/about/header'
 import TabListSetting from '@/components/about/TabListSetting'
 import Version from '@/components/about/version'
 import { ThemedView } from '@/components/ThemedView'
+import TextSelectable from '@/components/about/TextSelectable'
 
 export default function About() {
   return (
@@ -14,6 +15,7 @@ export default function About() {
       >
         <AboutHeader></AboutHeader>
         <Version></Version>
+        <TextSelectable />
         <TabListSetting></TabListSetting>
       </ThemedView>
     </ScrollView>

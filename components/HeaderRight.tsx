@@ -5,6 +5,7 @@ import { getPageIcon } from '@/utils'
 
 import ThemedIcon from './ThemedIcon'
 import { ThemedView } from './ThemedView'
+import { Link } from 'expo-router'
 
 export default function HeaderRight(props: { pathname: string }) {
   const { setReloadTab, setShowPageInfo, $tabsList, setShareInfo } = useStore()
@@ -23,6 +24,15 @@ export default function HeaderRight(props: { pathname: string }) {
         backgroundColor: 'transparent',
       }}
     >
+      {/* <Link href="/modal">
+        <Image
+          source={pageIcon}
+          style={{
+            width: 24,
+            height: 24,
+          }}
+        ></Image>
+      </Link> */}
       <TouchableOpacity
         activeOpacity={0.5}
         style={{ paddingVertical: 1, paddingHorizontal: 4, width: 36 }}
@@ -34,6 +44,7 @@ export default function HeaderRight(props: { pathname: string }) {
         }}
       >
         {/* <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon> */}
+
         <Image
           source={pageIcon}
           style={{

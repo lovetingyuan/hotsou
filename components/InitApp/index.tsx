@@ -1,12 +1,12 @@
 import './init'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import * as Sentry from '@sentry/react-native'
-import { isRunningInExpoGo } from 'expo'
+// import * as Sentry from '@sentry/react-native'
+// import { isRunningInExpoGo } from 'expo'
 import * as Application from 'expo-application'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
-import { useNavigationContainerRef } from 'expo-router'
+// import { useNavigationContainerRef } from 'expo-router'
 import React, { useEffect } from 'react'
 import { ProviderOnChangeType } from 'react-atomic-context'
 import { Alert, Linking, ToastAndroid } from 'react-native'
@@ -24,21 +24,21 @@ import {
 } from '@/store'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
-// Construct a new instrumentation instance. This is needed to communicate between the integration and React
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation()
+// // Construct a new instrumentation instance. This is needed to communicate between the integration and React
+// const routingInstrumentation = new Sentry.ReactNavigationInstrumentation()
 
-Sentry.init({
-  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-  debug: false, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
-  integrations: [
-    new Sentry.ReactNativeTracing({
-      // Pass instrumentation to be used as `routingInstrumentation`
-      routingInstrumentation,
-      enableNativeFramesTracking: !isRunningInExpoGo(),
-      // ...
-    }),
-  ],
-})
+// Sentry.init({
+//   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+//   debug: false, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+//   integrations: [
+//     new Sentry.ReactNativeTracing({
+//       // Pass instrumentation to be used as `routingInstrumentation`
+//       routingInstrumentation,
+//       enableNativeFramesTracking: !isRunningInExpoGo(),
+//       // ...
+//     }),
+//   ],
+// })
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -159,12 +159,6 @@ function App(props: React.PropsWithChildren) {
 }
 
 function RootLayout(props: React.PropsWithChildren<{}>) {
-  const ref = useNavigationContainerRef()
-  useEffect(() => {
-    if (ref) {
-      routingInstrumentation.registerNavigationContainer(ref)
-    }
-  }, [ref])
   const appValue = useAppValue()
 
   useMounted(() => {
@@ -198,4 +192,4 @@ function RootLayout(props: React.PropsWithChildren<{}>) {
   )
 }
 
-export default Sentry.wrap(RootLayout)
+export default RootLayout
