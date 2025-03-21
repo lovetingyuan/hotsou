@@ -198,7 +198,7 @@ img {
   `
     : ''
 }
-${$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
+${!$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
       )}
       renderLoading={() => (
         <ThemedView
