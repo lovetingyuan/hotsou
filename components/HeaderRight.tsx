@@ -5,7 +5,6 @@ import { getPageIcon } from '@/utils'
 
 import ThemedIcon from './ThemedIcon'
 import { ThemedView } from './ThemedView'
-import { Link } from 'expo-router'
 
 export default function HeaderRight(props: { pathname: string }) {
   const { setReloadTab, setShowPageInfo, $tabsList, setShareInfo } = useStore()

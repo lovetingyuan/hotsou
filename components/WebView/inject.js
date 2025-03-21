@@ -7,7 +7,7 @@ function __$inject() {
   }
   window.__injected = true
 
-  const noDragCss = document.createElement('style')
+  const noDragCss = window.document.createElement('style')
 
   noDragCss.innerText = `
   * {
@@ -39,16 +39,16 @@ function __$inject() {
 .tgme_widget_message_wrap.js-widget_message_wrap {
 margin-top: 10px;}
   `
-  document.head?.append(noDragCss)
+  window.document.head?.append(noDragCss)
   window.__waitBody = callback => {
-    if (document.body) {
+    if (window.document.body) {
       callback()
     } else {
-      document.addEventListener('DOMContentLoaded', callback)
+      window.document.addEventListener('DOMContentLoaded', callback)
     }
   }
   window.__waitBody(() => {
-    document.head.append(noDragCss)
+    window.document.head.append(noDragCss)
   })
   const sendClick = () => {
     window.ReactNativeWebView.postMessage(
@@ -63,23 +63,23 @@ margin-top: 10px;}
 
   window.__keepScrollPosition = selector => {
     const saveScrollPosition = () => {
-      if (location.search.includes('__main_page')) {
-        const top = selector ? document.querySelector(selector).scrollTop : window.scrollY
-        localStorage.setItem('__scrollPosition', top + '')
+      if (window.location.search.includes('__main_page')) {
+        const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY
+        window.localStorage.setItem('__scrollPosition', top + '')
       }
     }
 
     const restoreScrollPosition = () => {
-      if (location.search.includes('__main_page')) {
-        const scrollPosition = localStorage.getItem('__scrollPosition')
+      if (window.location.search.includes('__main_page')) {
+        const scrollPosition = window.localStorage.getItem('__scrollPosition')
         if (scrollPosition && parseInt(scrollPosition)) {
-          localStorage.setItem('__scrollPosition', '')
-          localStorage.removeItem('__scrollPosition')
-          setTimeout(() => {
-            localStorage.setItem('__scrollPosition', '')
-            localStorage.removeItem('__scrollPosition')
+          window.localStorage.setItem('__scrollPosition', '')
+          window.localStorage.removeItem('__scrollPosition')
+          window.setTimeout(() => {
+            window.localStorage.setItem('__scrollPosition', '')
+            window.localStorage.removeItem('__scrollPosition')
             if (selector) {
-              const dom = document.querySelector(selector)
+              const dom = window.document.querySelector(selector)
               if (dom) {
                 dom.scrollTop = parseInt(scrollPosition)
               }
@@ -91,7 +91,7 @@ margin-top: 10px;}
       }
     }
 
-    if (document.readyState === 'complete') {
+    if (window.document.readyState === 'complete') {
       restoreScrollPosition()
     } else {
       window.addEventListener('load', restoreScrollPosition)
@@ -101,7 +101,7 @@ margin-top: 10px;}
   }
 
   window.__markReaded = (containerClass, textClass, textsClass, onClick) => {
-    document.addEventListener(
+    window.document.addEventListener(
       'click',
       evt => {
         const itemElement = evt.target.closest(containerClass)
@@ -112,7 +112,7 @@ margin-top: 10px;}
             if (ret === false) {
               return
             }
-            const clicked = JSON.parse(localStorage.getItem('__clicked__') || '{}')
+            const clicked = JSON.parse(window.localStorage.getItem('__clicked__') || '{}')
             const titleText = title.innerText
             const now = Date.now()
             clicked[titleText] = now
@@ -121,16 +121,16 @@ margin-top: 10px;}
                 delete clicked[t]
               }
             }
-            localStorage.setItem('__clicked__', JSON.stringify(clicked))
+            window.localStorage.setItem('__clicked__', JSON.stringify(clicked))
           }
         }
       },
       true
     )
 
-    setInterval(() => {
-      const clicked = JSON.parse(localStorage.getItem('__clicked__') || '{}')
-      const items = document.querySelectorAll(textsClass)
+    window.setInterval(() => {
+      const clicked = JSON.parse(window.localStorage.getItem('__clicked__') || '{}')
+      const items = window.document.querySelectorAll(textsClass)
       items.forEach(ele => {
         if (ele.innerText in clicked) {
           ele.style.opacity = 0.4
@@ -140,65 +140,68 @@ margin-top: 10px;}
   }
 
   window.__injectCss = () => {
-    let style = document.querySelector('style[data-css-inject]')
+    let style = window.document.querySelector('style[data-css-inject]')
     if (!style) {
-      style = document.createElement('style')
+      style = window.document.createElement('style')
       style.dataset.cssInject = 'true'
-      document.head.appendChild(style)
+      window.document.head.appendChild(style)
     }
     // eslint-disable-next-line no-undef
     style.textContent = CSS_CODE
   }
-  if (document.head) {
+  if (window.document.head) {
     window.__injectCss()
   } else {
-    document.addEventListener('DOMContentLoaded', () => {
+    window.document.addEventListener('DOMContentLoaded', () => {
       window.__injectCss()
     })
   }
 
-  setInterval(() => {
-    if (!document.body) {
+  window.setInterval(() => {
+    if (!window.document.body) {
       return
     }
-    if (document.getElementById('__keep-alive__')) {
-      document.getElementById('__keep-alive__')?.remove()
+    if (window.document.getElementById('__keep-alive__')) {
+      window.document.getElementById('__keep-alive__')?.remove()
     } else {
-      const div = document.createElement('div')
+      const div = window.document.createElement('div')
       div.id = '__keep-alive__'
-      div.innerHTML = document.body.clientHeight + 'px'
+      div.innerHTML = window.document.body.clientHeight + 'px'
       div.style.width = '1px'
       div.style.height = '1px'
       div.style.fontSize = '0'
       div.style.position = 'fixed'
-      if (document.body) {
-        document.body.appendChild(div)
+      if (window.document.body) {
+        window.document.body.appendChild(div)
       }
     }
   }, 4000)
 
   window.__handleShare = function () {
-    const url = location.hostname === 'm.douyin.com' ? location.href.split('#')[0] : location.href
+    const url =
+      window.location.hostname === 'm.douyin.com'
+        ? window.location.href.split('#')[0]
+        : window.location.href
 
     window.ReactNativeWebView.postMessage(
       JSON.stringify({
         type: 'share',
         payload: {
-          title: document.title,
+          title: window.document.title,
           url,
         },
       })
     )
   }
 
-  document.addEventListener(
+  window.document.addEventListener(
     'click',
     e => {
-      if (location.hostname === 't.me') {
+      if (window.location.hostname === 't.me') {
         if (e.target.tagName === 'I' && e.target.classList.contains('link_preview_image')) {
           e.preventDefault()
           e.stopPropagation()
-          const bg = getComputedStyle(e.target).backgroundImage
+          const bg = window.getComputedStyle(e.target).backgroundImage
           if (bg.startsWith('url(')) {
             window.open(bg.slice(5, -2))
           }
@@ -221,15 +224,15 @@ function __$inject2() {
       window.__injectCss()
     }
   })
-  const cookies = document.cookie.split(';')
+  const cookies = window.document.cookie.split(';')
   for (const element of cookies) {
     const cookie = element
     const eqPos = cookie.indexOf('=')
     const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
-    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
+    window.document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
   }
   ;(function userScript() {
-    // eslint-disable-next-line sonarjs/no-unused-expressions, no-unused-expressions, no-undef
+    // eslint-disable-next-line no-unused-expressions, no-undef
     USER_SCRIPT
   })()
 }

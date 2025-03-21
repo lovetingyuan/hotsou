@@ -29,8 +29,8 @@ function __$inject() {
     return '刚刚'
   }
 
-  if (location.pathname === '/share/billboard') {
-    history.scrollRestoration = 'auto'
+  if (window.location.pathname === '/share/billboard') {
+    window.history.scrollRestoration = 'auto'
     const searchByKeyword = word => {
       const keyword = encodeURIComponent(word)
       return fetch(
@@ -74,8 +74,8 @@ function __$inject() {
       (evt, title) => {
         evt.stopPropagation()
         evt.preventDefault()
-        if (!document.querySelector('.douyin-title-click-loader')) {
-          const loading = document.createElement('div')
+        if (!window.document.querySelector('.douyin-title-click-loader')) {
+          const loading = window.document.createElement('div')
           loading.className = 'douyin-title-click-loader'
           title.appendChild(loading)
           const titleText = title.innerText
@@ -84,7 +84,7 @@ function __$inject() {
             if (ids && ids.length) {
               url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
             }
-            location.href = url
+            window.location.href = url
           })
           return
         }
@@ -92,9 +92,9 @@ function __$inject() {
       }
     )
   }
-  if (location.pathname.startsWith('/share/video/')) {
+  if (window.location.pathname.startsWith('/share/video/')) {
     const getVideoComments = () => {
-      const id = location.pathname.split('/').pop()
+      const id = window.location.pathname.split('/').pop()
       return fetch(
         `https://www.douyin.com/aweme/v1/web/comment/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&aweme_id=${id}&cursor=0&count=30&item_type=0`,
         {
@@ -132,30 +132,30 @@ function __$inject() {
     let startY
     const threshold = 100
     const switchVideo = direction => {
-      if (document.querySelector('.show-comments-popup')) {
+      if (window.document.querySelector('.show-comments-popup')) {
         return
       }
-      const ids = location.hash.slice(1).split(',')
-      const id = location.pathname.split('/').pop()
+      const ids = window.location.hash.slice(1).split(',')
+      const id = window.location.pathname.split('/').pop()
       const index = ids.indexOf(id)
       if (direction === 'up') {
         if (index === ids.length - 1) {
           alert('暂无下一个')
         } else if (index !== -1) {
           const nid = ids[index + 1]
-          history.replaceState({}, '', '/share/video/' + nid + location.hash)
-          location.reload()
+          window.history.replaceState({}, '', '/share/video/' + nid + window.location.hash)
+          window.location.reload()
         }
       } else if (index === 0) {
         alert('暂无上一个')
       } else if (index !== -1) {
         const nid = ids[index - 1]
-        history.replaceState({}, '', '/share/video/' + nid + location.hash)
-        location.reload()
+        window.history.replaceState({}, '', '/share/video/' + nid + window.location.hash)
+        window.location.reload()
       }
     }
 
-    document.addEventListener(
+    window.document.addEventListener(
       'touchstart',
       e => {
         startY = e.touches[0].clientY
@@ -163,7 +163,7 @@ function __$inject() {
       false
     )
 
-    document.addEventListener(
+    window.document.addEventListener(
       'touchend',
       e => {
         if (!startY) {
@@ -181,7 +181,7 @@ function __$inject() {
       },
       false
     )
-    const download = document.createElement('div')
+    const download = window.document.createElement('div')
     download.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
         <defs>
@@ -197,10 +197,10 @@ function __$inject() {
     download.style.opacity = '0.9'
     download.style.textAlign = 'center'
     download.style.fontSize = '0'
-    if (!document.getElementById(download.id)) {
-      document.querySelector('.right-con')?.appendChild(download)
+    if (!window.document.getElementById(download.id)) {
+      window.document.querySelector('.right-con')?.appendChild(download)
       download.addEventListener('click', () => {
-        const video = document.getElementById('video-player')
+        const video = window.document.getElementById('video-player')
         if (video && video.src) {
           window.ReactNativeWebView.postMessage(
             JSON.stringify({
@@ -216,7 +216,7 @@ function __$inject() {
       })
     }
     window.__waitBody(() => {
-      const commentContainer = document.createElement('div')
+      const commentContainer = window.document.createElement('div')
       commentContainer.innerHTML = `
       <style>
         .comments-overlay {
@@ -316,15 +316,15 @@ function __$inject() {
         </div>
       </div>
       `
-      document.body.appendChild(commentContainer)
-      const overlay = document.getElementById('comments-overlay')
-      const popup = document.getElementById('comments-popup')
-      const commentItemTemplate = document.getElementById('comment-item-template')
-      const close = document.getElementById('comment-popup-close')
+      window.document.body.appendChild(commentContainer)
+      const overlay = window.document.getElementById('comments-overlay')
+      const popup = window.document.getElementById('comments-popup')
+      const commentItemTemplate = window.document.getElementById('comment-item-template')
+      const close = window.document.getElementById('comment-popup-close')
       const openPopup = () => {
         window.history.pushState({ popup: 'open' }, 'open popup')
         overlay.classList.add('show-comments-popup')
-        setTimeout(() => {
+        window.setTimeout(() => {
           popup.classList.add('slide-up-comments-popup')
         }, 10)
       }
@@ -337,10 +337,10 @@ function __$inject() {
 
       const closePopup = state => {
         if (!state) {
-          history.back()
+          window.history.back()
         }
         popup.classList.remove('slide-up-comments-popup')
-        setTimeout(() => {
+        window.setTimeout(() => {
           overlay.classList.remove('show-comments-popup')
         }, 300)
       }
@@ -353,7 +353,7 @@ function __$inject() {
       close.addEventListener('click', () => {
         closePopup()
       })
-      document.addEventListener(
+      window.document.addEventListener(
         'click',
         evt => {
           if (evt.target.closest('.avatar-container')) {
@@ -361,7 +361,7 @@ function __$inject() {
               const id =
                 window._ROUTER_DATA.loaderData['video_(id)/page'].videoInfoRes.item_list[0].author
                   .sec_uid
-              location.href = 'https://m.douyin.com/share/user/' + id
+              window.location.href = 'https://m.douyin.com/share/user/' + id
             } catch (e) {
               Object(e)
             }
@@ -369,8 +369,8 @@ function __$inject() {
           if (evt.target.tagName === 'IMG' && evt.target.className === 'comments') {
             openPopup()
             getVideoComments().then(({ comments, total }) => {
-              document.getElementById('comment-popup-title').textContent = `评论(${total}条)`
-              const fragment = document.createDocumentFragment()
+              window.document.getElementById('comment-popup-title').textContent = `评论(${total}条)`
+              const fragment = window.document.createDocumentFragment()
               // eslint-disable-next-line sonarjs/no-nested-functions
               comments.forEach(comment => {
                 const commentItem = commentItemTemplate.content.cloneNode(true)
@@ -384,7 +384,7 @@ function __$inject() {
                 }
                 fragment.appendChild(commentItem)
               })
-              document.getElementById('comment-popup-body').appendChild(fragment)
+              window.document.getElementById('comment-popup-body').appendChild(fragment)
             })
           }
         },

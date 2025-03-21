@@ -91,7 +91,7 @@ export function getPageIcon(page?: (typeof TabsList)[0]) {
       const { hostname } = new URL(page.url)
       icon = { uri: `https://icon.horse/icon/${hostname}` }
       // eslint-disable-next-line sonarjs/no-ignored-exceptions
-    } catch (err) {
+    } catch {
       icon = defaultIcon
     }
   } else {

@@ -1,7 +1,9 @@
 import { Switch, ToastAndroid } from 'react-native'
-import { ThemedView } from '../ThemedView'
+
 import { useStore } from '@/store'
+
 import { ThemedText } from '../ThemedText'
+import { ThemedView } from '../ThemedView'
 
 export default function TextSelectable() {
   const { $enableTextSelect, set$enableTextSelect } = useStore()

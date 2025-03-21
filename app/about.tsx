@@ -3,9 +3,9 @@ import { ScrollView } from 'react-native'
 
 import AboutHeader from '@/components/about/header'
 import TabListSetting from '@/components/about/TabListSetting'
+import TextSelectable from '@/components/about/TextSelectable'
 import Version from '@/components/about/version'
 import { ThemedView } from '@/components/ThemedView'
-import TextSelectable from '@/components/about/TextSelectable'
 
 export default function About() {
   return (

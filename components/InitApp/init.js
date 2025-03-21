@@ -17,7 +17,7 @@ const _push = Array.prototype.push
 /**
  * Hack node_modules/expo-router/build/useScreens.js L:50
  */
-// eslint-disable-next-line sonarjs/no-extend-native, no-extend-native
+// eslint-disable-next-line no-extend-native
 Array.prototype.push = function push(...args) {
   const route = args[0]?.route
   if (

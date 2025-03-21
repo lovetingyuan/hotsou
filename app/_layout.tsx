@@ -1,14 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { Stack, Slot, useNavigationContainerRef } from 'expo-router'
+import * as Sentry from '@sentry/react-native'
+import { isRunningInExpoGo } from 'expo'
+import { Stack, useNavigationContainerRef } from 'expo-router'
 import React from 'react'
 import { Share } from 'react-native'
 
 import InitApp from '@/components/InitApp'
 import ThemedIcon from '@/components/ThemedIcon'
 import { useColorScheme } from '@/hooks/useColorScheme'
-
-import * as Sentry from '@sentry/react-native'
-import { isRunningInExpoGo } from 'expo'
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 const navigationIntegration = Sentry.reactNavigationIntegration({
