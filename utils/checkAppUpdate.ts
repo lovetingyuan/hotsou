@@ -1,14 +1,24 @@
 // const url = `https://api.github.com/repos/lovetingyuan/hotsou/releases`
-const latestRelease = 'https://github.com/lovetingyuan/hotsou/releases/latest'
+const latestRelease = 'https://ghfast.top/https://github.com/lovetingyuan/hotsou/releases/latest'
 
 async function getRedirectUrl(url: string) {
   const response = await fetch(url, {
     method: 'HEAD',
     redirect: 'manual',
   })
-  if (response.status === 200 && response.url.includes('releases/tag/')) {
-    const v = response.url.split('/').pop()
-    return v?.slice(1)
+  if (response.status === 302) {
+    // @ts-expect-error ignore this
+    const newUrl = response.headers.location
+    if (newUrl) {
+      const v = newUrl.split('/').pop()
+      return v?.slice(1)
+    }
+  } else if (response.status === 200) {
+    const newUrl = response.url
+    if (newUrl) {
+      const v = newUrl.split('/').pop()
+      return v?.slice(1)
+    }
   }
 }
 
@@ -18,7 +28,7 @@ export default function checkAppUpdate() {
     if (r?.includes('.')) {
       return {
         version: r,
-        downloadUrl: `https://github.com/lovetingyuan/hotsou/releases/download/v${r}/hotsou-${r}.apk`,
+        downloadUrl: `https://ghfast.top/https://github.com/lovetingyuan/hotsou/releases/download/v${r}/hotsou-${r}.apk`,
       }
     }
   })
