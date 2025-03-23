@@ -113,7 +113,7 @@ function App(props: React.PropsWithChildren) {
         const currentVersion = Application.nativeApplicationVersion
         set$checkAppUpdateTime(Date.now())
         if (r && r.version !== currentVersion) {
-          Alert.alert('有新版本🎉', `\n${currentVersion} 更新到 ${r.version} (*^_^*)`, [
+          Alert.alert('有新版本🎉', `\n${currentVersion} 更新到 ${r.version} \n\n${r.changelog}`, [
             {
               text: '取消',
             },

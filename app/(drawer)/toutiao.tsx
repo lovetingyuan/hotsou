@@ -2,7 +2,7 @@ import WebView from '@/components/WebView'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
-  if (location.pathname.startsWith('/article/')) {
+  if (location.pathname.startsWith('/article/') || location.pathname.startsWith('/video/')) {
     setInterval(() => {
       const cancelBtn = document.querySelector('.activate-modal .button.cancel')
       if (cancelBtn) {
@@ -26,7 +26,8 @@ export default function Toutiao() {
           :where(.m-top-container, .m-bottom-container, .m-index-tag, .content-bottom),
         .m-top-padding,
         .m-bottom-bar,
-        .m-index-tag {
+        .m-index-tag,
+        .arco-masking {
           display: none !important;
         }
         .hot-list-footer {

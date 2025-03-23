@@ -31,7 +31,7 @@ export default function Version() {
           } else {
             Alert.alert(
               '🎉 有新版',
-              `最新版 ${res.version} （当前：${currentVersion}）\n点击在浏览器下载`,
+              `最新版 ${res.version}（当前：${currentVersion}）\n\n${res.changelog}`,
               [
                 {
                   text: '取消',
