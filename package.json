@@ -7,7 +7,7 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
-    "build:android": "eas build --profile production --platform android",
+    "build:android": "node scripts/build.mjs",
     "update:android": "eas update --branch production --platform android",
     "upload-sourcemap": "npx sentry-expo-upload-sourcemaps dist",
     "ios": "expo start --ios",
@@ -52,11 +52,15 @@
     "@types/jest": "^29.5.12",
     "@types/react": "~18.3.12",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "dotenv": "^16.4.7",
     "eslint": "^8.57.0",
     "eslint-config-expo": "canary",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-sonarjs": "^3.0.2",
-    "typescript": "~5.3.3"
+    "open": "^10.1.0",
+    "semver": "^7.7.1",
+    "typescript": "~5.3.3",
+    "zx": "^8.4.1"
   },
   "private": true,
   "expo": {

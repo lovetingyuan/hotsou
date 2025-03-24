@@ -129,6 +129,32 @@ function App(props: React.PropsWithChildren) {
       })
     }
   }, [loaded, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime])
+  useMounted(() => {
+    fetch('https://cdn.jsdelivr.net/gh/lovetingyuan/hotsou@main/app.json')
+      .then(r => r.json())
+      .then(appConfig => {
+        const config = appConfig.expo.extra.$config
+        if (config && config.show) {
+          Alert.alert(
+            'Hello',
+            config.statement,
+            [
+              {
+                text: '确定',
+              },
+              config.url
+                ? {
+                    text: '详情',
+                    onPress: () => {
+                      Linking.openURL(config.url)
+                    },
+                  }
+                : null,
+            ].filter(v => v !== null)
+          )
+        }
+      })
+  })
 
   if (!initialed || !loaded) {
     return null
