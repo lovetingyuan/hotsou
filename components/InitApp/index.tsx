@@ -2,6 +2,7 @@ import './init'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Application from 'expo-application'
+import Constants from 'expo-constants'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
 import React, { useEffect } from 'react'
@@ -20,6 +21,7 @@ import {
   useStore,
 } from '@/store'
 import checkAppUpdate from '@/utils/checkAppUpdate'
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
@@ -133,10 +135,10 @@ function App(props: React.PropsWithChildren) {
     fetch('https://cdn.jsdelivr.net/gh/lovetingyuan/hotsou@main/app.json')
       .then(r => r.json())
       .then(appConfig => {
-        const config = appConfig.expo.extra.$config
+        const config = __DEV__ ? Constants.expoConfig!.extra!.$config : appConfig.expo.extra.$config
         if (config && config.show) {
           Alert.alert(
-            'Hello',
+            '公告',
             config.statement,
             [
               {
