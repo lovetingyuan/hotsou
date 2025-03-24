@@ -4,11 +4,17 @@
 // import { BuildListSchema } from '../src/api/check-update.schema.ts'
 // 1 检查环境 2 写入版本 3 eas构建 4 写入更新日志 5 下载apk 6 git推送
 
-const z = require('zod')
-const open = require('open')
-const semver = require('semver')
-const dotenv = require('dotenv')
-const assert = require('node:assert')
+import assert from 'node:assert'
+
+import dotenv from 'dotenv'
+import open from 'open'
+import semver from 'semver'
+import z from 'zod'
+// const z = require('zod')
+// const open = require('open')
+// const semver = require('semver')
+// const dotenv = require('dotenv')
+// const assert = require('node:assert')
 
 const BuildListSchema = z
   .object({
@@ -54,10 +60,11 @@ const BuildListSchema = z
 
 dotenv.config({
   // eslint-disable-next-line no-undef
-  path: path.resolve(__dirname, '../.env'),
+  path: path.resolve(__dirname, './.env'),
 })
 
-const app = require('../app.json')
+const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
+// const app = require('../app.json')
 const version = app.version
 
 const getBuildList = buildStr => {
@@ -132,7 +139,7 @@ if (!changes.trim()) {
   throw new Error('更新日志不能为空')
 }
 app.version = newVersion
-fs.writeFileSync('../app.json', JSON.stringify(app, null, 2))
+fs.writeFileSync('./app.json', JSON.stringify(app, null, 2))
 
 echo(chalk.cyan('EAS building: https://expo.dev/accounts/tingyuan/projects/hotsou/builds'))
 
@@ -218,7 +225,7 @@ try {
 echo(chalk.green('Build done!'))
 
 open(
-  `https://github.com/lovetingyuan/hotsou/releases/new?tag=v${newVersion}&title=hotsou-${newVersion}&body=${encodeURIComponent(
+  `https://github.com/lovetingyuan/hotsou/releases/new?tag=v${newVersion}&title=v${newVersion}&body=${encodeURIComponent(
     changes
       .split('  ')
       .map(c => `- ${c}`)
