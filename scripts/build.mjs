@@ -10,178 +10,175 @@ import dotenv from 'dotenv'
 import open from 'open'
 import semver from 'semver'
 import z from 'zod'
-// const z = require('zod')
-// const open = require('open')
-// const semver = require('semver')
-// const dotenv = require('dotenv')
-// const assert = require('node:assert')
 
-const BuildListSchema = z
-  .object({
-    id: z.string(),
-    status: z.enum(['PENDING', 'FINISHED']),
-    platform: z.enum(['ANDROID', 'IOS', 'ALL']),
-    artifacts: z.object({
-      buildUrl: z.string(),
-      applicationArchiveUrl: z.string(),
-    }),
-    initiatingActor: z.object({
-      id: z.string(),
-      displayName: z.string(),
-    }),
-    project: z.object({
-      id: z.string(),
-      name: z.string(),
-      slug: z.string(),
-      ownerAccount: z.object({
-        id: z.string(),
-        name: z.string(),
-      }),
-    }),
-    channel: z.string().nullish(),
-    releaseChannel: z.string().nullish(),
-    distribution: z.enum(['STORE']),
-    buildProfile: z.string(),
-    sdkVersion: z.string(),
-    appVersion: z.string(),
-    appBuildVersion: z.string(),
-    gitCommitHash: z.string(),
-    gitCommitMessage: z.string(),
-    // priority: 'NORMAL'
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    completedAt: z.string(),
-    // resourceClass: 'ANDROID_MEDIUM'
-  })
-  .refine(data => {
-    return !!data.channel || !!data.releaseChannel
-  }, 'channel error')
-  .array()
+// const BuildListSchema = z
+//   .object({
+//     id: z.string(),
+//     status: z.enum(['PENDING', 'FINISHED']),
+//     platform: z.enum(['ANDROID', 'IOS', 'ALL']),
+//     artifacts: z.object({
+//       buildUrl: z.string(),
+//       applicationArchiveUrl: z.string(),
+//     }),
+//     initiatingActor: z.object({
+//       id: z.string(),
+//       displayName: z.string(),
+//     }),
+//     project: z.object({
+//       id: z.string(),
+//       name: z.string(),
+//       slug: z.string(),
+//       ownerAccount: z.object({
+//         id: z.string(),
+//         name: z.string(),
+//       }),
+//     }),
+//     channel: z.string().nullish(),
+//     releaseChannel: z.string().nullish(),
+//     distribution: z.enum(['STORE']),
+//     buildProfile: z.string(),
+//     sdkVersion: z.string(),
+//     appVersion: z.string(),
+//     appBuildVersion: z.string(),
+//     gitCommitHash: z.string(),
+//     gitCommitMessage: z.string(),
+//     // priority: 'NORMAL'
+//     createdAt: z.string(),
+//     updatedAt: z.string(),
+//     completedAt: z.string(),
+//     // resourceClass: 'ANDROID_MEDIUM'
+//   })
+//   .refine(data => {
+//     return !!data.channel || !!data.releaseChannel
+//   }, 'channel error')
+//   .array()
 
-dotenv.config({
-  // eslint-disable-next-line no-undef
-  path: path.resolve(__dirname, './.env'),
-})
+// dotenv.config({
+//   // eslint-disable-next-line no-undef
+//   path: path.resolve(__dirname, './.env'),
+// })
 
-const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
-// const app = require('../app.json')
-const version = app.expo.version
+// const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
+// // const app = require('../app.json')
+// const version = app.expo.version
 
-const getBuildList = buildStr => {
-  let buildListStr = buildStr.toString('utf8')
-  let list
-  while (buildListStr.includes('[')) {
-    try {
-      buildListStr = buildListStr.substring(buildListStr.indexOf('['))
-      list = JSON.parse(buildListStr)
-      break
-    } catch {
-      buildListStr = buildListStr.substring(1)
-    }
-  }
-  list.toString = () => buildListStr.trim()
-  return list
-}
+// const getBuildList = buildStr => {
+//   let buildListStr = buildStr.toString('utf8')
+//   let list
+//   while (buildListStr.includes('[')) {
+//     try {
+//       buildListStr = buildListStr.substring(buildListStr.indexOf('['))
+//       list = JSON.parse(buildListStr)
+//       break
+//     } catch {
+//       buildListStr = buildListStr.substring(1)
+//     }
+//   }
+//   list.toString = () => buildListStr.trim()
+//   return list
+// }
 
-$.verbose = false
+// $.verbose = false
 
-await spinner('Checking build env...', async () => {
-  const gitStatus = await $`git status --porcelain`
-  assert.equal(
-    gitStatus.toString('utf8').trim(),
-    '',
-    chalk.red('Current git workspace is not clean')
-  )
+// await spinner('Checking build env...', async () => {
+//   const gitStatus = await $`git status --porcelain`
+//   assert.equal(
+//     gitStatus.toString('utf8').trim(),
+//     '',
+//     chalk.red('Current git workspace is not clean')
+//   )
 
-  await fetch('https://api.expo.dev')
-    .then(res => res.text())
-    .then(d => {
-      assert.equal(d, 'OK', chalk.red('Can not access Expo Api'))
-    })
+//   await fetch('https://api.expo.dev')
+//     .then(res => res.text())
+//     .then(d => {
+//       assert.equal(d, 'OK', chalk.red('Can not access Expo Api'))
+//     })
 
-  const easuser = await $`npx --yes eas-cli@latest whoami`
-  assert.ok(easuser && easuser.toString('utf8').trim().length > 0, chalk.red('EAS cli not login.'))
+//   const easuser = await $`npx --yes eas-cli@latest whoami`
+//   assert.ok(easuser && easuser.toString('utf8').trim().length > 0, chalk.red('EAS cli not login.'))
 
-  await retry(3, () => $`git ls-remote --heads https://github.com/lovetingyuan/hotsou.git`)
+//   await retry(3, () => $`git ls-remote --heads https://github.com/lovetingyuan/hotsou.git`)
 
-  const branch = await $`git rev-parse --abbrev-ref HEAD`
-  assert.equal(branch.toString('utf8').trim(), 'main', chalk.red('Current branch is not main'))
-  await $`git push`
-})
+//   const branch = await $`git rev-parse --abbrev-ref HEAD`
+//   assert.equal(branch.toString('utf8').trim(), 'main', chalk.red('Current branch is not main'))
+//   await $`git push`
+// })
 
-echo(chalk.green('Environment is all right.\n'))
+// echo(chalk.green('Environment is all right.\n'))
 
-let appVersion
+// let appVersion
 
-await spinner('Checking current build list...', async () => {
-  const currentBuild =
-    await $`npx -y eas-cli@latest build:list --platform android --limit 1 --json --non-interactive --status finished --channel production`
-  const buildList = getBuildList(currentBuild)
-  BuildListSchema.parse(buildList)
-  appVersion = buildList[0].appVersion
-  if (appVersion !== version) {
-    throw new Error(
-      `Package version ${version} is not same as the latest build version ${appVersion}`
-    )
-  }
-})
+// await spinner('Checking current build list...', async () => {
+//   const currentBuild =
+//     await $`npx -y eas-cli@latest build:list --platform android --limit 1 --json --non-interactive --status finished --channel production`
+//   const buildList = getBuildList(currentBuild)
+//   BuildListSchema.parse(buildList)
+//   appVersion = buildList[0].appVersion
+//   if (appVersion !== version) {
+//     throw new Error(
+//       `Package version ${version} is not same as the latest build version ${appVersion}`
+//     )
+//   }
+// })
 
-// -------------------------------------------
+// // -------------------------------------------
 
-const newVersion = await question(`更新版本（${appVersion} -> ?）`)
+// const newVersion = await question(`更新版本（${appVersion} -> ?）`)
 
-if (!semver.valid(newVersion) || semver.lt(newVersion, appVersion)) {
-  throw new Error('版本号输入错误')
-}
+// if (!semver.valid(newVersion) || semver.lt(newVersion, appVersion)) {
+//   throw new Error('版本号输入错误')
+// }
 
-const changes = await question('更新日志（使用双空格分开）')
-if (!changes.trim()) {
-  throw new Error('更新日志不能为空')
-}
-app.expo.version = newVersion
-fs.writeFileSync('./app.json', JSON.stringify(app, null, 2))
+// const changes = await question('更新日志（使用双空格分开）')
+// if (!changes.trim()) {
+//   throw new Error('更新日志不能为空')
+// }
+// app.expo.version = newVersion
+// fs.writeFileSync('./app.json', JSON.stringify(app, null, 2))
 
-echo(chalk.cyan('EAS building: https://expo.dev/accounts/tingyuan/projects/hotsou/builds'))
+// echo(chalk.cyan('EAS building: https://expo.dev/accounts/tingyuan/projects/hotsou/builds'))
 
-let latestBuildList
+// let latestBuildList
 
-try {
-  await spinner('EAS building...', () => {
-    return $`npx -y eas-cli@latest build --platform android --profile production --message ${changes} --json --non-interactive`
-  })
-  let buildListStr = ''
-  echo(chalk.green('EAS build done.'))
-  await new Promise(r => globalThis.setTimeout(r, 1000))
-  try {
-    buildListStr = await spinner('Checking EAS build list...', () =>
-      retry(
-        3,
-        () =>
-          $`npx -y eas-cli@latest build:list --platform android --limit 5 --json --non-interactive --status finished --channel production`
-      )
-    )
-  } catch (err) {
-    echo(chalk.red('Failed to get build list.'))
-    throw err
-  }
+// try {
+//   await spinner('EAS building...', () => {
+//     return $`npx -y eas-cli@latest build --platform android --profile production --message ${changes} --json --non-interactive`
+//   })
+//   let buildListStr = ''
+//   echo(chalk.green('EAS build done.'))
+//   await new Promise(r => globalThis.setTimeout(r, 1000))
+//   try {
+//     buildListStr = await spinner('Checking EAS build list...', () =>
+//       retry(
+//         3,
+//         () =>
+//           $`npx -y eas-cli@latest build:list --platform android --limit 5 --json --non-interactive --status finished --channel production`
+//       )
+//     )
+//   } catch (err) {
+//     echo(chalk.red('Failed to get build list.'))
+//     throw err
+//   }
 
-  latestBuildList = getBuildList(buildListStr)
-  if (latestBuildList[0].appVersion !== newVersion) {
-    throw new Error(
-      `EAS latest version ${latestBuildList[0].appVersion} is not same as updated version ${newVersion}`
-    )
-  }
-  echo(chalk.green('EAS build success.'))
-} catch (err) {
-  await $`git checkout -- .`
-  // await $`npm version ${version} -m "failed to publish ${newVersion}" --allow-same-version`
-  echo(chalk.red('Failed to build new apk on EAS.'))
-  throw err
-}
+//   latestBuildList = getBuildList(buildListStr)
+//   if (latestBuildList[0].appVersion !== newVersion) {
+//     throw new Error(
+//       `EAS latest version ${latestBuildList[0].appVersion} is not same as updated version ${newVersion}`
+//     )
+//   }
+//   echo(chalk.green('EAS build success.'))
+// } catch (err) {
+//   await $`git checkout -- .`
+//   // await $`npm version ${version} -m "failed to publish ${newVersion}" --allow-same-version`
+//   echo(chalk.red('Failed to build new apk on EAS.'))
+//   throw err
+// }
 
-const apkUrl = latestBuildList[0].artifacts.buildUrl
+const apkUrl = 'https://expo.dev/artifacts/eas/ih94J8z1Hr3yvtmggLBned.apk' // latestBuildList[0].artifacts.buildUrl
+echo(apkUrl)
 echo(chalk.blue('download apk file...'))
-
+const newVersion = '1.3.2'
+const changes = '修复已知问题  添加公告'
 try {
   await spinner('Downloading APK file...', async () => {
     await $`npx rimraf apk`
