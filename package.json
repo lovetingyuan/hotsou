@@ -7,7 +7,7 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
-    "build:android": "zx scripts/build.mjs",
+    "build:android": "zx scripts/build.js",
     "update:android": "eas update --branch production --platform android",
     "upload-sourcemap": "npx sentry-expo-upload-sourcemaps dist",
     "ios": "expo start --ios",

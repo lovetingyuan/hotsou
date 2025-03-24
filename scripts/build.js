@@ -8,6 +8,7 @@ const z = require('zod')
 const open = require('open')
 const semver = require('semver')
 const dotenv = require('dotenv')
+const assert = require('node:assert')
 
 const BuildListSchema = z
   .object({
@@ -58,8 +59,6 @@ dotenv.config({
 
 const app = require('../app.json')
 const version = app.version
-
-const assert = require('node:assert')
 
 const getBuildList = buildStr => {
   let buildListStr = buildStr.toString('utf8')
