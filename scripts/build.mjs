@@ -65,7 +65,7 @@ dotenv.config({
 
 const app = JSON.parse(fs.readFileSync('app.json', 'utf8'))
 // const app = require('../app.json')
-const version = app.version
+const version = app.expo.version
 
 const getBuildList = buildStr => {
   let buildListStr = buildStr.toString('utf8')
@@ -138,7 +138,7 @@ const changes = await question('更新日志（使用双空格分开）')
 if (!changes.trim()) {
   throw new Error('更新日志不能为空')
 }
-app.version = newVersion
+app.expo.version = newVersion
 fs.writeFileSync('./app.json', JSON.stringify(app, null, 2))
 
 echo(chalk.cyan('EAS building: https://expo.dev/accounts/tingyuan/projects/hotsou/builds'))
