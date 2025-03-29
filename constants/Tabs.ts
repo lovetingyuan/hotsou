@@ -14,6 +14,10 @@ export enum TabsName {
   zidingyi3 = 'zidingyi3',
   zidingyi4 = 'zidingyi4',
   zidingyi5 = 'zidingyi5',
+  zidingyi6 = 'zidingyi6',
+  zidingyi7 = 'zidingyi7',
+  zidingyi8 = 'zidingyi8',
+  zidingyi9 = 'zidingyi9',
 }
 
 export const TabsList = [
@@ -108,6 +112,30 @@ export const TabsList = [
   {
     name: TabsName.zidingyi5,
     title: '自定义5',
+    url: '',
+    show: false,
+  },
+  {
+    name: TabsName.zidingyi6,
+    title: '自定义6',
+    url: '',
+    show: false,
+  },
+  {
+    name: TabsName.zidingyi7,
+    title: '自定义7',
+    url: '',
+    show: false,
+  },
+  {
+    name: TabsName.zidingyi8,
+    title: '自定义8',
+    url: '',
+    show: false,
+  },
+  {
+    name: TabsName.zidingyi9,
+    title: '自定义9',
     url: '',
     show: false,
   },

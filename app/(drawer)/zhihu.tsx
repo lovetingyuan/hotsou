@@ -23,6 +23,7 @@ export default function Zhihu() {
         'datahub.zhihu.com',
         'apm.zhihu.com',
         'www.zhihu.com/oia/answers/',
+        'www.zhihu.com/oia/people/',
       ]}
       css={`
         .OpenInAppButton,
