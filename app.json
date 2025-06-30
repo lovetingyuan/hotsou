@@ -40,14 +40,6 @@
             "usesCleartextTraffic": true
           }
         }
-      ],
-      [
-        "@sentry/react-native/expo",
-        {
-          "url": "https://sentry.io",
-          "project": "hotsou",
-          "organization": "tingyuan123"
-        }
       ]
     ],
     "experiments": {

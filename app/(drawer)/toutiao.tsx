@@ -11,6 +11,32 @@ function __$inject() {
       }
     }, 200)
   }
+  if (location.pathname === '/feoffline/hotspot_and_local/html/hot_list/index.html') {
+    document.addEventListener(
+      'click',
+      evt => {
+        // @ts-ignore
+        if (evt.target.closest('.tt-show-monitor')) {
+          // @ts-ignore
+          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
+        }
+      },
+      true
+    )
+    const id = localStorage.getItem('scroll-position')
+    if (id) {
+      const timer = setInterval(() => {
+        const nodes = document.querySelectorAll('.tt-show-monitor')
+        if (nodes.length > 20) {
+          clearInterval(timer)
+          window.scrollTo({
+            top: Number(id),
+          })
+        }
+      }, 200)
+      localStorage.removeItem('scroll-position')
+    }
+  }
 }
 
 export default function Toutiao() {

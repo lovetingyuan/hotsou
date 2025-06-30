@@ -3,19 +3,43 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname === '/ranking') {
-    history.scrollRestoration = 'auto'
+    // history.scrollRestoration = 'auto'
     // @ts-ignore
     window.__markReaded?.(
       '[dt-eid="em_item_article"]',
       '[class^="ranking-item_text"]',
       '[dt-eid="em_item_article"] [class^="ranking-item_text"]'
     )
-    // @ts-ignore
-    // window.__keepScrollPosition?.()
+
+    document.addEventListener(
+      'click',
+      evt => {
+        // @ts-ignore
+        if (evt.target.closest('[dt-eid="em_item_article"]')) {
+          // @ts-ignore
+          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
+        }
+      },
+      true
+    )
+    const id = localStorage.getItem('scroll-position')
+    if (id) {
+      const timer = setInterval(() => {
+        const nodes = document.querySelectorAll('[dt-eid="em_item_article"]')
+        if (nodes.length > 20) {
+          clearInterval(timer)
+          window.scrollTo({
+            top: Number(id),
+          })
+        }
+      }, 200)
+      localStorage.removeItem('scroll-position')
+    }
   }
 }
 
 export default function Tengxun() {
+  console.log(99, getTabUrl(TabsName.tengxun))
   return (
     <WebView
       name={TabsName.tengxun}

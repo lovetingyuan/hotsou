@@ -2,8 +2,9 @@ import WebView from '@/components/WebView'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
+  // rank-container hot-search
   if (location.pathname.includes('newsapp/hot-content/')) {
-    history.scrollRestoration = 'auto'
+    // history.scrollRestoration = 'auto'
     const tabsConfig = [
       {
         name: '热议榜',
@@ -59,8 +60,6 @@ function __$inject() {
         evt.preventDefault()
       }
     })
-    // @ts-ignore
-    // window.__keepScrollPosition?.('.swiper-slide-active .rank-container')
 
     const tabs = document.getElementById('tabContainer')
     if (tabs) {
@@ -92,6 +91,34 @@ function __$inject() {
       }
 
       observer.observe(tabs, config)
+    }
+
+    document.addEventListener(
+      'click',
+      evt => {
+        // @ts-ignore
+        if (evt.target.closest('.s-item-wrapper')) {
+          // @ts-ignore
+          localStorage.setItem(
+            'scroll-position',
+            // @ts-ignore
+            document.querySelector('.swiper-slide-active .rank-container').scrollTop
+          )
+        }
+      },
+      true
+    )
+    const id = localStorage.getItem('scroll-position')
+    if (id) {
+      const timer = setInterval(() => {
+        const nodes = document.querySelectorAll('.s-item-wrapper')
+        if (nodes.length > 20) {
+          clearInterval(timer)
+          // @ts-ignore
+          document.querySelector('.swiper-slide-active .rank-container').scrollTop = id
+        }
+      }, 200)
+      localStorage.removeItem('scroll-position')
     }
   }
 }

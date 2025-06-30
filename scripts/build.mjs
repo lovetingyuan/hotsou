@@ -10,6 +10,10 @@ import dotenv from 'dotenv'
 import open from 'open'
 import semver from 'semver'
 import { z } from 'zod'
+import { usePowerShell } from 'zx'
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
+usePowerShell()
 
 const BuildListSchema = z
   .object({

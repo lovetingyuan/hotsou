@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import * as Sentry from '@sentry/react-native'
-import { isRunningInExpoGo } from 'expo'
-import { Stack, useNavigationContainerRef } from 'expo-router'
+// import * as Sentry from '@sentry/react-native'
+// import { isRunningInExpoGo } from 'expo'
+import { Stack } from 'expo-router'
 import React from 'react'
 import { Share } from 'react-native'
 
@@ -10,21 +10,21 @@ import ThemedIcon from '@/components/ThemedIcon'
 import { useColorScheme } from '@/hooks/useColorScheme'
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
-const navigationIntegration = Sentry.reactNavigationIntegration({
-  enableTimeToInitialDisplay: !isRunningInExpoGo(),
-})
+// const navigationIntegration = Sentry.reactNavigationIntegration({
+//   enableTimeToInitialDisplay: !isRunningInExpoGo(),
+// })
 
-Sentry.init({
-  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-  enabled: !__DEV__,
-  debug: __DEV__, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
-  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
-  integrations: [
-    // Pass integration
-    navigationIntegration,
-  ],
-  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
-})
+// Sentry.init({
+//   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+//   enabled: !__DEV__,
+//   debug: __DEV__, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+//   tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
+//   integrations: [
+//     // Pass integration
+//     navigationIntegration,
+//   ],
+//   enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
+// })
 
 function RootLayout() {
   const colorScheme = useColorScheme()
@@ -46,13 +46,13 @@ function RootLayout() {
       ></ThemedIcon>
     )
   }
-  const ref = useNavigationContainerRef()
+  // const ref = useNavigationContainerRef()
 
-  React.useEffect(() => {
-    if (ref?.current) {
-      navigationIntegration.registerNavigationContainer(ref)
-    }
-  }, [ref])
+  // React.useEffect(() => {
+  //   if (ref?.current) {
+  //     navigationIntegration.registerNavigationContainer(ref)
+  //   }
+  // }, [ref])
 
   return (
     <InitApp>
@@ -79,4 +79,4 @@ function RootLayout() {
   )
 }
 
-export default __DEV__ ? RootLayout : Sentry.wrap(RootLayout)
+export default RootLayout
