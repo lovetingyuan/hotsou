@@ -31,42 +31,42 @@ function __$inject() {
 
   if (window.location.pathname === '/share/billboard') {
     window.history.scrollRestoration = 'auto'
-    const searchByKeyword = word => {
-      const keyword = encodeURIComponent(word)
-      return fetch(
-        // `https://www.douyin.com/aweme/v1/web/general/search/single/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_general&enable_history=1&keyword=${keyword}&search_source=hot_search_board&query_correct_type=1&is_filter_search=0&from_group_id=&offset=0&count=20&need_filter_settings=1&list_type=single&pc_client_type=1&cookie_enabled=true`,
-        // `https://www.douyin.com/aweme/v1/web/general/search/single/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_video_web&enable_history=1&keyword=${keyword}&search_source=normal_search&query_correct_type=1&is_filter_search=0&from_group_id=&offset=0&count=20&need_filter_settings=1&list_type=single&pc_client_type=1&update_version_code=170400&version_code=190600&version_name=19.6.0`,
-        `https://www.douyin.com/aweme/v1/web/general/search/single/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_general&enable_history=1&keyword=${keyword}&search_source=normal_search&query_correct_type=1&is_filter_search=0&from_group_id=&offset=0&count=10&need_filter_settings=1&list_type=single&update_version_code=170400&pc_client_type=1&pc_libra_divert=Windows&version_code=190600&version_name=19.6.0&cookie_enabled=false&screen_width=1384&screen_height=865&browser_language=zh-CN&browser_platform=Win32&browser_name=Edge&browser_version=130.0.0.0&browser_online=true&engine_name=Blink&engine_version=130.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=1.5&effective_type=3g&round_trip_time=550&webid=7412132629645002278`,
-        {
-          headers: {
-            accept: 'application/json, text/plain, */*',
-            'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-            'cache-control': 'no-cache',
-          },
-          // referrer: 'https://www.douyin.com/search/' + keyword,
-          // referrerPolicy: 'strict-origin-when-cross-origin',
-          body: null,
-          method: 'GET',
-          mode: 'cors',
-          credentials: 'include',
-        }
-      )
-        .then(r => r.json())
-        .then(r => {
-          const allIds = r.data
-            .filter(v => v.type === 1 && v.aweme_info)
-            .sort((a, b) => {
-              return (
-                b.aweme_info.statistics.comment_count +
-                b.aweme_info.statistics.digg_count -
-                a.aweme_info.statistics.comment_count -
-                a.aweme_info.statistics.digg_count
-              )
-            })
-            .map(v => v.provider_doc_id_str)
-          return allIds
-        })
-    }
+    // const searchByKeyword = word => {
+    //   const keyword = encodeURIComponent(word)
+    //   return fetch(
+    //     // `https://www.douyin.com/aweme/v1/web/general/search/single/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_general&enable_history=1&keyword=${keyword}&search_source=hot_search_board&query_correct_type=1&is_filter_search=0&from_group_id=&offset=0&count=20&need_filter_settings=1&list_type=single&pc_client_type=1&cookie_enabled=true`,
+    //     // `https://www.douyin.com/aweme/v1/web/general/search/single/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_video_web&enable_history=1&keyword=${keyword}&search_source=normal_search&query_correct_type=1&is_filter_search=0&from_group_id=&offset=0&count=20&need_filter_settings=1&list_type=single&pc_client_type=1&update_version_code=170400&version_code=190600&version_name=19.6.0`,
+    //     `https://www.douyin.com/aweme/v1/web/general/search/single/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_general&enable_history=1&keyword=${keyword}&search_source=normal_search&query_correct_type=1&is_filter_search=0&from_group_id=&offset=0&count=10&need_filter_settings=1&list_type=single&update_version_code=170400&pc_client_type=1&pc_libra_divert=Windows&version_code=190600&version_name=19.6.0&cookie_enabled=false&screen_width=1384&screen_height=865&browser_language=zh-CN&browser_platform=Win32&browser_name=Edge&browser_version=130.0.0.0&browser_online=true&engine_name=Blink&engine_version=130.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=1.5&effective_type=3g&round_trip_time=550&webid=7412132629645002278`,
+    //     {
+    //       headers: {
+    //         accept: 'application/json, text/plain, */*',
+    //         'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+    //         'cache-control': 'no-cache',
+    //       },
+    //       // referrer: 'https://www.douyin.com/search/' + keyword,
+    //       // referrerPolicy: 'strict-origin-when-cross-origin',
+    //       body: null,
+    //       method: 'GET',
+    //       mode: 'cors',
+    //       credentials: 'include',
+    //     }
+    //   )
+    //     .then(r => r.json())
+    //     .then(r => {
+    //       const allIds = r.data
+    //         .filter(v => v.type === 1 && v.aweme_info)
+    //         .sort((a, b) => {
+    //           return (
+    //             b.aweme_info.statistics.comment_count +
+    //             b.aweme_info.statistics.digg_count -
+    //             a.aweme_info.statistics.comment_count -
+    //             a.aweme_info.statistics.digg_count
+    //           )
+    //         })
+    //         .map(v => v.provider_doc_id_str)
+    //       return allIds
+    //     })
+    // }
     window.__markReaded?.(
       '.list-container .word-item',
       '.word',
@@ -74,24 +74,33 @@ function __$inject() {
       (evt, title) => {
         evt.stopPropagation()
         evt.preventDefault()
+
         if (!window.document.querySelector('.douyin-title-click-loader')) {
           const loading = window.document.createElement('div')
           loading.className = 'douyin-title-click-loader'
           title.appendChild(loading)
           const titleText = title.innerText
-          searchByKeyword(titleText).then(ids => {
-            let url = 'https://www.douyin.com/search/' + titleText
-            if (ids && ids.length) {
-              url = `https://m.douyin.com/share/video/${ids[0]}#${ids}`
+          const _hot_list = decodeURIComponent(window.location.hash.split('=')[1] || '')
+          if (_hot_list) {
+            const hotList = JSON.parse(_hot_list)
+            const item = hotList.find(v => v.word === titleText)
+            if (item) {
+              window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                  type: 'douyin-hot-id',
+                  payload: item.sentence_id,
+                })
+              )
+              // window.location.href = 'https://www.douyin.com/hot/' + item.sentence_id
             }
-            window.location.href = url
-          })
+          }
           return
         }
         return false
       }
     )
   }
+
   if (window.location.pathname.startsWith('/share/video/')) {
     const getVideoComments = () => {
       const id = window.location.pathname.split('/').pop()
@@ -129,58 +138,58 @@ function __$inject() {
           return { comments, total: r.total }
         })
     }
-    let startY
-    const threshold = 100
-    const switchVideo = direction => {
-      if (window.document.querySelector('.show-comments-popup')) {
-        return
-      }
-      const ids = window.location.hash.slice(1).split(',')
-      const id = window.location.pathname.split('/').pop()
-      const index = ids.indexOf(id)
-      if (direction === 'up') {
-        if (index === ids.length - 1) {
-          alert('暂无下一个')
-        } else if (index !== -1) {
-          const nid = ids[index + 1]
-          window.history.replaceState({}, '', '/share/video/' + nid + window.location.hash)
-          window.location.reload()
-        }
-      } else if (index === 0) {
-        alert('暂无上一个')
-      } else if (index !== -1) {
-        const nid = ids[index - 1]
-        window.history.replaceState({}, '', '/share/video/' + nid + window.location.hash)
-        window.location.reload()
-      }
-    }
+    // let startY
+    // const threshold = 100
+    // const switchVideo = direction => {
+    //   if (window.document.querySelector('.show-comments-popup')) {
+    //     return
+    //   }
+    //   const ids = window.location.hash.slice(1).split(',')
+    //   const id = window.location.pathname.split('/').pop()
+    //   const index = ids.indexOf(id)
+    //   if (direction === 'up') {
+    //     if (index === ids.length - 1) {
+    //       alert('暂无下一个')
+    //     } else if (index !== -1) {
+    //       const nid = ids[index + 1]
+    //       window.history.replaceState({}, '', '/share/video/' + nid + window.location.hash)
+    //       window.location.reload()
+    //     }
+    //   } else if (index === 0) {
+    //     alert('暂无上一个')
+    //   } else if (index !== -1) {
+    //     const nid = ids[index - 1]
+    //     window.history.replaceState({}, '', '/share/video/' + nid + window.location.hash)
+    //     window.location.reload()
+    //   }
+    // }
 
-    window.document.addEventListener(
-      'touchstart',
-      e => {
-        startY = e.touches[0].clientY
-      },
-      false
-    )
+    // window.document.addEventListener(
+    //   'touchstart',
+    //   e => {
+    //     startY = e.touches[0].clientY
+    //   },
+    //   false
+    // )
 
-    window.document.addEventListener(
-      'touchend',
-      e => {
-        if (!startY) {
-          return
-        }
+    // window.document.addEventListener(
+    //   'touchend',
+    //   e => {
+    //     if (!startY) {
+    //       return
+    //     }
 
-        const endY = e.changedTouches[0].clientY
-        const deltaY = endY - startY
+    //     const endY = e.changedTouches[0].clientY
+    //     const deltaY = endY - startY
 
-        if (Math.abs(deltaY) > threshold) {
-          switchVideo(deltaY > 0 ? 'down' : 'up')
-        }
+    //     if (Math.abs(deltaY) > threshold) {
+    //       switchVideo(deltaY > 0 ? 'down' : 'up')
+    //     }
 
-        startY = null
-      },
-      false
-    )
+    //     startY = null
+    //   },
+    //   false
+    // )
     const download = window.document.createElement('div')
     download.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
@@ -392,6 +401,7 @@ function __$inject() {
       )
     })
   }
+  // window.setHotList = list => {}
 }
 const jsCode = `(${__$inject})()`
 export default jsCode

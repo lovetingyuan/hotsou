@@ -71,4 +71,7 @@ body {
 .right-con {
   bottom: 120px !important;
 }
+  #captcha_container, div:has(.loading-global.open) {
+  display:none!important;
+}
 `

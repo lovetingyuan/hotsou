@@ -8,6 +8,7 @@ export enum TabsName {
   // muzi = 'muzi',
   tengxun = 'tengxun',
   xinlang = 'xinlang',
+  douyin2 = 'douyin2',
   // ----------------
   zidingyi1 = 'zidingyi1',
   zidingyi2 = 'zidingyi2',
@@ -85,6 +86,13 @@ export const TabsList = [
     builtIn: true,
     icon: 'https://static.zhihu.com/heifetz/assets/apple-touch-icon-152.81060cab.png',
   },
+  // {
+  //   name: TabsName.douyin2,
+  //   title: '抖音2',
+  //   url: 'https://www.douyin.com/hot/',
+  //   show: true,
+  //   builtIn: true,
+  // },
   {
     name: TabsName.zidingyi1,
     title: '自定义1',

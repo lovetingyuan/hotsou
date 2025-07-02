@@ -32,6 +32,8 @@ export default function WebView(props: {
   js?: string
   css?: string
   forbiddenUrls?: (string | RegExp)[]
+  ua?: string
+  dynamicJs?: string
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const {
@@ -42,6 +44,7 @@ export default function WebView(props: {
     $tabsList,
     shareInfo,
     $enableTextSelect,
+    setDouyinHotId,
   } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
   const page = $tabsList.find(t => t.name === props.name)
@@ -157,7 +160,11 @@ export default function WebView(props: {
     url: '',
     init: true,
   })
-
+  useEffect(() => {
+    if (props.dynamicJs) {
+      webViewRef.current?.injectJavaScript(props.dynamicJs)
+    }
+  }, [props.dynamicJs])
   return (
     <RNWebView
       ref={webViewRef}
@@ -173,6 +180,7 @@ export default function WebView(props: {
       webviewDebuggingEnabled={__DEV__}
       forceDarkOn={true} // Android only
       thirdPartyCookiesEnabled={false}
+      userAgent={props.ua}
       // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
       onRenderProcessGone={() => {
         // ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
@@ -300,6 +308,9 @@ ${!$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
         }
         if (data.type === 'reload') {
           webViewRef.current?.reload()
+        }
+        if (data.type === 'douyin-hot-id') {
+          setDouyinHotId(data.payload)
         }
       }}
     />
