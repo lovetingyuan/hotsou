@@ -144,7 +144,7 @@ function __$inject() {
           ele.style.opacity = 0.4
         }
       })
-    }, 200)
+    }, 100)
   }
 
   window.__injectCss = () => {

@@ -39,7 +39,6 @@ function __$inject() {
 }
 
 export default function Tengxun() {
-  console.log(99, getTabUrl(TabsName.tengxun))
   return (
     <WebView
       name={TabsName.tengxun}

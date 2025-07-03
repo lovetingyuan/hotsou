@@ -82,7 +82,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 export default function Layout() {
   const { setClickTab, reloadAllTab, $tabsList } = useStore()
   const pathname = usePathname()
-  // console.log(99, pathname)
   const colorScheme = useColorScheme()
   const getDrawerContent = (props: DrawerContentComponentProps) => {
     return <CustomDrawerContent {...props} />
