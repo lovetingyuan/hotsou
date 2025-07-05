@@ -49,7 +49,9 @@ export default function Zhihu() {
         .KfeCollection-VipRecommendCard,
         .MBannerAd,
         .RelatedReadingsItem:has(.MRelateFeedAd),
-        .WeiboAd-wrap {
+        .WeiboAd-wrap,
+        .zhihuAdvert-MBanner,
+        .Card.HotQuestions {
           display: none !important;
         }
         .Question-mainEntity > div:nth-of-type(2) {

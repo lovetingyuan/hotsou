@@ -70,6 +70,12 @@ export default function WebView(props: {
   )
 
   useEffect(() => {
+    return () => {
+      webViewRef.current?.injectJavaScript('localStorage.removeItem("scroll-position");true;')
+    }
+  }, [])
+
+  useEffect(() => {
     if (reloadTab[0] === props.name) {
       webViewRef.current?.injectJavaScript('localStorage.removeItem("__scrollPosition");true;')
       webViewRef.current?.reload()
