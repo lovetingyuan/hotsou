@@ -165,26 +165,6 @@ function __$inject() {
     })
   }
 
-  // window.setInterval(() => {
-  //   if (!window.document.body) {
-  //     return
-  //   }
-  //   if (window.document.getElementById('__keep-alive__')) {
-  //     window.document.getElementById('__keep-alive__')?.remove()
-  //   } else {
-  //     const div = window.document.createElement('div')
-  //     div.id = '__keep-alive__'
-  //     div.innerHTML = window.document.body.clientHeight + 'px'
-  //     div.style.width = '1px'
-  //     div.style.height = '1px'
-  //     div.style.fontSize = '0'
-  //     div.style.position = 'fixed'
-  //     if (window.document.body) {
-  //       window.document.body.appendChild(div)
-  //     }
-  //   }
-  // }, 4000)
-
   window.__handleShare = function () {
     const url =
       window.location.hostname === 'm.douyin.com'
@@ -239,6 +219,43 @@ function __$inject2() {
     const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
     window.document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
   }
+
+  if (window.location.href.startsWith('https://t.me/')) {
+    const year = new Date().getFullYear()
+    localStorage.removeItem(location.href + '_' + (year - 1))
+    const style = document.createElement('style')
+    const css = `
+    content: '👀';
+    position: absolute;
+    right: 20px;
+    top: 40px;
+    font-size: 80px;
+    rotate: -45deg;
+    z-index: 9;
+    opacity: 0.6;
+    user-select: none;
+    `
+    document.head.append(style)
+    const key = location.href + '_' + year
+    const cache = JSON.parse(localStorage.getItem(key) || '{}')
+    style.textContent = `${Object.keys(cache).map(k => `[data-post="${k}"]::after`)} {${css}}`
+    const style2 = document.createElement('style')
+    document.head.append(style2)
+
+    window.addEventListener('pointerdown', e => {
+      const item = e.target.closest('.js-widget_message_wrap')
+      if (item) {
+        const id = item.querySelector('.js-widget_message[data-post]')?.dataset.post
+        if (id) {
+          const cache = JSON.parse(localStorage.getItem(key) || '{}')
+          cache[id] = true
+          localStorage.setItem(key, JSON.stringify(cache))
+          style2.textContent += `[data-post="${id}"]::after {${css}}`
+        }
+      }
+    })
+  }
+
   ;(function userScript() {
     // eslint-disable-next-line no-unused-expressions, no-undef
     USER_SCRIPT

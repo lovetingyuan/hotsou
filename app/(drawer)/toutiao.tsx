@@ -10,6 +10,14 @@ function __$inject() {
         cancelBtn.click()
       }
     }, 200)
+    const readMore = setInterval(() => {
+      const readMoreBtn = document.querySelector('.toggle-button')
+      if (readMoreBtn) {
+        clearInterval(readMore)
+        // @ts-ignore
+        readMoreBtn.click()
+      }
+    }, 100)
   }
   if (location.pathname === '/feoffline/hotspot_and_local/html/hot_list/index.html') {
     document.addEventListener(
@@ -60,7 +68,7 @@ export default function Toutiao() {
           padding: 24px 0 !important;
         }
       `}
-      forbiddenUrls={['zijieapi.com', 'artical.zlink.toutiao.com']}
+      forbiddenUrls={['zijieapi.com', 'article.zlink.toutiao.com']}
     />
   )
 }
