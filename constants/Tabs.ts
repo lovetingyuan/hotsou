@@ -10,6 +10,7 @@ export enum TabsName {
   xinlang = 'xinlang',
   fenghuang = 'fenghuang',
   juejin = 'juejin',
+  bilibili = 'bilibili',
   // ----------------
   zidingyi1 = 'zidingyi1',
   zidingyi2 = 'zidingyi2',
@@ -86,6 +87,14 @@ export const TabsList = [
     url: 'https://www.zhihu.com/billboard',
     builtIn: true,
     icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/zhihu.png',
+  },
+  {
+    name: TabsName.bilibili,
+    title: 'Bilibili热搜',
+    url: 'https://www.bilibili.com/blackboard/activity-trending-topic.html',
+    show: true,
+    builtIn: true,
+    icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/bilibili.png',
   },
   {
     name: TabsName.fenghuang,
