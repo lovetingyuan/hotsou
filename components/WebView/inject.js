@@ -230,15 +230,28 @@ function __$inject2() {
     right: 20px;
     top: 40px;
     font-size: 80px;
-    rotate: -45deg;
+    rotate: -40deg;
     z-index: 9;
     opacity: 0.6;
     user-select: none;
+    animation: scaleUp 2s ease-in-out;
+    display: inline-block;
     `
     document.head.append(style)
     const key = location.href + '_' + year
     const cache = JSON.parse(localStorage.getItem(key) || '{}')
-    style.textContent = `${Object.keys(cache).map(k => `[data-post="${k}"]::after`)} {${css}}`
+    style.textContent = `
+        @keyframes scaleUp {
+            0% {
+                transform: scale(0.2) translateX(-200px);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1) translateX(0px);
+                opacity: 0.6;
+            }
+        }
+    ${Object.keys(cache).map(k => `[data-post="${k}"]::after`)} {${css}}`
     const style2 = document.createElement('style')
     document.head.append(style2)
 
@@ -250,7 +263,12 @@ function __$inject2() {
           const cache = JSON.parse(localStorage.getItem(key) || '{}')
           cache[id] = true
           localStorage.setItem(key, JSON.stringify(cache))
-          style2.textContent += `[data-post="${id}"]::after {${css}}`
+          setTimeout(() => {
+            const _css = style2.textContent
+            if (!_css.includes(id)) {
+              style2.textContent = _css + `[data-post="${id}"]::after{${css}}`
+            }
+          }, 2000)
         }
       }
     })
