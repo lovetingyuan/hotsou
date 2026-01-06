@@ -11,22 +11,22 @@ function __$inject() {
   }, 200)
   // @ts-ignore
   window.__markReaded?.('.HotList-item', '.HotList-itemTitle', '.HotList-item .HotList-itemTitle')
-  if (location.pathname.startsWith('/question/')) {
-    const timer = setInterval(() => {
-      const btns = Array.from(document.querySelectorAll('button'))
-      for (const btn of btns) {
-        // @ts-ignore
-        if (btn.textContent.trim() === '查看问题描述​') {
-          clearInterval(timer)
-          btn.click()
-          break
-        }
-      }
-    }, 200)
-    setTimeout(() => {
-      clearInterval(timer)
-    }, 5000)
-  }
+  // if (location.pathname.startsWith('/question/')) {
+  //   const timer = setInterval(() => {
+  //     const btns = Array.from(document.querySelectorAll('button'))
+  //     for (const btn of btns) {
+  //       // @ts-ignore
+  //       if (btn.textContent.trim() === '查看问题描述​') {
+  //         clearInterval(timer)
+  //         btn.click()
+  //         break
+  //       }
+  //     }
+  //   }, 200)
+  //   setTimeout(() => {
+  //     clearInterval(timer)
+  //   }, 5000)
+  // }
 }
 
 export default function Zhihu() {

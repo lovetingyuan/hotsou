@@ -45,6 +45,21 @@ function __$inject() {
       localStorage.removeItem('scroll-position')
     }
   }
+  if (location.pathname === '/search') {
+    const reload = () => {
+      const results = document.getElementById('results')
+      if (results && results.textContent.includes('抱歉，未找到相关结果')) {
+        location.reload()
+      }
+    }
+    if (document.readyState === 'complete') {
+      reload()
+    } else {
+      window.addEventListener('load', () => {
+        reload()
+      })
+    }
+  }
 }
 
 export default function Toutiao() {

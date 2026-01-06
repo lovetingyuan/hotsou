@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-function __$inject() {
+function __$injectBeforeLoad() {
   // injectedJavascript may execute twice
   if (window.__injected) {
     return
@@ -71,31 +71,27 @@ function __$inject() {
 
   window.__keepScrollPosition = selector => {
     const saveScrollPosition = () => {
-      if (window.location.search.includes('__main_page')) {
-        const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY
-        window.localStorage.setItem('__scrollPosition', top + '')
-      }
+      const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY
+      window.localStorage.setItem('__scrollPosition', top + '')
     }
 
     const restoreScrollPosition = () => {
-      if (window.location.search.includes('__main_page')) {
-        const scrollPosition = window.localStorage.getItem('__scrollPosition')
-        if (scrollPosition && parseInt(scrollPosition)) {
+      const scrollPosition = window.localStorage.getItem('__scrollPosition')
+      if (scrollPosition && parseInt(scrollPosition)) {
+        window.localStorage.setItem('__scrollPosition', '')
+        window.localStorage.removeItem('__scrollPosition')
+        window.setTimeout(() => {
           window.localStorage.setItem('__scrollPosition', '')
           window.localStorage.removeItem('__scrollPosition')
-          window.setTimeout(() => {
-            window.localStorage.setItem('__scrollPosition', '')
-            window.localStorage.removeItem('__scrollPosition')
-            if (selector) {
-              const dom = window.document.querySelector(selector)
-              if (dom) {
-                dom.scrollTop = parseInt(scrollPosition)
-              }
-            } else {
-              window.scrollTo(0, parseInt(scrollPosition))
+          if (selector) {
+            const dom = window.document.querySelector(selector)
+            if (dom) {
+              dom.scrollTop = parseInt(scrollPosition)
             }
-          }, 300)
-        }
+          } else {
+            window.scrollTo(0, parseInt(scrollPosition))
+          }
+        }, 300)
       }
     }
 
@@ -106,6 +102,37 @@ function __$inject() {
     }
 
     window.addEventListener('beforeunload', saveScrollPosition)
+  }
+  window.__keepScrollPosition2 = (selector, callback) => {
+    document.addEventListener(
+      'click',
+      e => {
+        if (e.target.closest(selector)) {
+          const top = window.scrollY
+          localStorage.setItem('__scrollPosition', top + '')
+        }
+      },
+      true
+    )
+    const restoreScrollPosition = () => {
+      const scrollPosition = localStorage.getItem('__scrollPosition')
+      window.localStorage.removeItem('__scrollPosition')
+      if (scrollPosition) {
+        const timer = setInterval(() => {
+          if (callback(parseInt(scrollPosition))) {
+            clearInterval(timer)
+          }
+        }, 200)
+        setTimeout(() => {
+          clearInterval(timer)
+        }, 10000)
+      }
+    }
+    if (window.document.readyState === 'complete') {
+      restoreScrollPosition()
+    } else {
+      window.addEventListener('load', restoreScrollPosition)
+    }
   }
 
   window.__markReaded = (containerClass, textClass, textsClass, onClick) => {
@@ -125,7 +152,7 @@ function __$inject() {
             const now = Date.now()
             clicked[titleText] = now
             for (const t in clicked) {
-              if (now - clicked[t] > 3 * 24 * 60 * 60 * 1000) {
+              if (now - clicked[t] > 5 * 24 * 60 * 60 * 1000) {
                 delete clicked[t]
               }
             }
@@ -182,102 +209,102 @@ function __$inject() {
     )
   }
 
-  window.document.addEventListener(
-    'click',
-    e => {
-      if (window.location.hostname === 't.me') {
-        if (e.target.tagName === 'I' && e.target.classList.contains('link_preview_image')) {
-          e.preventDefault()
-          e.stopPropagation()
-          const bg = window.getComputedStyle(e.target).backgroundImage
-          if (bg.startsWith('url(')) {
-            window.open(bg.slice(5, -2))
-          }
-        }
-      }
-    },
-    true
-  )
+  // window.document.addEventListener(
+  //   'click',
+  //   e => {
+  //     if (window.location.hostname === 't.me') {
+  //       if (e.target.tagName === 'I' && e.target.classList.contains('link_preview_image')) {
+  //         e.preventDefault()
+  //         e.stopPropagation()
+  //         const bg = window.getComputedStyle(e.target).backgroundImage
+  //         if (bg.startsWith('url(')) {
+  //           window.open(bg.slice(5, -2))
+  //         }
+  //       }
+  //     }
+  //   },
+  //   true
+  // )
 }
 
-export const beforeLoadedInject = `(${__$inject})();true;`
+export const beforeLoadedInject = `(${__$injectBeforeLoad})();true;`
 
-function __$inject2() {
-  if (window.__injected2) {
-    return
-  }
-  window.__injected2 = true
-  window.__waitBody?.(() => {
-    if (window.__injectCss) {
-      window.__injectCss()
-    }
-  })
-  const cookies = window.document.cookie.split(';')
-  for (const element of cookies) {
-    const cookie = element
-    const eqPos = cookie.indexOf('=')
-    const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
-    window.document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
-  }
+// function __$inject2() {
+//   // if (window.__injected2) {
+//   //   return
+//   // }
+//   // window.__injected2 = true
+//   // window.__waitBody?.(() => {
+//   //   if (window.__injectCss) {
+//   //     window.__injectCss()
+//   //   }
+//   // })
+//   // const cookies = window.document.cookie.split(';')
+//   // for (const element of cookies) {
+//   //   const cookie = element
+//   //   const eqPos = cookie.indexOf('=')
+//   //   const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
+//   //   window.document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
+//   // }
 
-  if (window.location.href.startsWith('https://t.me/')) {
-    const year = new Date().getFullYear()
-    localStorage.removeItem(location.href + '_' + (year - 1))
-    const style = document.createElement('style')
-    const css = `
-    content: '👀';
-    position: absolute;
-    right: 20px;
-    top: 40px;
-    font-size: 80px;
-    rotate: -40deg;
-    z-index: 9;
-    opacity: 0.6;
-    user-select: none;
-    animation: scaleUp 2s ease-in-out;
-    display: inline-block;
-    `
-    document.head.append(style)
-    const key = location.href + '_' + year
-    const cache = JSON.parse(localStorage.getItem(key) || '{}')
-    style.textContent = `
-        @keyframes scaleUp {
-            0% {
-                transform: scale(0.2) translateX(-200px);
-                opacity: 0.3;
-            }
-            100% {
-                transform: scale(1) translateX(0px);
-                opacity: 0.6;
-            }
-        }
-    ${Object.keys(cache).map(k => `[data-post="${k}"]::after`)} {${css}}`
-    const style2 = document.createElement('style')
-    document.head.append(style2)
+//   // if (window.location.href.startsWith('https://t.me/')) {
+//   //   const year = new Date().getFullYear()
+//   //   localStorage.removeItem(location.href + '_' + (year - 1))
+//   //   const style = document.createElement('style')
+//   //   const css = `
+//   //   content: '👀';
+//   //   position: absolute;
+//   //   right: 20px;
+//   //   top: 40px;
+//   //   font-size: 80px;
+//   //   rotate: -40deg;
+//   //   z-index: 9;
+//   //   opacity: 0.6;
+//   //   user-select: none;
+//   //   animation: scaleUp 2s ease-in-out;
+//   //   display: inline-block;
+//   //   `
+//   //   document.head.append(style)
+//   //   const key = location.href + '_' + year
+//   //   const cache = JSON.parse(localStorage.getItem(key) || '{}')
+//   //   style.textContent = `
+//   //       @keyframes scaleUp {
+//   //           0% {
+//   //               transform: scale(0.2) translateX(-200px);
+//   //               opacity: 0.3;
+//   //           }
+//   //           100% {
+//   //               transform: scale(1) translateX(0px);
+//   //               opacity: 0.6;
+//   //           }
+//   //       }
+//   //   ${Object.keys(cache).map(k => `[data-post="${k}"]::after`)} {${css}}`
+//   //   const style2 = document.createElement('style')
+//   //   document.head.append(style2)
 
-    window.addEventListener('pointerdown', e => {
-      const item = e.target.closest('.js-widget_message_wrap')
-      if (item) {
-        const id = item.querySelector('.js-widget_message[data-post]')?.dataset.post
-        if (id) {
-          const cache = JSON.parse(localStorage.getItem(key) || '{}')
-          cache[id] = true
-          localStorage.setItem(key, JSON.stringify(cache))
-          setTimeout(() => {
-            const _css = style2.textContent
-            if (!_css.includes(id)) {
-              style2.textContent = _css + `[data-post="${id}"]::after{${css}}`
-            }
-          }, 2000)
-        }
-      }
-    })
-  }
+//   //   window.addEventListener('pointerdown', e => {
+//   //     const item = e.target.closest('.js-widget_message_wrap')
+//   //     if (item) {
+//   //       const id = item.querySelector('.js-widget_message[data-post]')?.dataset.post
+//   //       if (id) {
+//   //         const cache = JSON.parse(localStorage.getItem(key) || '{}')
+//   //         cache[id] = true
+//   //         localStorage.setItem(key, JSON.stringify(cache))
+//   //         setTimeout(() => {
+//   //           const _css = style2.textContent
+//   //           if (!_css.includes(id)) {
+//   //             style2.textContent = _css + `[data-post="${id}"]::after{${css}}`
+//   //           }
+//   //         }, 2000)
+//   //       }
+//   //     }
+//   //   })
+//   // }
 
-  ;(function userScript() {
-    // eslint-disable-next-line no-unused-expressions, no-undef
-    USER_SCRIPT
-  })()
-}
+//   ;(function userScript() {
+//     // eslint-disable-next-line no-unused-expressions, no-undef
+//     USER_SCRIPT
+//   })()
+// }
 
-export const injectJS = `(${__$inject2})();true;`
+// export const injectJS = `(${__$inject2})();true;`

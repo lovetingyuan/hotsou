@@ -10,21 +10,19 @@ import {
   Linking,
   Platform,
   Share,
-  StyleSheet,
   Text,
   ToastAndroid,
   View,
 } from 'react-native'
 import { WebView as RNWebView } from 'react-native-webview'
 
-import { getTabUrl, TabsName } from '@/constants/Tabs'
-import { useColorScheme } from '@/hooks/useColorScheme'
+// import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { getPageIcon } from '@/utils'
 
 // import { FloatingButton } from '../FloatingButton'
 import { ThemedView } from '../ThemedView'
-import { beforeLoadedInject, injectJS } from './inject'
+import { beforeLoadedInject } from './inject'
 
 export default function WebView(props: {
   name: string
@@ -49,7 +47,7 @@ export default function WebView(props: {
   const [webviewKey, setWebviewKey] = React.useState(0)
   const page = $tabsList.find(t => t.name === props.name)
   const pageIcon = getPageIcon(page)
-  const colorScheme = useColorScheme()
+  // const colorScheme = useColorScheme()
   useFocusEffect(
     useCallback(() => {
       const onAndroidBackPress = () => {
@@ -74,6 +72,18 @@ export default function WebView(props: {
       webViewRef.current?.injectJavaScript('localStorage.removeItem("scroll-position");true;')
     }
   }, [])
+
+  useEffect(() => {
+    webViewRef.current?.injectJavaScript(`
+      var __enableSelect = ${$enableTextSelect};
+      var __style = document.getElementById('__user_select');
+      if (!__style) {
+        __style = document.createElement('style');
+        document.head.appendChild(__style)
+      }
+      __style.textContent = __enableSelect ? '' : '* { user-select: none!important; }'
+      `)
+  }, [$enableTextSelect])
 
   useEffect(() => {
     if (reloadTab[0] === props.name) {
@@ -130,21 +140,20 @@ export default function WebView(props: {
     }
   }, [props.name, shareInfo])
 
+  // 点击标题滚动到顶部
   useEffect(() => {
     const [name] = clickTab
     if (name === props.name && webViewRef.current) {
       const code = `
-      if (location.href.split('?')[0] === "${getTabUrl(TabsName.wangyi)?.split('?')[0]}") {
-        document.querySelector('.swiper-slide-active .rank-container')?.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      } else {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
+    [window, document.documentElement, '.swiper-slide-active .rank-container'].forEach(v => {
+      if (typeof v==='string') {
+        v = document.querySelector(v)
       }
+      v?.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+     })
       `
       webViewRef.current.injectJavaScript(code + ';true;')
     }
@@ -175,7 +184,7 @@ export default function WebView(props: {
     <RNWebView
       ref={webViewRef}
       key={'webview_' + props.name + webviewKey}
-      style={styles.container}
+      style={{ flex: 1 }}
       allowsBackForwardNavigationGestures
       startInLoadingState
       allowsFullscreenVideo
@@ -184,38 +193,17 @@ export default function WebView(props: {
       mixedContentMode={'always'}
       originWhitelist={['*']}
       webviewDebuggingEnabled={__DEV__}
-      forceDarkOn={true} // Android only
       thirdPartyCookiesEnabled={false}
-      userAgent={
-        props.ua ||
-        'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/139.0.7258.160 Mobile Safari/537.36'
-      }
+      userAgent={props.ua}
       // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
       onRenderProcessGone={() => {
         // ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
         setWebviewKey(c => c + 1)
       }}
-      injectedJavaScript={[
-        beforeLoadedInject.replace('CSS_CODE', JSON.stringify(props.css || '')),
-        injectJS.replace('USER_SCRIPT', props.js || ''),
-      ].join('\n')}
+      injectedJavaScript={[props.js, ';true;'].join('\n')}
       injectedJavaScriptBeforeContentLoaded={beforeLoadedInject.replace(
         'CSS_CODE',
-        JSON.stringify(`
-          ${props.css ?? ''}
-${
-  colorScheme === 'dark'
-    ? `
- html, img, video {
-  filter: invert(1) hue-rotate(.5turn);
-}
-img {
-  opacity: .75;
-}
-  `
-    : ''
-}
-${!$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
+        JSON.stringify(props.css ?? '')
       )}
       renderLoading={() => (
         <ThemedView
@@ -234,7 +222,7 @@ ${!$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
           ></Image>
           <ActivityIndicator
             size="large"
-            style={{ transform: [{ scale: 1.8 }], position: 'relative', top: -50 }}
+            style={{ transform: [{ scale: 1.5 }], position: 'relative', top: -50 }}
           />
         </ThemedView>
       )}
@@ -256,8 +244,7 @@ ${!$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
         }
         // eslint-disable-next-line sonarjs/prefer-single-boolean-return
         if (
-          props.forbiddenUrls &&
-          props.forbiddenUrls.some(v => {
+          props.forbiddenUrls?.some(v => {
             if (typeof v === 'string') {
               return request.url.includes(v)
             }
@@ -303,32 +290,27 @@ ${!$enableTextSelect ? '* { user-select: none!important; }' : ''}    `)
       }}
       onMessage={evt => {
         const data = JSON.parse(evt.nativeEvent.data)
-        if (data.type === 'share') {
-          Share.share({
-            message: `${data.payload.title}\n${data.payload.url}`,
-          })
-        }
-        if (data.type === 'download-video') {
-          ToastAndroid.show('请在浏览器中下载（点击视频右下方三个小点）', ToastAndroid.SHORT)
-          Linking.openURL(data.payload.url)
-        }
-        if (data.type === 'user_click') {
-          setFabKey(fabKey + 1)
-        }
-        if (data.type === 'reload') {
-          webViewRef.current?.reload()
-        }
-        if (data.type === 'douyin-hot-id') {
-          setDouyinHotId(data.payload)
+        switch (data.type) {
+          case 'share':
+            Share.share({
+              message: `${data.payload.title}\n${data.payload.url}`,
+            })
+            break
+          case 'download-video':
+            ToastAndroid.show('请在浏览器中下载（点击视频右下方三个小点）', ToastAndroid.SHORT)
+            Linking.openURL(data.payload.url)
+            break
+          case 'user_click':
+            setFabKey(fabKey + 1)
+            break
+          case 'reload':
+            webViewRef.current?.reload()
+            break
+          case 'douyin-hot-id':
+            setDouyinHotId(data.payload)
+            break
         }
       }}
     />
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // marginTop: Constants.statusBarHeight,
-  },
-})

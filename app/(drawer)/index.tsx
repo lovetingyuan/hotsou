@@ -19,11 +19,17 @@ function __$inject() {
     }
   }, 200)
   if (location.pathname.startsWith('/p/106003')) {
-    history.scrollRestoration = 'auto'
+    // history.scrollRestoration = 'auto'
     // @ts-ignore
     window.__markReaded?.('div[callback]', '.main-text', 'div[callback] .main-text')
     // @ts-ignore
-    // window.__keepScrollPosition?.()
+    window.__keepScrollPosition2?.('.card.m-panel', height => {
+      const items = document.querySelectorAll('.card.m-panel')
+      if (items.length > 20) {
+        window.scrollTo(0, height)
+        return true
+      }
+    })
   }
   const observer = new IntersectionObserver(
     entries => {
@@ -70,15 +76,6 @@ export default function Weibo() {
     if (drawerStatus === 'open') {
       // eslint-disable-next-line sonarjs/pseudo-random
       setClearSelection(Math.random())
-      setTimeout(() => {
-        setClearSelection(Date.now())
-      }, 100)
-      setTimeout(() => {
-        setClearSelection(Date.now())
-      }, 200)
-      setTimeout(() => {
-        setClearSelection(Date.now())
-      }, 300)
     }
   }, [drawerStatus, setClearSelection])
   return (
@@ -86,12 +83,10 @@ export default function Weibo() {
       name={TabsName.weibo}
       url={getTabUrl(TabsName.weibo)!}
       css={`
-        div.card.m-panel.card4:has(img[src*='search_point_orange']) {
-          display: none;
-        }
-        div.card.m-panel.card4:has(img[src*='search_stick']) {
-          display: none;
-        }
+        div:has(> .m-top-bar),
+        h2.card-title,
+        div.card.m-panel.card4:has(img[src*='search_point_orange']),
+        div.card.m-panel.card4:has(img[src*='search_stick']),
         iframe,
         .main .card .wrap,
         .nav-left,

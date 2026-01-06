@@ -5,22 +5,12 @@ function __$inject() {
   if (location.hostname === 'top.baidu.com') {
     history.scrollRestoration = 'auto'
     // @ts-ignore
-    window.__markReaded?.(
-      '.row-start-center',
-      'div:nth-child(2) > span',
-      '.row-start-center > div:nth-child(2) > span'
-    )
+    window.__markReaded?.('.c-text-item', '.item-word', '.c-text-item .item-word')
   }
 }
-
-export default function Baidu() {
-  return (
-    <WebView
-      name={TabsName.baidu}
-      url={getTabUrl(TabsName.baidu)!}
-      js={`(${__$inject})()`}
-      css={`
-        #bdrainrwDragButton,
+/**
+ *
+ * @returns  #bdrainrwDragButton,
         #page-copyright,
         .invokeAppBtnWrapper,
         .newHeadDeflectorWrapper {
@@ -31,6 +21,17 @@ export default function Baidu() {
         }
         #page-ft {
           margin-bottom: 20px;
+        }
+ */
+export default function Baidu() {
+  return (
+    <WebView
+      name={TabsName.baidu}
+      url={getTabUrl(TabsName.baidu)!}
+      js={`(${__$inject})()`}
+      css={`
+        #hot0 {
+          display: none !important;
         }
       `}
       forbiddenUrls={['activity.baidu.com/mbox', 'wappass.baidu.com']}
