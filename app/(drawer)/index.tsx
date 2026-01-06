@@ -74,7 +74,6 @@ export default function Weibo() {
   const { setClearSelection } = useStore()
   React.useEffect(() => {
     if (drawerStatus === 'open') {
-      // eslint-disable-next-line sonarjs/pseudo-random
       setClearSelection(Math.random())
     }
   }, [drawerStatus, setClearSelection])

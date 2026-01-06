@@ -58,10 +58,10 @@ export default function WebView(props: {
         return false
       }
       if (Platform.OS === 'android') {
-        BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress)
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress)
 
         return () => {
-          BackHandler.removeEventListener('hardwareBackPress', onAndroidBackPress)
+          backHandler.remove()
         }
       }
     }, [])
@@ -242,7 +242,6 @@ export default function WebView(props: {
         if (request.url.split('?')[0].endsWith('.apk')) {
           return false
         }
-        // eslint-disable-next-line sonarjs/prefer-single-boolean-return
         if (
           props.forbiddenUrls?.some(v => {
             if (typeof v === 'string') {

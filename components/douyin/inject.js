@@ -380,7 +380,6 @@ function __$inject() {
             getVideoComments().then(({ comments, total }) => {
               window.document.getElementById('comment-popup-title').textContent = `评论(${total}条)`
               const fragment = window.document.createDocumentFragment()
-              // eslint-disable-next-line sonarjs/no-nested-functions
               comments.forEach(comment => {
                 const commentItem = commentItemTemplate.content.cloneNode(true)
                 commentItem.querySelector('.comment-item').dataset.cid = comment.cid
