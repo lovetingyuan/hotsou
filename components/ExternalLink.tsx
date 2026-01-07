@@ -23,5 +23,3 @@ export function ExternalLink({ href, style, onPress, children }: Props) {
     </Pressable>
   )
 }
-
-export type ExternalLinkProps = Props

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["App.tsx"],
+  "project": ["**/*.{ts,tsx}"],
+  "ignoreFiles": ["dist/**", "**/*.generated.ts"],
+  "ignoreDependencies": ["@types/react", "@types/node"],
+  "ignoreExportsUsedInFile": {
+    "interface": true,
+    "type": true
+  }
+}

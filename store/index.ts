@@ -1,9 +1,3 @@
-import React from 'react'
-// import {
-//   createAtomicContext,
-//   useAtomicContext,
-//   useAtomicContextMethods,
-// } from 'react-atomic-context'
 import { createStore } from 'react-atomic-store'
 
 import { TabsList } from '@/constants/Tabs'
@@ -28,25 +22,7 @@ const getAppValue = () => {
 
 const initValue = getAppValue()
 
-// const AppContext = createAtomicContext(initValue)
-
-export const { useStore, getStoreMethods, subscribeStore, getStoreState } = createStore(
-  getAppValue()
-)
-
-// export const AppContextProvider = AppContext.Provider
-
-export function useAppValue() {
-  return React.useMemo(getAppValue, [])
-}
-
-// export function useStore() {
-//   return useAtomicContext(AppContext)
-// }
-
-// export function useMethods() {
-//   return useAtomicContextMethods(AppContext)
-// }
+export const { useStore, getStoreMethods, subscribeStore, getStoreState } = createStore(initValue)
 
 export type AppContextValueType = ReturnType<typeof getAppValue>
 

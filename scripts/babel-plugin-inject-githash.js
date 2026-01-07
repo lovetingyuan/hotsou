@@ -16,7 +16,6 @@ module.exports = function ({ types: t }) {
 
 function getGitHash() {
   try {
-    // eslint-disable-next-line sonarjs/no-os-command-from-path
     return execSync('git rev-parse HEAD').toString().trim().slice(0, 8)
   } catch (error) {
     console.error('Error getting git hash:', error)
