@@ -3,7 +3,6 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname === '/ranking') {
-    // history.scrollRestoration = 'auto'
     // @ts-ignore
     window.__markReaded?.(
       '[dt-eid="em_item_article"]',
@@ -38,7 +37,7 @@ function __$inject() {
   }
 }
 
-export default function Tengxun() {
+export default function TengxunScreen() {
   return (
     <WebView
       name={TabsName.tengxun}

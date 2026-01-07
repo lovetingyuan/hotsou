@@ -1,9 +1,5 @@
-import { useDrawerStatus } from '@react-navigation/drawer'
-import React from 'react'
-
 import WebView from '@/components/WebView'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
-import { useStore } from '@/store'
 
 function __$inject() {
   setInterval(() => {
@@ -19,7 +15,6 @@ function __$inject() {
     }
   }, 200)
   if (location.pathname.startsWith('/p/106003')) {
-    // history.scrollRestoration = 'auto'
     // @ts-ignore
     window.__markReaded?.('div[callback]', '.main-text', 'div[callback] .main-text')
     // @ts-ignore
@@ -68,15 +63,7 @@ function __$inject() {
   )
 }
 
-export default function Weibo() {
-  // https://s.weibo.com/top/summary?cate=realtimehot
-  const drawerStatus = useDrawerStatus()
-  const { setClearSelection } = useStore()
-  React.useEffect(() => {
-    if (drawerStatus === 'open') {
-      setClearSelection(Math.random())
-    }
-  }, [drawerStatus, setClearSelection])
+export default function WeiboScreen() {
   return (
     <WebView
       name={TabsName.weibo}

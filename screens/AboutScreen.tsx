@@ -7,7 +7,7 @@ import TextSelectable from '@/components/about/TextSelectable'
 import Version from '@/components/about/version'
 import { ThemedView } from '@/components/ThemedView'
 
-export default function About() {
+function AboutScreen() {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
       <ThemedView
@@ -21,3 +21,5 @@ export default function About() {
     </ScrollView>
   )
 }
+
+export default AboutScreen

@@ -123,7 +123,7 @@ function __$inject() {
   }
 }
 
-export default function Wangyi() {
+export default function WangyiScreen() {
   return (
     <WebView
       name={TabsName.wangyi}

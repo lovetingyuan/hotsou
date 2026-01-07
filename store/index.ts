@@ -13,15 +13,16 @@ const getAppValue = () => {
     initialed: false,
     reloadAllTab: 0,
     reloadTab: ['', false] as [string, boolean],
-    showPageInfo: '',
-    shareInfo: '',
-    clickTab: [''],
+    showPageInfo: [''] as [string],
+    shareInfo: [''] as [string],
+    clickTab: [''] as [string],
     clearSelection: 0,
     $tabsList: JSON.parse(JSON.stringify(TabsList)) as typeof TabsList,
     $checkAppUpdateTime: 0,
     $enableTextSelect: false,
     douyinHotId: '',
     douyinVideoId: '',
+    activeTab: '',
   }
 }
 

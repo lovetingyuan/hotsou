@@ -8,22 +8,8 @@ function __$inject() {
     window.__markReaded?.('.c-text-item', '.item-word', '.c-text-item .item-word')
   }
 }
-/**
- *
- * @returns  #bdrainrwDragButton,
-        #page-copyright,
-        .invokeAppBtnWrapper,
-        .newHeadDeflectorWrapper {
-          display: none !important;
-        }
-        .row-start-center:has(img[src*='redtop']) {
-          display: none;
-        }
-        #page-ft {
-          margin-bottom: 20px;
-        }
- */
-export default function Baidu() {
+
+export default function BaiduScreen() {
   return (
     <WebView
       name={TabsName.baidu}

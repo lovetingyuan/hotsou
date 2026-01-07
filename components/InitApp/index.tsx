@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Application from 'expo-application'
 import Constants from 'expo-constants'
 import { useFonts } from 'expo-font'
-import { SplashScreen } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
 import { Alert, Linking, ToastAndroid } from 'react-native'
 
@@ -159,16 +159,6 @@ function App(props: React.PropsWithChildren) {
       })
   })
 
-  if (!initialed || !loaded) {
-    return null
-  }
-
-  return props.children
-}
-
-function RootLayout(props: React.PropsWithChildren) {
-  // const appValue = useAppValue()
-
   useMounted(() => {
     AsyncStorage.getItem('__First_Usage_Time').then((r: string | null) => {
       if (r) {
@@ -192,12 +182,10 @@ function RootLayout(props: React.PropsWithChildren) {
       )
     })
   })
-  return <App>{props.children}</App>
-  // return (
-  //   <AppContextProvider value={appValue} onChange={onChange}>
-  //     <App>{props.children}</App>
-  //   </AppContextProvider>
-  // )
+  if (!initialed || !loaded) {
+    return null
+  }
+  return props.children
 }
 
-export default RootLayout
+export default App

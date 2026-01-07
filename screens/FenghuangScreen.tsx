@@ -10,7 +10,7 @@ function __$inject() {
   )
 }
 
-export default function Fenghuang() {
+export default function FenghuangScreen() {
   return (
     <WebView
       name={TabsName.fenghuang}

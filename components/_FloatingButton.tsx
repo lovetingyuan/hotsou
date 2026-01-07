@@ -1,5 +1,5 @@
 import Entypo from '@expo/vector-icons/Entypo'
-import { Link, useFocusEffect } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
 import React, { useCallback, useState } from 'react'
 import { StyleSheet, TouchableOpacity, ViewProps } from 'react-native'
 import Animated, {
@@ -85,7 +85,7 @@ export function FloatingButton({
   const opacityAnimatedStyle = useAnimatedStyle(() => {
     const opacityAnimation = interpolate(
       animation.value,
-      [0, 0.5, 1],
+      [0, 0.5,1],
       [0, 0, 1],
       Extrapolation.CLAMP
     )
@@ -105,7 +105,7 @@ export function FloatingButton({
 
   const toggleMenu = () => {
     setIsOpen(current => {
-      animation.value = current ? 0 : 1
+      animation.value = current ? 0 :1
       return !current
     })
   }
@@ -120,13 +120,20 @@ export function FloatingButton({
 
   const buttons = isOpen ? (
     <>
-      <Link href="/about">
+      <TouchableOpacity
+        onPress={() => {
+          if (onPress) {
+            onPress('info')
+          }
+          toggleMenu()
+        }}
+      >
         <Animated.View
           style={[styles.button, styles.secondary, infoAnimatedStyle, opacityAnimatedStyle]}
         >
           <Entypo name="info" size={24} color="#f02a4b" />
         </Animated.View>
-      </Link>
+      </TouchableOpacity>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {

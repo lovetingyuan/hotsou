@@ -62,7 +62,7 @@ function __$inject() {
   }
 }
 
-export default function Toutiao() {
+export default function ToutiaoScreen() {
   return (
     <WebView
       name={TabsName.toutiao}

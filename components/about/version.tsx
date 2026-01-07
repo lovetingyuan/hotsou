@@ -1,5 +1,4 @@
 import * as Application from 'expo-application'
-import { type Href } from 'expo-router'
 import * as Updates from 'expo-updates'
 import React from 'react'
 import { Alert, Linking, Text, ToastAndroid, TouchableOpacity } from 'react-native'
@@ -64,7 +63,7 @@ export default function Version() {
     if (latestVersion) {
       return latestVersion?.version !== currentVersion ? (
         <ExternalLink
-          href={latestVersion!.downloadUrl as Href}
+          href={latestVersion!.downloadUrl}
           onPress={() => {
             ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
           }}
@@ -109,3 +108,4 @@ export default function Version() {
     </ThemedView>
   )
 }
+

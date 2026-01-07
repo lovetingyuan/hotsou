@@ -1,6 +1,6 @@
 import CustomPage from '@/components/CustomPage'
 import { TabsName } from '@/constants/Tabs'
 
-export default function Zidingyi3() {
-  return <CustomPage name={TabsName.zidingyi3} />
+export default function Zidingyi2Screen() {
+  return <CustomPage name={TabsName.zidingyi2} />
 }

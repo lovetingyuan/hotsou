@@ -20,11 +20,10 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -42,13 +41,8 @@
         }
       ]
     ],
-    "experiments": {
-      "typedRoutes": true
-    },
+    "experiments": {},
     "extra": {
-      "router": {
-        "origin": false
-      },
       "eas": {
         "projectId": "8dc9d1fe-0fde-4416-a5f9-6f2947b0ccd4"
       },

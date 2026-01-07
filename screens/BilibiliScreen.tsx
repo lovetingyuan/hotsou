@@ -70,7 +70,7 @@ function __$inject() {
   }
 }
 
-export default function Bilibili() {
+export default function BilibiliScreen() {
   return (
     <WebView
       name={TabsName.bilibili}

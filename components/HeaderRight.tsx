@@ -1,17 +1,19 @@
+import { useRoute } from '@react-navigation/native'
 import { Image, TouchableOpacity } from 'react-native'
 
 import { useStore } from '@/store'
-import { getPageIcon } from '@/utils'
 
 import ThemedIcon from './ThemedIcon'
 import { ThemedView } from './ThemedView'
 
-export default function HeaderRight(props: { pathname: string }) {
+export default function HeaderRight() {
   const { setReloadTab, setShowPageInfo, $tabsList, setShareInfo } = useStore()
-  const { pathname } = props
-
-  const page = $tabsList.find(t => t.name === (pathname.slice(1) || 'index'))
-  const pageIcon = getPageIcon(page)
+  // const { pathname } = props
+  const route = useRoute()
+  const page = $tabsList.find(t => t.name === route.name)
+  if (!page) {
+    return null
+  }
   return (
     <ThemedView
       style={{
@@ -36,16 +38,16 @@ export default function HeaderRight(props: { pathname: string }) {
         activeOpacity={0.5}
         style={{ paddingVertical: 1, paddingHorizontal: 4, width: 36 }}
         onPress={() => {
-          setShowPageInfo((pathname.slice(1) || 'index') + '_' + Date.now())
+          setShowPageInfo([page.name])
         }}
         onLongPress={() => {
-          setShareInfo((pathname.slice(1) || 'index') + '_' + Date.now())
+          setShareInfo([page.name])
         }}
       >
         {/* <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon> */}
 
         <Image
-          source={pageIcon}
+          source={{ uri: page.icon }}
           style={{
             width: 24,
             height: 24,
@@ -55,10 +57,10 @@ export default function HeaderRight(props: { pathname: string }) {
       <TouchableOpacity
         activeOpacity={0.5}
         onLongPress={() => {
-          setReloadTab([pathname.slice(1) || 'index', true])
+          setReloadTab([page.name, true])
         }}
         onPress={() => {
-          setReloadTab([pathname.slice(1) || 'index', false])
+          setReloadTab([page.name, false])
         }}
         style={{ paddingVertical: 3, paddingHorizontal: 5, width: 36 }}
       >

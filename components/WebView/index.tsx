@@ -1,5 +1,5 @@
+import { useFocusEffect } from '@react-navigation/native'
 import * as Clipboard from 'expo-clipboard'
-import { useFocusEffect } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
 import {
   ActivityIndicator,
@@ -41,6 +41,7 @@ export default function WebView(props: {
     clearSelection,
     $tabsList,
     shareInfo,
+    reloadAllTab,
     $enableTextSelect,
     setDouyinHotId,
   } = useStore()
@@ -94,9 +95,12 @@ export default function WebView(props: {
       }
     }
   }, [props.name, reloadTab])
+  useEffect(() => {
+    setWebviewKey(k => k + 1)
+  }, [reloadAllTab])
 
   useEffect(() => {
-    const [name] = showPageInfo.split('_')
+    const [name] = showPageInfo
     if (props.name === name) {
       const { url, title, init } = currentNavigationStateRef.current
       if (init) {
@@ -128,7 +132,7 @@ export default function WebView(props: {
   }, [props.name, showPageInfo])
 
   useEffect(() => {
-    const [name] = shareInfo.split('_')
+    const [name] = shareInfo
     if (props.name === name) {
       const { url, title } = currentNavigationStateRef.current
 

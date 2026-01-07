@@ -29,7 +29,8 @@ export default function AboutHeader() {
           </ThemedText>
           <HelloWave key={helloKey}></HelloWave>
         </View>
-        <ExternalLink href={'https://github.com/lovetingyuan/hotsou'} style={{ lineHeight: 40 }}>
+        <ExternalLink href={'https://github.com/lovetingyuan/hotsou'} style={{ minHeight: 40 }}>
+
           <ThemedIcon name="logo-github" size={26}></ThemedIcon>
         </ExternalLink>
       </ThemedView>

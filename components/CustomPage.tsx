@@ -1,4 +1,4 @@
-import { useNavigation } from 'expo-router'
+import { useNavigation } from '@react-navigation/native'
 
 import WebView from '@/components/WebView'
 import { TabsName } from '@/constants/Tabs'
@@ -22,12 +22,11 @@ export default function CustomPage(props: { name: TabsName }) {
           💡 请前往{' '}
           <ThemedText
             onPress={() => {
-              // @ts-ignore
-              navigation.navigate('about')
+              navigation.navigate('About' as never)
             }}
             style={{ color: '#00af57', fontWeight: 'bold', fontSize: 20 }}
           >
-            “关于”
+            &ldquo;关于&rdquo;
           </ThemedText>{' '}
           中设置或修改链接地址
         </ThemedText>

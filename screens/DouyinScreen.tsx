@@ -18,7 +18,7 @@ interface EvtItemType {
   video_count: number
   word: string
 }
-export default function Douyin() {
+export default function DouyinScreen() {
   const [url, setUrl] = useState('')
   const [dynamicJs, setDynamicJs] = useState('')
   const { douyinHotId, setDouyinHotId } = useStore()
@@ -37,9 +37,6 @@ export default function Douyin() {
               '#__hot_list=' +
               encodeURIComponent(JSON.stringify(res.data.word_list))
           )
-          // setDynamicJs(`
-          //   window.__hot_list = ${JSON.stringify(res.data.word_list)};
-          //   `)
         }
       )
   }, [])
@@ -54,7 +51,6 @@ export default function Douyin() {
         js={jsCode}
         css={cssCode}
         dynamicJs={dynamicJs}
-        // ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
         forbiddenUrls={['z.douyin.com', 'zijieapi.com', '/log-sdk/collect/']}
       />
       {douyinHotId ? (
@@ -77,7 +73,6 @@ export default function Douyin() {
               const id = evt.nativeEvent.data
               setDynamicJs(`window.location.href = "https://m.douyin.com/share/video/${id}";`)
               setDouyinHotId('')
-              // setDouyinVideoId(id)
             }}
           ></RNWebView>
         </View>
