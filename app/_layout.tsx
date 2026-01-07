@@ -2,8 +2,10 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 // import * as Sentry from '@sentry/react-native'
 // import { isRunningInExpoGo } from 'expo'
 import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import * as SystemUI from 'expo-system-ui'
 import React from 'react'
-import { Share } from 'react-native'
+import { Platform, Share } from 'react-native'
 
 import InitApp from '@/components/InitApp'
 import ThemedIcon from '@/components/ThemedIcon'
@@ -28,6 +30,14 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 
 function RootLayout() {
   const colorScheme = useColorScheme()
+
+  React.useEffect(() => {
+    if (Platform.OS === 'android') {
+      SystemUI.setBackgroundColorAsync(
+        colorScheme === 'dark' ? '#000000' : '#ffffff'
+      )
+    }
+  }, [colorScheme])
 
   const headerRight = () => {
     return (
@@ -56,6 +66,7 @@ function RootLayout() {
 
   return (
     <InitApp>
+      <StatusBar style="auto" />
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(drawer)" options={{ headerShown: false }} />

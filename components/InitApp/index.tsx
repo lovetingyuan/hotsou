@@ -6,18 +6,19 @@ import Constants from 'expo-constants'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
 import React, { useEffect } from 'react'
-import { ProviderOnChangeType } from 'react-atomic-context'
 import { Alert, Linking, ToastAndroid } from 'react-native'
 
 import { TabsList } from '@/constants/Tabs'
 import useMounted from '@/hooks/useMounted'
 import {
-  AppContextProvider,
+  // AppContextProvider,
   AppContextValueType,
+  getStoreMethods,
+  getStoreState,
   StoredKeys,
   storedKeys,
-  useAppValue,
-  useMethods,
+  subscribeStore,
+  // useAppValue,
   useStore,
 } from '@/store'
 import checkAppUpdate from '@/utils/checkAppUpdate'
@@ -25,8 +26,9 @@ import checkAppUpdate from '@/utils/checkAppUpdate'
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
-const onChange: ProviderOnChangeType<AppContextValueType> = ({ key, value }, ctx) => {
-  if (!ctx.getInitialed()) {
+subscribeStore(({ key, value }) => {
+  const { initialed } = getStoreState()
+  if (!initialed) {
     return
   }
   if (key.startsWith('$')) {
@@ -35,9 +37,10 @@ const onChange: ProviderOnChangeType<AppContextValueType> = ({ key, value }, ctx
       throw err
     })
   }
-}
+})
 
-const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
+const fulfillStoreKeys = () => {
+  const methods = getStoreMethods()
   return Promise.all(
     storedKeys.map(async k => {
       const key = k as StoredKeys
@@ -90,12 +93,11 @@ const fulfillStoreKeys = (methods: ReturnType<typeof useMethods>) => {
 
 function App(props: React.PropsWithChildren) {
   const { setInitialed, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime } = useStore()
-  const methods = useMethods()
   const [loaded] = useFonts({
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   })
   useMounted(() => {
-    fulfillStoreKeys(methods)
+    fulfillStoreKeys()
       .then(() => {
         setInitialed(true)
       })
@@ -165,7 +167,7 @@ function App(props: React.PropsWithChildren) {
 }
 
 function RootLayout(props: React.PropsWithChildren) {
-  const appValue = useAppValue()
+  // const appValue = useAppValue()
 
   useMounted(() => {
     AsyncStorage.getItem('__First_Usage_Time').then((r: string | null) => {
@@ -190,12 +192,12 @@ function RootLayout(props: React.PropsWithChildren) {
       )
     })
   })
-
-  return (
-    <AppContextProvider value={appValue} onChange={onChange}>
-      <App>{props.children}</App>
-    </AppContextProvider>
-  )
+  return <App>{props.children}</App>
+  // return (
+  //   <AppContextProvider value={appValue} onChange={onChange}>
+  //     <App>{props.children}</App>
+  //   </AppContextProvider>
+  // )
 }
 
 export default RootLayout
