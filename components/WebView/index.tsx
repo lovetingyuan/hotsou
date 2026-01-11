@@ -88,7 +88,7 @@ function InfoModal(props: {
             />
             <ThemedButton
               title="复制链接"
-              type="danger"
+              type="secondary"
               onPress={() => {
                 Clipboard.setStringAsync(props.url).then(() => {
                   ToastAndroid.show('已复制', ToastAndroid.SHORT)
