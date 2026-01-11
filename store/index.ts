@@ -37,7 +37,7 @@ export type AppContextValueType = ReturnType<typeof getAppValue>
 
 export type StoredKeys<K = keyof AppContextValueType> = K extends `$${string}` ? K : never
 
-export const storedKeys = Object.keys(initValue).filter(k => k.startsWith('$')) as StoredKeys[]
+const storedKeys = Object.keys(initValue).filter(k => k.startsWith('$')) as StoredKeys[]
 
 export const fulfillStoreKeys = () => {
   const methods = getStoreMethods()
