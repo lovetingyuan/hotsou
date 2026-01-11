@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   Alert,
   BackHandler,
-  Button,
   Image,
   Linking,
   Modal,
@@ -24,8 +23,9 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { getPageIcon } from '@/utils'
 
-import { ThemedText } from '../ThemedText'
 // import { FloatingButton } from '../FloatingButton'
+import { ThemedButton } from '../ThemedButton'
+import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 import { beforeLoadedInject } from './inject'
 
@@ -68,16 +68,16 @@ function InfoModal(props: {
               flexWrap: 'wrap',
             }}
           >
-            <Button
-              title=" 浏览器打开 "
+            <ThemedButton
+              title="浏览器打开"
               onPress={() => {
                 Linking.openURL(props.url)
                 props.closeModal()
               }}
             />
-            <Button
-              title=" 分享 "
-              color={'#2196F3'}
+            <ThemedButton
+              title="分享"
+              type="primary"
               onPress={() => {
                 Share.share({
                   title: props.title,
@@ -87,9 +87,9 @@ function InfoModal(props: {
                 props.closeModal()
               }}
             />
-            <Button
-              title=" 复制链接 "
-              color={'#ff4444'}
+            <ThemedButton
+              title="复制链接"
+              type="danger"
               onPress={() => {
                 Clipboard.setStringAsync(props.url).then(() => {
                   ToastAndroid.show('已复制', ToastAndroid.SHORT)
@@ -359,12 +359,12 @@ export default function WebView(props: {
               >
                 抱歉，网页加载失败 😔 {errorName} {'  '}
               </Text>
-              <Button
+              <ThemedButton
                 title="刷新重试"
                 onPress={() => {
                   webViewRef.current?.reload()
                 }}
-              ></Button>
+              ></ThemedButton>
             </View>
           )
         }}

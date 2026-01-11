@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   Alert,
-  Button,
   Modal,
   StyleSheet,
   Switch,
@@ -15,6 +14,7 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { isHttpUrl } from '@/utils'
 
+import { ThemedButton } from '../ThemedButton'
 import { ThemedTextInput } from '../ThemedInput'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
@@ -163,10 +163,10 @@ function EditingModal(props: {
             style={{ flexDirection: 'row', gap: 30, marginTop: 20, justifyContent: 'flex-end' }}
           >
             {!props.isAdding && !tab?.builtIn && (
-              <Button title=" 删除 " color={'#ff4444'} onPress={handleDelete}></Button>
+              <ThemedButton title="删除" type="danger" onPress={handleDelete}></ThemedButton>
             )}
-            <Button title=" 取消 " color={'#888'} onPress={handleCancel}></Button>
-            <Button title=" 保存 " onPress={handleSaveSub}></Button>
+            <ThemedButton title="取消" type="secondary" onPress={handleCancel}></ThemedButton>
+            <ThemedButton title="保存" onPress={handleSaveSub}></ThemedButton>
           </View>
         </ThemedView>
       </View>
@@ -191,8 +191,8 @@ export default function TabListSetting() {
         }}
       >
         <ThemedText style={{ fontSize: 20 }}>频道列表：</ThemedText>
-        <Button
-          title=" 添加 "
+        <ThemedButton
+          title="添加"
           onPress={() => {
             setIsAdding(true)
           }}
