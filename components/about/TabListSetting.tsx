@@ -1,16 +1,16 @@
 import React from 'react'
 import {
+  Alert,
   Button,
   Modal,
   StyleSheet,
   Switch,
-  Text,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native'
+import { NestableDraggableFlatList, RenderItemParams } from 'react-native-draggable-flatlist'
 
-import { TabsList } from '@/constants/Tabs'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { isHttpUrl } from '@/utils'
@@ -19,126 +19,41 @@ import { ThemedTextInput } from '../ThemedInput'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 
-function TabItem(
-  props: {
-    tab: (typeof TabsList)[0]
-    index: number
-    last?: boolean
-  } & UseStateByKey<'editingName', string>
-) {
-  const { get$tabsList, set$tabsList } = useStore()
-  const handleMove = (direction: 'up' | 'down') => {
-    if (props.editingName) {
-      ToastAndroid.show('请先完成编辑', ToastAndroid.SHORT)
-      return
-    }
-    set$tabsList(list => {
-      const _index = list.findIndex(v => v.name === props.tab.name)
-      const newIndex = direction === 'up' ? _index - 1 : _index + 1
-      const newList = [...list]
-      ;[newList[_index], newList[newIndex]] = [newList[newIndex], newList[_index]]
-      return newList
-    })
-  }
-
-  return (
-    <View style={[styles.item, { borderTopWidth: props.index ? 0 : 1 }]}>
-      <View style={{ flexShrink: 1 }}>
-        {!props.tab.builtIn ? (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              props.setEditingName(props.tab.name)
-            }}
-          >
-            <ThemedText
-              style={[styles.text, { color: '#0969da' }]}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {props.index + 1}. ✎ {props.tab.title}
-            </ThemedText>
-          </TouchableOpacity>
-        ) : (
-          <ThemedText style={styles.text}>
-            {props.index + 1}. {props.tab.title}
-          </ThemedText>
-        )}
-      </View>
-
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        {props.index === 0 ? null : (
-          <TouchableOpacity
-            onPress={() => {
-              handleMove('up')
-            }}
-          >
-            <ThemedText style={styles.arrow}>⬆</ThemedText>
-          </TouchableOpacity>
-        )}
-        {props.last ? (
-          <Text style={styles.arrow}> </Text>
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              handleMove('down')
-            }}
-          >
-            <ThemedText style={styles.arrow}>⬇</ThemedText>
-          </TouchableOpacity>
-        )}
-        <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={props.tab.show ? '#819cff' : '#f4f3f4'}
-          ios_backgroundColor="#3e3e3e"
-          value={props.tab.show}
-          onValueChange={() => {
-            const list = [...get$tabsList()]
-            const index = list.findIndex(v => v.name === props.tab.name)
-            const toShow = !list[index].show
-            if (!toShow) {
-              const showedCount = list.filter(v => v.show).length
-              if (showedCount === 1) {
-                ToastAndroid.show('不支持关闭全部', ToastAndroid.SHORT)
-                return
-              }
-            }
-            if (toShow) {
-              if (!list[index].builtIn && !list[index].url) {
-                ToastAndroid.show('请先点击名称编辑', ToastAndroid.SHORT)
-                return
-              }
-            }
-
-            const newItem = {
-              ...list[index],
-              show: toShow,
-            }
-            list[index] = newItem
-            set$tabsList(list)
-          }}
-        />
-      </View>
-    </View>
-  )
+type TabType = {
+  name: string
+  title: string
+  url: string
+  show: boolean
+  builtIn?: boolean
+  icon?: string
 }
 
-function EditingModal(props: { name: string; visible: boolean; closeModal: () => void }) {
+function EditingModal(props: {
+  name: string
+  visible: boolean
+  isAdding: boolean
+  closeModal: () => void
+}) {
   const { get$tabsList, set$tabsList } = useStore()
   const colorScheme = useColorScheme()
   const tabList = get$tabsList()
   const tab = tabList.find(v => v.name === props.name)
-  const [title, setTitle] = React.useState(tab?.title ?? '')
-  const [url, setUrl] = React.useState(tab?.url ?? '')
+  const [title, setTitle] = React.useState('')
+  const [url, setUrl] = React.useState('')
+
   React.useEffect(() => {
-    if (tab) {
-      setTitle(tab.title)
+    if (props.visible) {
+      if (props.isAdding) {
+        setTitle('')
+        setUrl('')
+      } else if (tab) {
+        setTitle(tab.title)
+        setUrl(tab.url)
+      }
     }
-    if (tab) {
-      setUrl(tab.url)
-    }
-  }, [tab])
-  if (!props.name || !tab) {
+  }, [props.visible, props.isAdding, tab])
+
+  if (!props.visible) {
     return null
   }
 
@@ -147,7 +62,11 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
       ToastAndroid.show('名称不能为空', ToastAndroid.SHORT)
       return
     }
-    if (TabsList.find(v => v.title === title.trim() && v.name !== tab.name)) {
+    // Check for duplicate titles in the current list
+    const currentList = get$tabsList()
+    if (
+      currentList.find(v => v.title === title.trim() && (props.isAdding || v.name !== props.name))
+    ) {
       ToastAndroid.show('请换一个名称', ToastAndroid.SHORT)
       return
     }
@@ -161,28 +80,57 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
     }
     set$tabsList(list => {
       const newList = [...list]
-      const index = newList.findIndex(v => v.name === tab.name)
-      if (index >= 0) {
-        newList[index] = {
-          ...newList[index],
+      if (props.isAdding) {
+        newList.push({
+          name: `custom_${Date.now()}`,
           title: title.trim(),
           url: url.trim(),
+          show: true,
+          builtIn: false,
+          icon: '', // Optional: add default icon or allow user to input
+        } as any)
+      } else {
+        const index = newList.findIndex(v => v.name === props.name)
+        if (index >= 0) {
+          newList[index] = {
+            ...newList[index],
+            title: title.trim(),
+            url: url.trim(),
+            show: true,
+            builtIn: false,
+            icon: '', // Optional: add default icon or allow user to input
+          }
         }
       }
       return newList
     })
     props.closeModal()
   }
+
+  const handleDelete = () => {
+    Alert.alert('确认删除', '确定要删除这个站点吗？', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '删除',
+        style: 'destructive',
+        onPress: () => {
+          set$tabsList(list => list.filter(v => v.name !== props.name))
+          props.closeModal()
+        },
+      },
+    ])
+  }
+
   const handleCancel = () => {
-    setTitle(tab?.title ?? '')
-    setUrl(tab?.url ?? '')
     props.closeModal()
   }
+
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={props.visible}
+      statusBarTranslucent={true}
       onRequestClose={() => {
         props.closeModal()
       }}
@@ -191,7 +139,9 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
         <ThemedView
           style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
         >
-          <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>编辑站点</ThemedText>
+          <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>
+            {props.isAdding ? '添加站点' : '编辑站点'}
+          </ThemedText>
           <ThemedTextInput
             placeholder="名称"
             autoFocus
@@ -212,6 +162,9 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
           <View
             style={{ flexDirection: 'row', gap: 30, marginTop: 20, justifyContent: 'flex-end' }}
           >
+            {!props.isAdding && !tab?.builtIn && (
+              <Button title=" 删除 " color={'#ff4444'} onPress={handleDelete}></Button>
+            )}
             <Button title=" 取消 " color={'#888'} onPress={handleCancel}></Button>
             <Button title=" 保存 " onPress={handleSaveSub}></Button>
           </View>
@@ -222,30 +175,116 @@ function EditingModal(props: { name: string; visible: boolean; closeModal: () =>
 }
 
 export default function TabListSetting() {
-  const { $tabsList } = useStore()
+  const { $tabsList, set$tabsList, get$tabsList } = useStore()
 
   const [editingName, setEditingName] = React.useState('')
+  const [isAdding, setIsAdding] = React.useState(false)
 
   return (
     <ThemedView style={{ marginTop: 15 }}>
-      <ThemedText style={{ fontSize: 20, marginBottom: 14 }}>频道列表：</ThemedText>
-      {$tabsList.map((tab, index, _list) => {
-        return (
-          <TabItem
-            key={tab.name}
-            tab={tab}
-            index={index}
-            last={index === _list.length - 1}
-            editingName={editingName}
-            setEditingName={setEditingName}
-          />
-        )
-      })}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 14,
+        }}
+      >
+        <ThemedText style={{ fontSize: 20 }}>频道列表：</ThemedText>
+        <Button
+          title=" 添加 "
+          onPress={() => {
+            setIsAdding(true)
+          }}
+        />
+      </View>
+      <NestableDraggableFlatList
+        data={$tabsList}
+        renderItem={({ item, getIndex, drag, isActive }: RenderItemParams<TabType>) => {
+          const index = getIndex() ?? -1
+          return (
+            <View
+              style={[
+                styles.item,
+                {
+                  borderTopWidth: index ? 0 : 1,
+                  backgroundColor: isActive ? '#f0f0f0' : undefined,
+                  opacity: isActive ? 0.8 : 1,
+                },
+              ]}
+            >
+              <View style={{ flexShrink: 1 }}>
+                {!item.builtIn ? (
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => {
+                      setEditingName(item.name)
+                    }}
+                  >
+                    <ThemedText
+                      style={[styles.text, { color: '#0969da' }]}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {index + 1}. ✎ {item.title}
+                    </ThemedText>
+                  </TouchableOpacity>
+                ) : (
+                  <ThemedText style={styles.text}>
+                    {index + 1}. {item.title}
+                  </ThemedText>
+                )}
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <TouchableOpacity onPressIn={drag} hitSlop={10}>
+                  <ThemedText style={styles.arrow}>☰</ThemedText>
+                </TouchableOpacity>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={item.show ? '#819cff' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  value={item.show}
+                  onValueChange={() => {
+                    const list = [...get$tabsList()]
+                    const currentIndex = list.findIndex(v => v.name === item.name)
+                    const toShow = !list[currentIndex].show
+                    if (!toShow) {
+                      const showedCount = list.filter(v => v.show).length
+                      if (showedCount === 1) {
+                        ToastAndroid.show('不支持关闭全部', ToastAndroid.SHORT)
+                        return
+                      }
+                    }
+                    if (toShow) {
+                      if (!list[currentIndex].builtIn && !list[currentIndex].url) {
+                        ToastAndroid.show('请先点击名称编辑', ToastAndroid.SHORT)
+                        return
+                      }
+                    }
+
+                    const newItem = {
+                      ...list[currentIndex],
+                      show: toShow,
+                    }
+                    list[currentIndex] = newItem
+                    set$tabsList(list)
+                  }}
+                />
+              </View>
+            </View>
+          )
+        }}
+        keyExtractor={item => item.name}
+        onDragEnd={({ data }) => set$tabsList(data)}
+      />
       <EditingModal
         name={editingName}
-        visible={!!editingName}
+        isAdding={isAdding}
+        visible={!!editingName || isAdding}
         closeModal={() => {
           setEditingName('')
+          setIsAdding(false)
         }}
       />
     </ThemedView>
@@ -285,6 +324,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     // marginTop: 22,
   },
   modalView: {

@@ -41,13 +41,25 @@ export function isHttpUrl(string: string) {
   )
 }
 
-export function getPageIcon(page?: (typeof TabsList)[0]) {
+export function getPageIcon(page?: { icon?: string; url?: string }) {
   const defaultIcon = require('../assets/images/favicon.png')
   if (!page) {
     return defaultIcon
   }
   if (page.icon) {
     return { uri: page.icon }
+  }
+  // If no specific icon, try to get favicon from favicon.im service
+  if (page.url) {
+    try {
+      // Extract hostname
+      const urlObj = new URL(page.url)
+      const domain = urlObj.hostname
+      // Use favicon.im service which is reliable and free
+      return { uri: `https://favicon.im/${domain}?larger=true` }
+    } catch (e) {
+      // If URL parsing fails, fallback to default
+    }
   }
   return defaultIcon
 }

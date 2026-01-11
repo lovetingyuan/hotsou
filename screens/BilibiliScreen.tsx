@@ -11,8 +11,6 @@ function __$inject() {
       if (item) {
         e.preventDefault()
         const word = item.__vue__?.data.keyword
-        console.log(9999, 34234, word)
-
         if (word) {
           const url = 'https://m.bilibili.com/search/?keyword=' + encodeURIComponent(word)
           location.href = url

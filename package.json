@@ -11,7 +11,7 @@
     "update:android": "eas update --branch production --platform android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint",
+    "lint": "expo lint --fix",
     "knip": "knip",
     "doctor": "npx -y expo-doctor@latest",
     "update-expo": "npm i -g eas-cli && npm install expo && npx expo install --fix && npm run doctor"
@@ -42,6 +42,7 @@
     "react-atomic-store": "^0.0.8",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-draggable-flatlist": "^4.0.3",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",

@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native'
 import { Image, TouchableOpacity } from 'react-native'
 
 import { useStore } from '@/store'
+import { getPageIcon } from '@/utils'
 
 import ThemedIcon from './ThemedIcon'
 import { ThemedView } from './ThemedView'
@@ -47,10 +48,11 @@ export default function HeaderRight() {
         {/* <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon> */}
 
         <Image
-          source={{ uri: page.icon }}
+          source={getPageIcon(page)}
           style={{
             width: 24,
             height: 24,
+            borderRadius: 4,
           }}
         ></Image>
       </TouchableOpacity>

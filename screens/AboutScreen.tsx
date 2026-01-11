@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView } from 'react-native'
+import { NestableScrollContainer } from 'react-native-draggable-flatlist'
 
 import AboutHeader from '@/components/about/header'
 import TabListSetting from '@/components/about/TabListSetting'
@@ -9,7 +9,7 @@ import { ThemedView } from '@/components/ThemedView'
 
 function AboutScreen() {
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+    <NestableScrollContainer style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
       <ThemedView
         style={{ flex: 1, minHeight: '100%', paddingHorizontal: 20, paddingVertical: 30, gap: 20 }}
       >
@@ -18,7 +18,7 @@ function AboutScreen() {
         <TextSelectable />
         <TabListSetting></TabListSetting>
       </ThemedView>
-    </ScrollView>
+    </NestableScrollContainer>
   )
 }
 

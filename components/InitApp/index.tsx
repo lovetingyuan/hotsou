@@ -1,4 +1,4 @@
-import './init'
+// import './init'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Application from 'expo-application'
@@ -8,19 +8,8 @@ import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
 import { Alert, Linking, ToastAndroid } from 'react-native'
 
-import { TabsList } from '@/constants/Tabs'
 import useMounted from '@/hooks/useMounted'
-import {
-  // AppContextProvider,
-  AppContextValueType,
-  getStoreMethods,
-  getStoreState,
-  StoredKeys,
-  storedKeys,
-  subscribeStore,
-  // useAppValue,
-  useStore,
-} from '@/store'
+import { fulfillStoreKeys, getStoreState, subscribeStore, useStore } from '@/store'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -38,73 +27,15 @@ subscribeStore(({ key, value }) => {
     })
   }
 })
-
-const fulfillStoreKeys = () => {
-  const methods = getStoreMethods()
-  return Promise.all(
-    storedKeys.map(async k => {
-      const key = k as StoredKeys
-      const setKey = `set${key}` as const
-      const data = await AsyncStorage.getItem(key)
-      if (!data) {
-        return
-      }
-      if (key === '$tabsList') {
-        let list = JSON.parse(data) as AppContextValueType['$tabsList']
-        list = list.filter(v => {
-          return TabsList.find(t => t.name === v.name)
-        })
-        const newAdded = TabsList.filter(t => {
-          return !list.find(v => v.name === t.name)
-        })
-        list.push(...JSON.parse(JSON.stringify(newAdded)))
-        for (const item of list) {
-          const tab = TabsList.find(t => t.name === item.name)
-          for (const key in tab) {
-            if (!(key in item)) {
-              // @ts-ignore
-              item[key] = tab[key]
-            } else if (tab.builtIn) {
-              if (key !== 'show') {
-                // @ts-ignore
-                item[key] = tab[key]
-              }
-            } else {
-              if (key !== 'show' && key !== 'title' && key !== 'url') {
-                // @ts-ignore
-                item[key] = tab[key]
-              }
-            }
-          }
-          if (item.url === 'https://') {
-            item.url = ''
-          }
-          if (item.builtIn) {
-            Object.assign(item, tab)
-          }
-        }
-        methods.set$tabsList(list)
-      } else {
-        methods[setKey](JSON.parse(data))
-      }
-    })
-  )
-}
+fulfillStoreKeys()
 
 function App(props: React.PropsWithChildren) {
-  const { setInitialed, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime } = useStore()
+  const { initialed, get$checkAppUpdateTime, set$checkAppUpdateTime } = useStore()
   const [loaded] = useFonts({
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   })
   useMounted(() => {
     fulfillStoreKeys()
-      .then(() => {
-        setInitialed(true)
-      })
-      .catch(err => {
-        ToastAndroid.show('抱歉，应用发生了错误!', ToastAndroid.SHORT)
-        throw err
-      })
   })
 
   useEffect(() => {

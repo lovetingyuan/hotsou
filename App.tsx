@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar'
 import * as SystemUI from 'expo-system-ui'
 import React from 'react'
 import { Platform } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import InitApp from '@/components/InitApp'
 import { useColorScheme } from '@/hooks/useColorScheme'
@@ -23,14 +24,16 @@ function App() {
   }, [colorScheme])
 
   return (
-    <InitApp>
-      <StatusBar style="auto" />
-      <NavigationContainer>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <RootNavigator />
-        </ThemeProvider>
-      </NavigationContainer>
-    </InitApp>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <InitApp>
+        <StatusBar style="auto" />
+        <NavigationContainer>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <RootNavigator />
+          </ThemeProvider>
+        </NavigationContainer>
+      </InitApp>
+    </GestureHandlerRootView>
   )
 }
 

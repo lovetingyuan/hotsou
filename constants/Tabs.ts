@@ -11,16 +11,6 @@ export enum TabsName {
   fenghuang = 'fenghuang',
   // juejin = 'juejin',
   bilibili = 'bilibili',
-  // ----------------
-  zidingyi1 = 'zidingyi1',
-  zidingyi2 = 'zidingyi2',
-  zidingyi3 = 'zidingyi3',
-  zidingyi4 = 'zidingyi4',
-  zidingyi5 = 'zidingyi5',
-  zidingyi6 = 'zidingyi6',
-  zidingyi7 = 'zidingyi7',
-  zidingyi8 = 'zidingyi8',
-  zidingyi9 = 'zidingyi9',
 }
 
 export const TabsList = [
@@ -103,68 +93,6 @@ export const TabsList = [
     show: true,
     builtIn: true,
     icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/fenghuang.png',
-  },
-  // {
-  //   name: TabsName.juejin,
-  //   title: '掘金热榜',
-  //   url: 'https://juejin.cn/hot/articles',
-  //   show: true,
-  //   builtIn: true,
-  //   icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/juejin.png',
-  // },
-  {
-    name: TabsName.zidingyi1,
-    title: '自定义1',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi2,
-    title: '自定义2',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi3,
-    title: '自定义3',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi4,
-    title: '自定义4',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi5,
-    title: '自定义5',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi6,
-    title: '自定义6',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi7,
-    title: '自定义7',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi8,
-    title: '自定义8',
-    url: '',
-    show: false,
-  },
-  {
-    name: TabsName.zidingyi9,
-    title: '自定义9',
-    url: '',
-    show: false,
   },
 ]
 

@@ -9,6 +9,7 @@ import { useRoute } from '@react-navigation/native'
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
 
+import CustomPage from '@/components/CustomPage'
 import HeaderRight from '@/components/HeaderRight'
 import Image2 from '@/components/Image2'
 import { ThemedText } from '@/components/ThemedText'
@@ -24,20 +25,13 @@ import ToutiaoScreen from '@/screens/ToutiaoScreen'
 import WangyiScreen from '@/screens/WangyiScreen'
 import WeiboScreen from '@/screens/WeiboScreen'
 import ZhihuScreen from '@/screens/ZhihuScreen'
-import Zidingyi1Screen from '@/screens/Zidingyi1Screen'
-import Zidingyi2Screen from '@/screens/Zidingyi2Screen'
-import Zidingyi3Screen from '@/screens/Zidingyi3Screen'
-import Zidingyi4Screen from '@/screens/Zidingyi4Screen'
-import Zidingyi5Screen from '@/screens/Zidingyi5Screen'
-import Zidingyi6Screen from '@/screens/Zidingyi6Screen'
-import Zidingyi7Screen from '@/screens/Zidingyi7Screen'
-import Zidingyi8Screen from '@/screens/Zidingyi8Screen'
-import Zidingyi9Screen from '@/screens/Zidingyi9Screen'
 import { useStore } from '@/store'
 import { getPageIcon } from '@/utils'
 
 export type DrawerParamList = {
   index: undefined
+  // Built-in tabs
+  weibo: undefined
   baidu: undefined
   toutiao: undefined
   douyin: undefined
@@ -46,15 +40,7 @@ export type DrawerParamList = {
   tengxun: undefined
   fenghuang: undefined
   bilibili: undefined
-  zidingyi1: undefined
-  zidingyi2: undefined
-  zidingyi3: undefined
-  zidingyi4: undefined
-  zidingyi5: undefined
-  zidingyi6: undefined
-  zidingyi7: undefined
-  zidingyi8: undefined
-  zidingyi9: undefined
+  // Dynamic tabs will work at runtime but may not be typed here
   About: undefined
 }
 
@@ -213,30 +199,12 @@ function DrawerNavigator() {
                   ? FenghuangScreen
                   : page.name === TabsName.bilibili
                   ? BilibiliScreen
-                  : page.name === TabsName.zidingyi1
-                  ? Zidingyi1Screen
-                  : page.name === TabsName.zidingyi2
-                  ? Zidingyi2Screen
-                  : page.name === TabsName.zidingyi3
-                  ? Zidingyi3Screen
-                  : page.name === TabsName.zidingyi4
-                  ? Zidingyi4Screen
-                  : page.name === TabsName.zidingyi5
-                  ? Zidingyi5Screen
-                  : page.name === TabsName.zidingyi6
-                  ? Zidingyi6Screen
-                  : page.name === TabsName.zidingyi7
-                  ? Zidingyi7Screen
-                  : page.name === TabsName.zidingyi8
-                  ? Zidingyi8Screen
-                  : page.name === TabsName.zidingyi9
-                  ? Zidingyi9Screen
-                  : WeiboScreen
+                  : CustomPage
               }
               options={{
-                drawerLabel: props => getDrawerLabel(props, page),
+                drawerLabel: props => getDrawerLabel(props, page as any),
                 title: page.title,
-                drawerIcon: () => getDrawerIcon(page),
+                drawerIcon: () => getDrawerIcon(page as any),
               }}
               listeners={{
                 focus: () => {
