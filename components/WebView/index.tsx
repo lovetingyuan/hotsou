@@ -3,7 +3,6 @@ import * as Clipboard from 'expo-clipboard'
 import React, { useCallback, useEffect } from 'react'
 import {
   ActivityIndicator,
-  Alert,
   BackHandler,
   Image,
   Linking,

@@ -1,5 +1,3 @@
-import { TabsList } from '@/constants/Tabs'
-
 /**
  * RegExps.
  * A URL must match #1 and then at least one of #2/#3.
