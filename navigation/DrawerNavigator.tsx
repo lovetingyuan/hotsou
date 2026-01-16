@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons'
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
@@ -52,8 +53,18 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   return (
     <ThemedView style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
-        <ThemedView style={{ marginTop: 10 }}>
-          <ThemedText style={{ marginLeft: 20, height: 30, fontSize: 18 }}># 频道</ThemedText>
+        <ThemedView
+          style={{
+            marginTop: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginLeft: 20,
+            marginBottom: 5,
+            gap: 8,
+          }}
+        >
+          <Ionicons name="grid-outline" size={20} color={colorScheme === 'dark' ? '#fff' : '#000'} />
+          <ThemedText style={{ fontSize: 18, fontWeight: '600' }}>频道</ThemedText>
         </ThemedView>
         <DrawerItemList {...props} />
         <ThemedView style={{ height: 20 }}></ThemedView>
@@ -61,35 +72,62 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       <ThemedView
         style={{
           flexDirection: 'row',
-          shadowColor: colorScheme === 'dark' ? '#fff' : '#000',
+          borderTopWidth: 1,
+          borderTopColor: colorScheme === 'dark' ? '#333' : '#f0f0f0',
+          shadowColor: '#000',
           shadowOffset: {
             width: 0,
-            height: -10,
+            height: -4,
           },
-          shadowOpacity: 0.8,
-          shadowRadius: 20,
-          elevation: 24,
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 5,
+          zIndex: 1,
         }}
       >
         <TouchableOpacity
           activeOpacity={0.8}
-          style={{ flexGrow: 1, padding: 20 }}
+          style={{
+            flexGrow: 1,
+            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
           onPress={() => {
             setReloadAllTab(Date.now())
             props.navigation.closeDrawer()
           }}
         >
-          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>🔄 刷新全部</ThemedText>
+          <Ionicons
+            name="refresh-outline"
+            size={22}
+            color={colorScheme === 'dark' ? '#fff' : '#000'}
+          />
+          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>刷新全部</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.8}
-          style={{ flexGrow: 1, padding: 20 }}
+          style={{
+            flexGrow: 1,
+            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
           onPress={() => {
             props.navigation.navigate('About')
             props.navigation.closeDrawer()
           }}
         >
-          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>⚙️ 关于</ThemedText>
+          <Ionicons
+            name="information-circle-outline"
+            size={22}
+            color={colorScheme === 'dark' ? '#fff' : '#000'}
+          />
+          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>关于</ThemedText>
         </TouchableOpacity>
       </ThemedView>
     </ThemedView>

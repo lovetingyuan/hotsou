@@ -1,5 +1,3 @@
-// import './init'
-
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Application from 'expo-application'
 import Constants from 'expo-constants'
@@ -8,7 +6,6 @@ import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
 import { Alert, Linking, ToastAndroid } from 'react-native'
 
-import useMounted from '@/hooks/useMounted'
 import { fulfillStoreKeys, getStoreState, subscribeStore, useStore } from '@/store'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
@@ -32,11 +29,11 @@ fulfillStoreKeys()
 function App(props: React.PropsWithChildren) {
   const { initialed, get$checkAppUpdateTime, set$checkAppUpdateTime } = useStore()
   const [loaded] = useFonts({
-    SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   })
-  useMounted(() => {
+  useEffect(() => {
     fulfillStoreKeys()
-  })
+  }, [])
 
   useEffect(() => {
     if (loaded && initialed) {
@@ -63,7 +60,7 @@ function App(props: React.PropsWithChildren) {
       })
     }
   }, [loaded, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime])
-  useMounted(() => {
+  useEffect(() => {
     fetch('https://cdn.jsdelivr.net/gh/lovetingyuan/hotsou@main/app.json')
       .then(r => r.json())
       .then(appConfig => {
@@ -88,9 +85,9 @@ function App(props: React.PropsWithChildren) {
           )
         }
       })
-  })
+  }, [])
 
-  useMounted(() => {
+  useEffect(() => {
     AsyncStorage.getItem('__First_Usage_Time').then((r: string | null) => {
       if (r) {
         return
@@ -112,7 +109,7 @@ function App(props: React.PropsWithChildren) {
         ]
       )
     })
-  })
+  }, [])
   if (!initialed || !loaded) {
     return null
   }
