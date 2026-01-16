@@ -1,10 +1,11 @@
-import React, { useCallback, useRef } from 'react'
-import { Image, ImageProps, ImageSourcePropType, Platform, StyleSheet } from 'react-native'
+import { Image, ImageProps, ImageSource } from 'expo-image'
+import React, { useCallback, useState } from 'react'
+import { StyleSheet } from 'react-native'
 
-interface FallbackImageProps extends Omit<ImageProps, 'source'> {
-  source: ImageSourcePropType
-  fallbackSource: number
-  defaultSource?: number
+interface FallbackImageProps extends Omit<ImageProps, 'source' | 'onError'> {
+  source: ImageSource
+  fallbackSource: ImageSource
+  defaultSource?: ImageSource
   onError?: (error: any) => void
   onLoadSuccess?: () => void
 }
@@ -16,43 +17,40 @@ const FallbackImage: React.FC<FallbackImageProps> = ({
   style,
   onError,
   onLoadSuccess,
+  contentFit = 'cover',
   ...props
 }) => {
-  // 使用useRef来追踪当前是否在显示fallback图片
-  const isFallback = useRef(false)
-  // 使用useRef来存储原始source
-  const originalSource = useRef(source)
+  // Use state to trigger re-render on error
+  const [isFallback, setIsFallback] = useState(false)
 
-  // 只在原始图片加载失败时触发错误处理
   const handleError = useCallback(
-    (error: any) => {
-      if (!isFallback.current) {
-        isFallback.current = true
-        onError?.(error)
+    (event: any) => {
+      if (!isFallback) {
+        setIsFallback(true)
+        onError?.(event)
       }
     },
-    [onError]
+    [isFallback, onError]
   )
 
-  // 处理加载成功
   const handleLoadSuccess = useCallback(() => {
-    if (!isFallback.current) {
+    if (!isFallback) {
       onLoadSuccess?.()
     }
-  }, [onLoadSuccess])
+  }, [isFallback, onLoadSuccess])
 
-  // 获取当前应该显示的图片源
-  const displaySource = isFallback.current ? fallbackSource : originalSource.current
+  const displaySource = isFallback ? fallbackSource : source
 
   return (
     <Image
       {...props}
       source={displaySource}
+      placeholder={defaultSource}
       style={[styles.image, style]}
       onError={handleError}
       onLoad={handleLoadSuccess}
-      {...(Platform.OS === 'android' && { fallback: true })}
-      defaultSource={defaultSource}
+      contentFit={contentFit}
+      transition={200}
     />
   )
 }
@@ -61,7 +59,6 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
-    resizeMode: 'cover',
   },
 })
 
