@@ -32,6 +32,7 @@ export type DrawerParamList = {
   index: undefined
   // Built-in tabs
   weibo: undefined
+  weibo2: undefined
   baidu: undefined
   toutiao: undefined
   douyin: undefined
