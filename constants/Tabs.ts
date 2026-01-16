@@ -1,6 +1,6 @@
 export enum TabsName {
   weibo = 'weibo',
-  weibo2 = 'weibo2',
+  // weibo2 = 'weibo2',
   baidu = 'baidu',
   toutiao = 'toutiao',
   douyin = 'douyin',
@@ -15,17 +15,17 @@ export enum TabsName {
 }
 
 export const TabsList = [
+  // {
+  //   name: TabsName.weibo,
+  //   title: '微博热搜',
+  //   show: true,
+  //   url: 'https://m.weibo.cn/p/106003type=25&t=3&disable_hot=1&filter_type=realtimehot',
+  //   builtIn: true,
+  //   icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/weibo.png',
+  // },
   {
     name: TabsName.weibo,
     title: '微博热搜',
-    show: true,
-    url: 'https://m.weibo.cn/p/106003type=25&t=3&disable_hot=1&filter_type=realtimehot',
-    builtIn: true,
-    icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/weibo.png',
-  },
-  {
-    name: TabsName.weibo2,
-    title: '微博热搜2',
     show: true,
     url: 'https://s.weibo.com/top/summary?cate=realtimehot',
     builtIn: true,

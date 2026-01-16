@@ -1,8 +1,12 @@
 import React from 'react'
-import { ActivityIndicator, Pressable, PressableProps, StyleSheet, TextStyle, ViewStyle } from 'react-native'
-
-import { Colors } from '@/constants/Colors'
-import { useColorScheme } from '@/hooks/useColorScheme'
+import {
+  ActivityIndicator,
+  Pressable,
+  PressableProps,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+} from 'react-native'
 
 import { ThemedText } from './ThemedText'
 
@@ -25,8 +29,6 @@ export function ThemedButton({
   disabled,
   ...rest
 }: ThemedButtonProps) {
-  const colorScheme = useColorScheme() ?? 'light'
-
   const getBackgroundColor = (pressed: boolean) => {
     if (disabled) {
       return '#ccc'
@@ -64,9 +66,7 @@ export function ThemedButton({
       {isLoading ? (
         <ActivityIndicator color={getTextColor()} />
       ) : (
-        <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>
-          {title}
-        </ThemedText>
+        <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>{title}</ThemedText>
       )}
     </Pressable>
   )

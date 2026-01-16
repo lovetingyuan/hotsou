@@ -24,7 +24,7 @@ import TengxunScreen from '@/screens/TengxunScreen'
 import ToutiaoScreen from '@/screens/ToutiaoScreen'
 import WangyiScreen from '@/screens/WangyiScreen'
 import WeiboScreen from '@/screens/WeiboScreen'
-import WeiboScreen2 from '@/screens/WeiboScreen2'
+// import WeiboScreen2 from '@/screens/WeiboScreen2'
 import ZhihuScreen from '@/screens/ZhihuScreen'
 import { useStore } from '@/store'
 import { getPageIcon } from '@/utils'
@@ -178,7 +178,6 @@ function DrawerNavigator() {
           if (!page.show) {
             return null
           }
-          console.log(999, page)
           return (
             <Drawer.Screen
               key={page.name + '-' + reloadAllTab}
@@ -186,9 +185,9 @@ function DrawerNavigator() {
               component={
                 page.name === TabsName.weibo
                   ? WeiboScreen
-                  : page.name === TabsName.weibo2
-                  ? WeiboScreen2
-                  : page.name === TabsName.baidu
+                  : // : page.name === TabsName.weibo2
+                  // ? WeiboScreen2
+                  page.name === TabsName.baidu
                   ? BaiduScreen
                   : page.name === TabsName.toutiao
                   ? ToutiaoScreen
