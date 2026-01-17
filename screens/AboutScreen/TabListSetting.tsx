@@ -3,7 +3,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   StyleSheet,
   Switch,
   TextInput,
@@ -148,7 +147,7 @@ function EditingModal(props: {
       onShow={onShow}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
         style={styles.centeredView}
       >
         <ThemedView
