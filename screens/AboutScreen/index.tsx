@@ -1,20 +1,22 @@
 import React from 'react'
-import { LayoutAnimation, Platform, StyleSheet, TouchableOpacity, UIManager, View } from 'react-native'
+import {
+  LayoutAnimation,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { NestableScrollContainer } from 'react-native-draggable-flatlist'
 
-import AboutHeader from '@/components/about/header'
-import TabListSetting from '@/components/about/TabListSetting'
-import TextSelectable from '@/components/about/TextSelectable'
-import Version from '@/components/about/version'
 import { ExternalLink } from '@/components/ExternalLink'
 import ThemedIcon from '@/components/ThemedIcon'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true)
-}
+import AboutHeader from './header'
+import TabListSetting from './TabListSetting'
+import TextSelectable from './TextSelectable'
+import Version from './version'
 
 function Section({ children, title }: { children: React.ReactNode; title?: string }) {
   const colorScheme = useColorScheme()

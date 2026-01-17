@@ -69,7 +69,7 @@ function __$injectBeforeLoad() {
   window.addEventListener('click', sendClick, true)
   window.addEventListener('touchstart', sendClick, true)
 
-  window.__keepScrollPosition = selector => {
+  window.__keepScrollPosition = (selector, distanceAdjust = 0) => {
     const saveScrollPosition = () => {
       const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY
       window.localStorage.setItem('__scrollPosition', top + '')
@@ -86,10 +86,10 @@ function __$injectBeforeLoad() {
           if (selector) {
             const dom = window.document.querySelector(selector)
             if (dom) {
-              dom.scrollTop = parseInt(scrollPosition)
+              dom.scrollTop = parseInt(scrollPosition) + distanceAdjust
             }
           } else {
-            window.scrollTo(0, parseInt(scrollPosition))
+            window.scrollTo(0, parseInt(scrollPosition) + distanceAdjust)
           }
         }, 300)
       }
@@ -102,37 +102,6 @@ function __$injectBeforeLoad() {
     }
 
     window.addEventListener('beforeunload', saveScrollPosition)
-  }
-  window.__keepScrollPosition2 = (selector, callback) => {
-    document.addEventListener(
-      'click',
-      e => {
-        if (e.target.closest(selector)) {
-          const top = window.scrollY
-          localStorage.setItem('__scrollPosition', top + '')
-        }
-      },
-      true
-    )
-    const restoreScrollPosition = () => {
-      const scrollPosition = localStorage.getItem('__scrollPosition')
-      window.localStorage.removeItem('__scrollPosition')
-      if (scrollPosition) {
-        const timer = setInterval(() => {
-          if (callback(parseInt(scrollPosition))) {
-            clearInterval(timer)
-          }
-        }, 200)
-        setTimeout(() => {
-          clearInterval(timer)
-        }, 10000)
-      }
-    }
-    if (window.document.readyState === 'complete') {
-      restoreScrollPosition()
-    } else {
-      window.addEventListener('load', restoreScrollPosition)
-    }
   }
 
   window.__markReaded = (containerClass, textClass, textsClass, onClick) => {

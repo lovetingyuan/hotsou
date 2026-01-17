@@ -1,82 +1,74 @@
-import React, { useEffect, useState } from 'react'
-import { View } from 'react-native'
-import { WebView as RNWebView } from 'react-native-webview'
-
-import cssCode from '@/components/douyin/css'
-import jsCode from '@/components/douyin/inject'
 import WebView from '@/components/WebView'
 import { getTabUrl, TabsName } from '@/constants/Tabs'
-import { useStore } from '@/store'
 
-interface EvtItemType {
-  event_time: number
-  hot_value: number
-  label_url: string
-  max_rank: number
-  position: number
-  sentence_id: string
-  video_count: number
-  word: string
-}
-export default function DouyinScreen() {
-  const [url, setUrl] = useState('')
-  const [dynamicJs, setDynamicJs] = useState('')
-  const { douyinHotId, setDouyinHotId } = useStore()
-  useEffect(() => {
-    fetch('https://aweme-hl.snssdk.com/aweme/v1/hot/search/list/')
-      .then(res => res.json())
-      .then(
-        (res: {
-          status_code: number
-          data: {
-            word_list: EvtItemType[]
-          }
-        }) => {
-          setUrl(
-            getTabUrl(TabsName.douyin) +
-              '#__hot_list=' +
-              encodeURIComponent(JSON.stringify(res.data.word_list))
-          )
-        }
-      )
-  }, [])
-  if (!url) {
-    return null
+function __$inject() {
+  const TARGET_URL =
+    'https://lf-douyin-mobile.bytecdn.com/obj/growth-douyin-share/growth/douyin_ug/static/image/bg-hot-title.e1b11d08.png'
+  // @ts-ignore
+  const processNode = node => {
+    if (
+      node.nodeType === 1 &&
+      node.tagName === 'X-IMAGE' &&
+      node.classList?.contains('banner-image')
+    ) {
+      if (node.getAttribute('src') !== TARGET_URL) {
+        node.setAttribute('src', TARGET_URL)
+      }
+    }
   }
-  return (
-    <>
-      <WebView
-        name={TabsName.douyin}
-        url={url}
-        js={jsCode}
-        css={cssCode}
-        dynamicJs={dynamicJs}
-        forbiddenUrls={['z.douyin.com', 'zijieapi.com', '/log-sdk/collect/']}
-      />
-      {douyinHotId ? (
-        <View style={{ width: 0, height: 0, opacity: 0 }}>
-          <RNWebView
-            source={{
-              uri: 'https://www.douyin.com/hot/' + douyinHotId,
-            }}
-            injectedJavaScript={`
-          setInterval(() => {
-            if (location.pathname.startsWith('/video/')) {
-              const id = location.pathname.split('/').pop()
-              window.ReactNativeWebView.postMessage(id)
-            }
-          }, 50);
 
-          `}
-            userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
-            onMessage={evt => {
-              const id = evt.nativeEvent.data
-              setDynamicJs(`window.location.href = "https://m.douyin.com/share/video/${id}";`)
-              setDouyinHotId('')
-            }}
-          ></RNWebView>
-        </View>
-      ) : null}
-    </>
+  // 1. Check existing nodes
+  document.querySelectorAll('x-image.banner-image').forEach(processNode)
+
+  // 3. Observe changes
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach(processNode)
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+        processNode(mutation.target)
+      }
+    })
+  })
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['src'],
+  })
+  if (location.pathname === '/landings/hotlist') {
+    // @ts-ignore
+    window.__markReaded?.(
+      'x-view[data-topic]',
+      'x-text.hot-item-title-text',
+      'x-text.hot-item-title-text'
+    )
+    // @ts-ignore
+    window.__keepScrollPosition('#hot-list-0[enable-scroll', 80)
+  }
+}
+const jsCode = `(${__$inject})()`
+
+export default function DouyinHotlistScreen() {
+  return (
+    <WebView
+      name={TabsName.douyin}
+      url={getTabUrl(TabsName.douyin)!}
+      js={jsCode}
+      css={`
+        x-view[data-index]:has(x-image.hot-item-index-top),
+        x-foldview-slot-drag-ng,
+        div[data-tag='header'] {
+          display: none !important;
+        }
+        #hot-list-0 {
+          padding-bottom: 50px !important;
+        }
+        x-foldview-slot-ng {
+          margin-top: 14px;
+        }
+      `}
+    />
   )
 }

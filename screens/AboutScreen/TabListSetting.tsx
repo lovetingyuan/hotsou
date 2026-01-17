@@ -10,15 +10,14 @@ import {
 } from 'react-native'
 import { NestableDraggableFlatList, RenderItemParams } from 'react-native-draggable-flatlist'
 
+import { ThemedButton } from '@/components/ThemedButton'
+import ThemedIcon from '@/components/ThemedIcon'
+import { ThemedTextInput } from '@/components/ThemedInput'
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { isHttpUrl } from '@/utils'
-
-import { ThemedButton } from '../ThemedButton'
-import ThemedIcon from '../ThemedIcon'
-import { ThemedTextInput } from '../ThemedInput'
-import { ThemedText } from '../ThemedText'
-import { ThemedView } from '../ThemedView'
 
 type TabType = {
   name: string

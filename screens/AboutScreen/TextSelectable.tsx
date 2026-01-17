@@ -2,8 +2,8 @@ import { Switch, ToastAndroid } from 'react-native'
 
 import { useStore } from '@/store'
 
-import { ThemedText } from '../ThemedText'
-import { ThemedView } from '../ThemedView'
+import { ThemedText } from '../../components/ThemedText'
+import { ThemedView } from '../../components/ThemedView'
 
 export default function TextSelectable() {
   const { $enableTextSelect, set$enableTextSelect } = useStore()
@@ -19,7 +19,6 @@ export default function TextSelectable() {
         ios_backgroundColor="#3e3e3e"
         value={$enableTextSelect}
         onValueChange={() => {
-
           set$enableTextSelect(v => !v)
           ToastAndroid.show('刷新后生效', ToastAndroid.SHORT)
         }}

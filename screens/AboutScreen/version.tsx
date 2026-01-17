@@ -3,11 +3,10 @@ import * as Updates from 'expo-updates'
 import React from 'react'
 import { Alert, Linking, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 
+import { ExternalLink } from '@/components/ExternalLink'
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
 import checkAppUpdate from '@/utils/checkAppUpdate'
-
-import { ExternalLink } from '../ExternalLink'
-import { ThemedText } from '../ThemedText'
-import { ThemedView } from '../ThemedView'
 
 // @ts-ignore
 const gitHash = typeof GIT_HASH === 'string' ? GIT_HASH : 'N/A'
@@ -46,7 +45,6 @@ export default function Version() {
                 },
               ]
             )
-            // ToastAndroid.show('有更新 ' + res.version, ToastAndroid.SHORT)
           }
         } else {
           ToastAndroid.show('检查更新失败', ToastAndroid.SHORT)
@@ -118,4 +116,3 @@ export default function Version() {
     </ThemedView>
   )
 }
-

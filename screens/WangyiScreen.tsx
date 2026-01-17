@@ -5,43 +5,43 @@ function __$inject() {
   // rank-container hot-search
   if (location.pathname.includes('newsapp/hot-content/')) {
     // history.scrollRestoration = 'auto'
-    const tabsConfig = [
-      {
-        name: '热议榜',
-        version: 'tieFirstTab',
-        type: 'TieHotrank',
-        callbackFunName: 'loadTieHotData',
-        isExcute: !1,
-      },
-      {
-        name: '热闻榜',
-        version: 'hotFirstTab',
-        type: 'AllHotrank',
-        callbackFunName: 'loadAllHotData',
-        isExcute: !1,
-      },
-      {
-        name: '热搜榜',
-        version: 'searchFirstTab',
-        type: 'HotSearch',
-        callbackFunName: 'loadHotSearch',
-        isExcute: !1,
-      },
-      {
-        name: '视频榜',
-        version: 'videoFirstTab',
-        type: 'VideoRank',
-        callbackFunName: 'loadVideoRank',
-        isExcute: !1,
-      },
-      {
-        name: '话题榜',
-        version: 'topicFirstTab',
-        type: 'TopicRank',
-        callbackFunName: 'loadTopicRank',
-        isExcute: !1,
-      },
-    ]
+    // const tabsConfig = [
+    //   {
+    //     name: '热议榜',
+    //     version: 'tieFirstTab',
+    //     type: 'TieHotrank',
+    //     callbackFunName: 'loadTieHotData',
+    //     isExcute: !1,
+    //   },
+    //   {
+    //     name: '热闻榜',
+    //     version: 'hotFirstTab',
+    //     type: 'AllHotrank',
+    //     callbackFunName: 'loadAllHotData',
+    //     isExcute: !1,
+    //   },
+    //   {
+    //     name: '热搜榜',
+    //     version: 'searchFirstTab',
+    //     type: 'HotSearch',
+    //     callbackFunName: 'loadHotSearch',
+    //     isExcute: !1,
+    //   },
+    //   {
+    //     name: '视频榜',
+    //     version: 'videoFirstTab',
+    //     type: 'VideoRank',
+    //     callbackFunName: 'loadVideoRank',
+    //     isExcute: !1,
+    //   },
+    //   {
+    //     name: '话题榜',
+    //     version: 'topicFirstTab',
+    //     type: 'TopicRank',
+    //     callbackFunName: 'loadTopicRank',
+    //     isExcute: !1,
+    //   },
+    // ]
     setInterval(() => {
       const reload = document.querySelector('.page-status-error .page-reload')
       if (reload) {
@@ -61,37 +61,37 @@ function __$inject() {
       }
     })
 
-    const tabs = document.getElementById('tabContainer')
-    if (tabs) {
-      const observer = new MutationObserver(mutations => {
-        for (const mutation of mutations) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            const active = tabs.querySelector('.active')
-            if (active) {
-              // @ts-ignore
-              const tabName = active.innerText
-              const version = tabsConfig.find(v => v.name === tabName)?.version
-              if (version) {
-                history.replaceState(
-                  {},
-                  '',
-                  location.pathname + '?version=' + version + '&__main_page'
-                )
-              }
-            }
-            break
-          }
-        }
-      })
+    // const tabs = document.getElementById('tabContainer')
+    // if (tabs) {
+    //   const observer = new MutationObserver(mutations => {
+    //     for (const mutation of mutations) {
+    //       if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+    //         const active = tabs.querySelector('.active')
+    //         if (active) {
+    //           // @ts-ignore
+    //           const tabName = active.innerText
+    //           const version = tabsConfig.find(v => v.name === tabName)?.version
+    //           if (version) {
+    //             history.replaceState(
+    //               {},
+    //               '',
+    //               location.pathname + '?version=' + version + '&__main_page'
+    //             )
+    //           }
+    //         }
+    //         break
+    //       }
+    //     }
+    //   })
 
-      const config = {
-        attributes: true,
-        attributeFilter: ['class'],
-        subtree: true,
-      }
+    //   const config = {
+    //     attributes: true,
+    //     attributeFilter: ['class'],
+    //     subtree: true,
+    //   }
 
-      observer.observe(tabs, config)
-    }
+    //   observer.observe(tabs, config)
+    // }
 
     document.addEventListener(
       'click',

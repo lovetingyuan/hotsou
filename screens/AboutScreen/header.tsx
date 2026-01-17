@@ -1,18 +1,14 @@
 import { Image } from 'expo-image'
 import React from 'react'
-import { Platform, Share, TouchableOpacity, View } from 'react-native'
+import { Share, TouchableOpacity, View } from 'react-native'
 
-import { useColorScheme } from '@/hooks/useColorScheme'
-
-import { HelloWave } from '../HelloWave'
-import ThemedIcon from '../ThemedIcon'
-import { ThemedText } from '../ThemedText'
-import { ThemedView } from '../ThemedView'
+import { HelloWave } from '@/components/HelloWave'
+import ThemedIcon from '@/components/ThemedIcon'
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
 
 export default function AboutHeader({ children }: { children?: React.ReactNode }) {
   const [helloKey, setHelloKey] = React.useState(1)
-  const colorScheme = useColorScheme()
-
   const onShare = async () => {
     try {
       await Share.share({
@@ -72,5 +68,3 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
     </ThemedView>
   )
 }
-
-
