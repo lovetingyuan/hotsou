@@ -49,17 +49,15 @@ function __$inject() {
       }, 200)
       localStorage.removeItem('scroll-position')
     }
-  } else {
-    document.documentElement.addEventListener(
+  } else if (location.pathname === '/search/') {
+    document.addEventListener(
       'click',
       e => {
         // @ts-ignore
-        const item2 = e.target.closest('m-open-app')
-        if (item2) {
+        const item = e.target.closest('.wx-tag.v-card-single[data-aid]')
+        if (item) {
           e.preventDefault()
-          e.stopPropagation()
-          const { pathname } = new URL(item2.getAttribute('schema'))
-          const url = 'https://player.bilibili.com/player.html?aid=' + pathname.split('/').pop()
+          const url = 'https://player.bilibili.com/player.html?aid=' + item.dataset.aid
           location.href = url
         }
       },
@@ -75,7 +73,8 @@ export default function BilibiliScreen() {
       url={getTabUrl(TabsName.bilibili)!}
       js={`(${__$inject})()`}
       css={`
-        bili-open-app:has(.rank-top) {
+        bili-open-app:has(.rank-top),
+        .v-dialog {
           display: none !important;
         }
       `}
