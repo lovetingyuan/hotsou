@@ -17,7 +17,8 @@ export default function WeiboScreen() {
         .m-nav,
         .list .title,
         .list_a li:first-child,
-        .list_a li:has(.icon_recommend) {
+        .list_a li:has(.icon_recommend),
+        .list_a li:has(strong[style]) {
           display: none !important;
         }
         .list_a li a span {

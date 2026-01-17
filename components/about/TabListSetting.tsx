@@ -15,6 +15,7 @@ import { useStore } from '@/store'
 import { isHttpUrl } from '@/utils'
 
 import { ThemedButton } from '../ThemedButton'
+import ThemedIcon from '../ThemedIcon'
 import { ThemedTextInput } from '../ThemedInput'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
@@ -226,7 +227,8 @@ export default function TabListSetting() {
                       numberOfLines={2}
                       ellipsizeMode="tail"
                     >
-                      {index + 1}. ✎ {item.title}
+                      {index + 1}. <ThemedIcon name="create-outline" size={18} color="#0969da" />{' '}
+                      {item.title}
                     </ThemedText>
                   </TouchableOpacity>
                 ) : (
@@ -238,7 +240,7 @@ export default function TabListSetting() {
 
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <TouchableOpacity onPressIn={drag} hitSlop={10}>
-                  <ThemedText style={styles.arrow}>☰</ThemedText>
+                  <ThemedIcon name="menu-outline" size={24} style={styles.arrow} />
                 </TouchableOpacity>
                 <Switch
                   trackColor={{ false: '#767577', true: '#81b0ff' }}

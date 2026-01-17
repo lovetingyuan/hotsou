@@ -7,6 +7,7 @@ import {
 } from '@react-navigation/drawer'
 import { HeaderTitleProps } from '@react-navigation/elements'
 import { useRoute } from '@react-navigation/native'
+import { Image } from 'expo-image'
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
 
@@ -63,7 +64,10 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             gap: 8,
           }}
         >
-          <Ionicons name="grid-outline" size={20} color={colorScheme === 'dark' ? '#fff' : '#000'} />
+          <Image
+            source={require('../assets/images/icon.png')}
+            style={{ width: 24, height: 24, borderRadius: 6 }}
+          />
           <ThemedText style={{ fontSize: 18, fontWeight: '600' }}>频道</ThemedText>
         </ThemedView>
         <DrawerItemList {...props} />
