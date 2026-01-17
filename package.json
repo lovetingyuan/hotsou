@@ -12,7 +12,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint --fix",
-    "knip": "knip",
+    "check-unused": "knip",
     "doctor": "npx -y expo-doctor@latest",
     "update-expo": "npm i -g eas-cli && npm install expo && npx expo install --fix && npm run doctor"
   },

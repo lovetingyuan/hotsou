@@ -27,7 +27,7 @@ This document outlines the development guidelines, build processes, and coding s
   - **Requirement**: Code must be free of TypeScript errors before completion.
 - **Project Health**: `npm run doctor`
   - Checks for Expo and dependency issues.
-- **Unused Code**: `npm run knip`
+- **Unused Code**: `npm run check-unused`
   - Checks for unused files and exports.
 
 ### Testing
