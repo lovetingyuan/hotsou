@@ -15,7 +15,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0a7ea4"
       },
       "package": "com.tingyuan.hotsou"
     },
@@ -29,7 +29,7 @@
         "expo-splash-screen",
         {
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#0a7ea4",
           "image": "./assets/images/splash-icon.png"
         }
       ],
