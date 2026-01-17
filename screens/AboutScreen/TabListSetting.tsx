@@ -1,9 +1,12 @@
 import React from 'react'
 import {
   Alert,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   StyleSheet,
   Switch,
+  TextInput,
   ToastAndroid,
   TouchableOpacity,
   View,
@@ -40,6 +43,7 @@ function EditingModal(props: {
   const tab = tabList.find(v => v.name === props.name)
   const [title, setTitle] = React.useState('')
   const [url, setUrl] = React.useState('')
+  const inputRef = React.useRef<TextInput>(null)
 
   React.useEffect(() => {
     if (props.visible) {
@@ -52,6 +56,13 @@ function EditingModal(props: {
       }
     }
   }, [props.visible, props.isAdding, tab])
+
+  const onShow = () => {
+    // Delay to ensure modal is visible and animation is done
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 600)
+  }
 
   if (!props.visible) {
     return null
@@ -134,8 +145,12 @@ function EditingModal(props: {
       onRequestClose={() => {
         props.closeModal()
       }}
+      onShow={onShow}
     >
-      <View style={styles.centeredView}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.centeredView}
+      >
         <ThemedView
           style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
         >
@@ -143,6 +158,7 @@ function EditingModal(props: {
             {props.isAdding ? '添加站点' : '编辑站点'}
           </ThemedText>
           <ThemedTextInput
+            ref={inputRef}
             placeholder="名称"
             autoFocus
             style={styles.input}
@@ -151,7 +167,7 @@ function EditingModal(props: {
           />
           <ThemedTextInput
             style={styles.input}
-            placeholder="网址(https://)"
+            placeholder="网址(http完整地址)"
             inputMode="url"
             keyboardType="url"
             value={url}
@@ -169,7 +185,7 @@ function EditingModal(props: {
             <ThemedButton title="保存" onPress={handleSaveSub}></ThemedButton>
           </View>
         </ThemedView>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   )
 }
