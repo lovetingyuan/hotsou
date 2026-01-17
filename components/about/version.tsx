@@ -1,7 +1,7 @@
 import * as Application from 'expo-application'
 import * as Updates from 'expo-updates'
 import React from 'react'
-import { Alert, Linking, Text, ToastAndroid, TouchableOpacity } from 'react-native'
+import { Alert, Linking, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
@@ -86,7 +86,14 @@ export default function Version() {
   }
 
   return (
-    <ThemedView style={{ flexDirection: 'row', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+    <ThemedView
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+      }}
+    >
       <ThemedText
         onPress={() => {
           if (Updates.createdAt) {
@@ -102,9 +109,12 @@ export default function Version() {
           }
         }}
       >
-        📊 当前版本：{currentVersion}
+        当前版本
       </ThemedText>
-      {versionView()}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <ThemedText style={{ color: '#888' }}>{currentVersion}</ThemedText>
+        {versionView()}
+      </View>
     </ThemedView>
   )
 }

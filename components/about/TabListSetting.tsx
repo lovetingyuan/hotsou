@@ -182,7 +182,7 @@ export default function TabListSetting() {
   const [isAdding, setIsAdding] = React.useState(false)
 
   return (
-    <ThemedView style={{ marginTop: 15 }}>
+    <ThemedView>
       <View
         style={{
           flexDirection: 'row',
@@ -191,7 +191,7 @@ export default function TabListSetting() {
           marginBottom: 14,
         }}
       >
-        <ThemedText style={{ fontSize: 20 }}>频道列表：</ThemedText>
+        <ThemedText style={{ fontSize: 18, fontWeight: 'bold' }}># 频道列表：</ThemedText>
         <ThemedButton
           title="添加"
           onPress={() => {
@@ -243,8 +243,8 @@ export default function TabListSetting() {
                   <ThemedIcon name="menu-outline" size={24} style={styles.arrow} />
                 </TouchableOpacity>
                 <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={item.show ? '#819cff' : '#f4f3f4'}
+                  trackColor={{ false: '#767577', true: '#34C759' }}
+                  thumbColor={item.show ? '#fff' : '#f4f3f4'}
                   ios_backgroundColor="#3e3e3e"
                   value={item.show}
                   onValueChange={() => {
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'left',
-    fontSize: 18,
+    fontSize: 17,
   },
   arrow: {
     fontSize: 24,

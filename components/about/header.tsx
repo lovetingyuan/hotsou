@@ -1,41 +1,76 @@
+import { Image } from 'expo-image'
 import React from 'react'
-import { View } from 'react-native'
+import { Platform, Share, TouchableOpacity, View } from 'react-native'
 
-import { ExternalLink } from '../ExternalLink'
+import { useColorScheme } from '@/hooks/useColorScheme'
+
 import { HelloWave } from '../HelloWave'
 import ThemedIcon from '../ThemedIcon'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 
-export default function AboutHeader() {
+export default function AboutHeader({ children }: { children?: React.ReactNode }) {
   const [helloKey, setHelloKey] = React.useState(1)
+  const colorScheme = useColorScheme()
+
+  const onShare = async () => {
+    try {
+      await Share.share({
+        title: 'HotSou',
+        message: 'HotSou - 全网热搜聚合 https://github.com/lovetingyuan/hotsou',
+        url: 'https://github.com/lovetingyuan/hotsou',
+      })
+    } catch (error) {
+      // ignore
+    }
+  }
+
   return (
-    <ThemedView style={{ gap: 16 }}>
-      <ThemedView
+    <ThemedView
+      style={{
+        paddingHorizontal: 20,
+        paddingTop: 30,
+        paddingBottom: 20,
+      }}
+    >
+      <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
+          marginBottom: 20,
         }}
       >
-        <View style={{ flexDirection: 'row' }}>
-          <ThemedText
-            style={{ fontSize: 20 }}
-            onPress={() => {
-              setHelloKey(helloKey + 1)
-            }}
-          >
-            欢迎使用本应用{' '}
-          </ThemedText>
-          <HelloWave key={helloKey}></HelloWave>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+          <Image
+            source={require('@/assets/images/icon.png')}
+            style={{ width: 60, height: 60, borderRadius: 16 }}
+          />
+          <View style={{ justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <ThemedText
+                type="title"
+                style={{ fontSize: 24, lineHeight: 32 }}
+                onPress={() => {
+                  setHelloKey(helloKey + 1)
+                }}
+              >
+                HotSou
+              </ThemedText>
+              <HelloWave key={helloKey} />
+            </View>
+            <ThemedText style={{ fontSize: 14, opacity: 0.6, fontWeight: '500' }}>
+              全网热搜聚合
+            </ThemedText>
+          </View>
         </View>
-        <ExternalLink href={'https://github.com/lovetingyuan/hotsou'} style={{ minHeight: 40 }}>
-
-          <ThemedIcon name="logo-github" size={26}></ThemedIcon>
-        </ExternalLink>
-      </ThemedView>
-      <ThemedText>📣 聚合一些媒体的热搜热点信息，仅供展示和浏览，请勿轻易相信或传播。</ThemedText>
-      <ThemedText>💡 如果使用过程中遇到问题，请及时更新版本。</ThemedText>
+        <TouchableOpacity onPress={onShare} style={{ padding: 8 }}>
+          <ThemedIcon name="share-outline" size={24} />
+        </TouchableOpacity>
+      </View>
+      {children}
     </ThemedView>
   )
 }
+
+

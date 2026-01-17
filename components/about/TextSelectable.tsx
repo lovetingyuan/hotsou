@@ -14,11 +14,12 @@ export default function TextSelectable() {
     >
       <ThemedText>长按复制页面内容({$enableTextSelect ? '已允许' : '已禁止'})</ThemedText>
       <Switch
-        trackColor={{ false: '#767577', true: '#81b0ff' }}
-        thumbColor={$enableTextSelect ? '#819cff' : '#f4f3f4'}
+        trackColor={{ false: '#767577', true: '#34C759' }}
+        thumbColor={$enableTextSelect ? '#fff' : '#f4f3f4'}
         ios_backgroundColor="#3e3e3e"
         value={$enableTextSelect}
         onValueChange={() => {
+
           set$enableTextSelect(v => !v)
           ToastAndroid.show('刷新后生效', ToastAndroid.SHORT)
         }}
