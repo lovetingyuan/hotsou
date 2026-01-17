@@ -21,6 +21,7 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import BaiduScreen from '@/screens/BaiduScreen'
 import BilibiliScreen from '@/screens/BilibiliScreen'
 import DouyinScreen from '@/screens/DouyinScreen'
+import DouyinHotlistScreen from '@/screens/DouyinHotlistScreen'
 import FenghuangScreen from '@/screens/FenghuangScreen'
 import TengxunScreen from '@/screens/TengxunScreen'
 import ToutiaoScreen from '@/screens/ToutiaoScreen'
@@ -39,6 +40,7 @@ export type DrawerParamList = {
   baidu: undefined
   toutiao: undefined
   douyin: undefined
+  douyin_hotlist: undefined
   zhihu: undefined
   wangyi: undefined
   tengxun: undefined
@@ -235,6 +237,8 @@ function DrawerNavigator() {
                   ? ToutiaoScreen
                   : page.name === TabsName.douyin
                   ? DouyinScreen
+                  : page.name === TabsName.douyin_hotlist
+                  ? DouyinHotlistScreen
                   : page.name === TabsName.zhihu
                   ? ZhihuScreen
                   : page.name === TabsName.wangyi

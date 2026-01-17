@@ -4,6 +4,7 @@ export enum TabsName {
   baidu = 'baidu',
   toutiao = 'toutiao',
   douyin = 'douyin',
+  douyin_hotlist = 'douyin_hotlist',
   zhihu = 'zhihu',
   wangyi = 'wangyi',
   // muzi = 'muzi',
@@ -63,6 +64,14 @@ export const TabsList = [
     icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/douyin.png',
     builtIn: true,
   },
+  {
+    name: TabsName.douyin_hotlist,
+    title: '抖音热榜',
+    show: true,
+    url: 'https://so-landing.douyin.com/landings/hotlist',
+    icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/douyin.png',
+    builtIn: true,
+  },
   // {
   //   name: TabsName.xinlang,
   //   title: '新浪热榜',
@@ -89,7 +98,7 @@ export const TabsList = [
   },
   {
     name: TabsName.bilibili,
-    title: 'Bilibili热搜',
+    title: 'bilibili热搜',
     url: 'https://www.bilibili.com/blackboard/activity-trending-topic.html',
     show: true,
     builtIn: true,
