@@ -200,7 +200,16 @@ try {
 try {
   const message = `release(v${newVersion}): ${changes}`
   await spinner('git push change...', async () => {
-    await $`git commit -am ${message}`
+    const status = await $`git status --porcelain`
+    const hasChanges = status.toString().split('\n').some(line => {
+      const l = line.trim()
+      return l.length > 0 && !l.startsWith('??')
+    })
+    if (hasChanges) {
+      await $`git commit -am ${message}`
+    } else {
+      echo(chalk.yellow('No changes to commit.'))
+    }
     return retry(5, () => $`git push`)
   })
   echo(chalk.green('git push commit done.'))
