@@ -61,7 +61,7 @@ function EditingModal(props: {
     // Delay to ensure modal is visible and animation is done
     setTimeout(() => {
       inputRef.current?.focus()
-    }, 600)
+    }, 100)
   }
 
   if (!props.visible) {
@@ -160,7 +160,6 @@ function EditingModal(props: {
           <ThemedTextInput
             ref={inputRef}
             placeholder="名称"
-            autoFocus
             style={styles.input}
             value={title}
             onChangeText={setTitle}
