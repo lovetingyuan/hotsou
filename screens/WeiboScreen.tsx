@@ -6,6 +6,12 @@ function __$inject() {
     // @ts-ignore
     window.__markReaded?.('.list_a li', '.list_a li a span', '.list_a li a span')
   }
+  const removeIframes = () => {
+    document.querySelectorAll('iframe').forEach((el) => el.remove())
+  }
+  removeIframes()
+  const observer = new MutationObserver(removeIframes)
+  observer.observe(document.body, { childList: true, subtree: true })
 }
 
 export default function WeiboScreen() {
@@ -14,6 +20,9 @@ export default function WeiboScreen() {
       name={TabsName.weibo}
       url={getTabUrl(TabsName.weibo)!}
       css={`
+        iframe {
+          display: none !important;
+        }
         .m-nav,
         .list .title,
         .list_a li:first-child,
