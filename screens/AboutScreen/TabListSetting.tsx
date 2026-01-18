@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { NestableDraggableFlatList, RenderItemParams } from 'react-native-draggable-flatlist'
 
 import { ThemedButton } from '@/components/ThemedButton'
 import ThemedIcon from '@/components/ThemedIcon'
@@ -20,15 +19,6 @@ import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 import { isHttpUrl } from '@/utils'
-
-type TabType = {
-  name: string
-  title: string
-  url: string
-  show: boolean
-  builtIn?: boolean
-  icon?: string
-}
 
 function EditingModal(props: {
   name: string
@@ -188,11 +178,97 @@ function EditingModal(props: {
   )
 }
 
+function SortingModal(props: {
+  visible: boolean
+  currentOrder: number
+  maxOrder: number
+  closeModal: () => void
+  onConfirm: (newOrder: number) => void
+}) {
+  const [order, setOrder] = React.useState('')
+  const inputRef = React.useRef<TextInput>(null)
+  const colorScheme = useColorScheme()
+
+  React.useEffect(() => {
+    if (props.visible) {
+      setOrder(String(props.currentOrder))
+    }
+  }, [props.visible, props.currentOrder])
+
+  const onShow = () => {
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 100)
+  }
+
+  if (!props.visible) return null
+
+  const handleSave = () => {
+    const newOrder = parseInt(order, 10)
+    if (isNaN(newOrder) || newOrder < 1 || newOrder > props.maxOrder) {
+      ToastAndroid.show(`请输入 1-${props.maxOrder} 之间的数字`, ToastAndroid.SHORT)
+      return
+    }
+    props.onConfirm(newOrder)
+    props.closeModal()
+  }
+
+  return (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={props.visible}
+      statusBarTranslucent={true}
+      onRequestClose={props.closeModal}
+      onShow={onShow}
+    >
+      <KeyboardAvoidingView behavior="padding" style={styles.centeredView}>
+        <ThemedView style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}>
+          <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>调整排序</ThemedText>
+          <ThemedText style={{ fontSize: 16 }}>当前位置: {props.currentOrder}</ThemedText>
+          <ThemedTextInput
+            ref={inputRef}
+            placeholder={`请输入新位置 (1-${props.maxOrder})`}
+            style={styles.input}
+            value={order}
+            onChangeText={setOrder}
+            keyboardType="number-pad"
+            maxLength={String(props.maxOrder).length + 1}
+          />
+          <View style={{ flexDirection: 'row', gap: 30, marginTop: 20, justifyContent: 'flex-end' }}>
+            <ThemedButton title="取消" type="secondary" onPress={props.closeModal} />
+            <ThemedButton title="确定" onPress={handleSave} />
+          </View>
+        </ThemedView>
+      </KeyboardAvoidingView>
+    </Modal>
+  )
+}
+
 export default function TabListSetting() {
   const { $tabsList, set$tabsList, get$tabsList } = useStore()
 
   const [editingName, setEditingName] = React.useState('')
   const [isAdding, setIsAdding] = React.useState(false)
+  const [sortingItemName, setSortingItemName] = React.useState<string | null>(null)
+
+  const handleSortConfirm = (newOrder: number) => {
+    if (!sortingItemName) return
+    const list = [...$tabsList]
+    const oldIndex = list.findIndex(v => v.name === sortingItemName)
+    if (oldIndex === -1) return
+    
+    const newIndex = newOrder - 1
+    if (newIndex === oldIndex) return
+
+    const [removed] = list.splice(oldIndex, 1)
+    list.splice(newIndex, 0, removed)
+    set$tabsList(list)
+  }
+
+  const sortingIndex = React.useMemo(() => {
+    return $tabsList.findIndex(v => v.name === sortingItemName) + 1
+  }, [sortingItemName, $tabsList])
 
   return (
     <ThemedView>
@@ -212,18 +288,15 @@ export default function TabListSetting() {
           }}
         />
       </View>
-      <NestableDraggableFlatList
-        data={$tabsList}
-        renderItem={({ item, getIndex, drag, isActive }: RenderItemParams<TabType>) => {
-          const index = getIndex() ?? -1
+      <View>
+        {$tabsList.map((item, index) => {
           return (
             <View
+              key={item.name}
               style={[
                 styles.item,
                 {
-                  borderTopWidth: index ? 0 : 1,
-                  backgroundColor: isActive ? '#f0f0f0' : undefined,
-                  opacity: isActive ? 0.8 : 1,
+                  borderTopWidth: index === 0 ? 1 : 0,
                 },
               ]}
             >
@@ -252,8 +325,8 @@ export default function TabListSetting() {
               </View>
 
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <TouchableOpacity onPressIn={drag} hitSlop={10}>
-                  <ThemedIcon name="menu-outline" size={24} style={styles.arrow} />
+                <TouchableOpacity onPress={() => setSortingItemName(item.name)} hitSlop={10}>
+                  <ThemedIcon name="swap-vertical-outline" size={24} style={styles.arrow} />
                 </TouchableOpacity>
                 <Switch
                   trackColor={{ false: '#767577', true: '#34C759' }}
@@ -289,10 +362,8 @@ export default function TabListSetting() {
               </View>
             </View>
           )
-        }}
-        keyExtractor={item => item.name}
-        onDragEnd={({ data }) => set$tabsList(data)}
-      />
+        })}
+      </View>
       <EditingModal
         name={editingName}
         isAdding={isAdding}
@@ -301,6 +372,13 @@ export default function TabListSetting() {
           setEditingName('')
           setIsAdding(false)
         }}
+      />
+      <SortingModal
+        visible={!!sortingItemName}
+        currentOrder={sortingIndex}
+        maxOrder={$tabsList.length}
+        closeModal={() => setSortingItemName(null)}
+        onConfirm={handleSortConfirm}
       />
     </ThemedView>
   )
