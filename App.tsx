@@ -3,38 +3,38 @@ import {
   DefaultTheme,
   NavigationContainer,
   ThemeProvider,
-} from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
-import * as SystemUI from "expo-system-ui";
-import React from "react";
-import { Platform } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+} from '@react-navigation/native'
+import { StatusBar } from 'expo-status-bar'
+import * as SystemUI from 'expo-system-ui'
+import React from 'react'
+import { Platform } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import InitApp from "@/components/InitApp";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import RootNavigator from "@/navigation";
+import InitApp from '@/components/InitApp'
+import { useColorScheme } from '@/hooks/useColorScheme'
+import RootNavigator from '@/navigation'
 
 function App() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme()
 
   React.useEffect(() => {
-    if (Platform.OS === "android") {
-      SystemUI.setBackgroundColorAsync(colorScheme === "dark" ? "#000000" : "#ffffff");
+    if (Platform.OS === 'android') {
+      SystemUI.setBackgroundColorAsync(colorScheme === 'dark' ? '#000000' : '#ffffff')
     }
-  }, [colorScheme]);
+  }, [colorScheme])
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <InitApp>
-        <StatusBar style="auto" />
+        <StatusBar style='auto' />
         <NavigationContainer>
-          <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <RootNavigator />
           </ThemeProvider>
         </NavigationContainer>
       </InitApp>
     </GestureHandlerRootView>
-  );
+  )
 }
 
-export default App;
+export default App

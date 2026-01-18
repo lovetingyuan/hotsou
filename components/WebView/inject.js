@@ -1,11 +1,11 @@
 function __$injectBeforeLoad() {
   // injectedJavascript may execute twice
   if (window.__injected) {
-    return;
+    return
   }
-  window.__injected = true;
+  window.__injected = true
 
-  const noDragCss = window.document.createElement("style");
+  const noDragCss = window.document.createElement('style')
 
   noDragCss.innerText = `
   * {
@@ -44,137 +44,137 @@ function __$injectBeforeLoad() {
   }
 
 
-  `;
-  window.document.head?.append(noDragCss);
+  `
+  window.document.head?.append(noDragCss)
   window.__waitBody = (callback) => {
     if (window.document.body) {
-      callback();
+      callback()
     } else {
-      window.document.addEventListener("DOMContentLoaded", callback);
+      window.document.addEventListener('DOMContentLoaded', callback)
     }
-  };
+  }
   window.__waitBody(() => {
-    window.document.head.append(noDragCss);
-  });
+    window.document.head.append(noDragCss)
+  })
   const sendClick = () => {
     window.ReactNativeWebView.postMessage(
       JSON.stringify({
-        type: "user_click",
+        type: 'user_click',
         payload: null,
       }),
-    );
-  };
-  window.addEventListener("click", sendClick, true);
-  window.addEventListener("touchstart", sendClick, true);
+    )
+  }
+  window.addEventListener('click', sendClick, true)
+  window.addEventListener('touchstart', sendClick, true)
 
   window.__keepScrollPosition = (selector, distanceAdjust = 0) => {
     const saveScrollPosition = () => {
-      const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY;
-      window.localStorage.setItem("__scrollPosition", top + "");
-    };
-
-    const restoreScrollPosition = () => {
-      const scrollPosition = window.localStorage.getItem("__scrollPosition");
-      if (scrollPosition && parseInt(scrollPosition)) {
-        window.localStorage.setItem("__scrollPosition", "");
-        window.localStorage.removeItem("__scrollPosition");
-        window.setTimeout(() => {
-          window.localStorage.setItem("__scrollPosition", "");
-          window.localStorage.removeItem("__scrollPosition");
-          if (selector) {
-            const dom = window.document.querySelector(selector);
-            if (dom) {
-              dom.scrollTop = parseInt(scrollPosition) + distanceAdjust;
-            }
-          } else {
-            window.scrollTo(0, parseInt(scrollPosition) + distanceAdjust);
-          }
-        }, 300);
-      }
-    };
-
-    if (window.document.readyState === "complete") {
-      restoreScrollPosition();
-    } else {
-      window.addEventListener("load", restoreScrollPosition);
+      const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY
+      window.localStorage.setItem('__scrollPosition', top + '')
     }
 
-    window.addEventListener("beforeunload", saveScrollPosition);
-  };
+    const restoreScrollPosition = () => {
+      const scrollPosition = window.localStorage.getItem('__scrollPosition')
+      if (scrollPosition && parseInt(scrollPosition)) {
+        window.localStorage.setItem('__scrollPosition', '')
+        window.localStorage.removeItem('__scrollPosition')
+        window.setTimeout(() => {
+          window.localStorage.setItem('__scrollPosition', '')
+          window.localStorage.removeItem('__scrollPosition')
+          if (selector) {
+            const dom = window.document.querySelector(selector)
+            if (dom) {
+              dom.scrollTop = parseInt(scrollPosition) + distanceAdjust
+            }
+          } else {
+            window.scrollTo(0, parseInt(scrollPosition) + distanceAdjust)
+          }
+        }, 300)
+      }
+    }
+
+    if (window.document.readyState === 'complete') {
+      restoreScrollPosition()
+    } else {
+      window.addEventListener('load', restoreScrollPosition)
+    }
+
+    window.addEventListener('beforeunload', saveScrollPosition)
+  }
 
   window.__markReaded = (containerClass, textClass, textsClass, onClick) => {
     window.document.addEventListener(
-      "click",
+      'click',
       (evt) => {
-        const itemElement = evt.target.closest(containerClass);
+        const itemElement = evt.target.closest(containerClass)
         if (itemElement) {
-          const title = itemElement.querySelector(textClass);
+          const title = itemElement.querySelector(textClass)
           if (title) {
-            const ret = onClick?.(evt, title);
+            const ret = onClick?.(evt, title)
             if (ret === false) {
-              return;
+              return
             }
-            const clicked = JSON.parse(window.localStorage.getItem("__clicked__") || "{}");
-            const titleText = title.innerText;
-            const now = Date.now();
-            clicked[titleText] = now;
+            const clicked = JSON.parse(window.localStorage.getItem('__clicked__') || '{}')
+            const titleText = title.innerText
+            const now = Date.now()
+            clicked[titleText] = now
             for (const t in clicked) {
               if (now - clicked[t] > 5 * 24 * 60 * 60 * 1000) {
-                delete clicked[t];
+                delete clicked[t]
               }
             }
-            window.localStorage.setItem("__clicked__", JSON.stringify(clicked));
+            window.localStorage.setItem('__clicked__', JSON.stringify(clicked))
           }
         }
       },
       true,
-    );
+    )
 
     window.setInterval(() => {
-      const clicked = JSON.parse(window.localStorage.getItem("__clicked__") || "{}");
-      const items = window.document.querySelectorAll(textsClass);
+      const clicked = JSON.parse(window.localStorage.getItem('__clicked__') || '{}')
+      const items = window.document.querySelectorAll(textsClass)
       items.forEach((ele) => {
         if (ele.innerText in clicked) {
-          ele.style.opacity = 0.4;
+          ele.style.opacity = 0.4
         }
-      });
-    }, 100);
-  };
+      })
+    }, 100)
+  }
 
   window.__injectCss = () => {
-    let style = window.document.querySelector("style[data-css-inject]");
+    let style = window.document.querySelector('style[data-css-inject]')
     if (!style) {
-      style = window.document.createElement("style");
-      style.dataset.cssInject = "true";
-      window.document.head.appendChild(style);
+      style = window.document.createElement('style')
+      style.dataset.cssInject = 'true'
+      window.document.head.appendChild(style)
     }
     // eslint-disable-next-line no-undef
-    style.textContent = CSS_CODE;
-  };
+    style.textContent = CSS_CODE
+  }
   if (window.document.head) {
-    window.__injectCss();
+    window.__injectCss()
   } else {
-    window.document.addEventListener("DOMContentLoaded", () => {
-      window.__injectCss();
-    });
+    window.document.addEventListener('DOMContentLoaded', () => {
+      window.__injectCss()
+    })
   }
 
   window.__handleShare = function () {
     const url =
-      window.location.hostname === "m.douyin.com"
-        ? window.location.href.split("#")[0]
-        : window.location.href;
+      window.location.hostname === 'm.douyin.com'
+        ? window.location.href.split('#')[0]
+        : window.location.href
 
     window.ReactNativeWebView.postMessage(
       JSON.stringify({
-        type: "share",
+        type: 'share',
         payload: {
           title: window.document.title,
           url,
         },
       }),
-    );
-  };
+    )
+  }
 
   // window.document.addEventListener(
   //   'click',
@@ -194,7 +194,7 @@ function __$injectBeforeLoad() {
   // )
 }
 
-export const beforeLoadedInject = `(${__$injectBeforeLoad})();true;`;
+export const beforeLoadedInject = `(${__$injectBeforeLoad})();true;`
 
 // function __$inject2() {
 //   // if (window.__injected2) {

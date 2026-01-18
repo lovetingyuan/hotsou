@@ -1,54 +1,54 @@
-import WebView from "@/components/WebView";
-import { getTabUrl, TabsName } from "@/constants/Tabs";
+import WebView from '@/components/WebView'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   const TARGET_URL =
-    "https://lf-douyin-mobile.bytecdn.com/obj/growth-douyin-share/growth/douyin_ug/static/image/bg-hot-title.e1b11d08.png";
+    'https://lf-douyin-mobile.bytecdn.com/obj/growth-douyin-share/growth/douyin_ug/static/image/bg-hot-title.e1b11d08.png'
   // @ts-ignore
   const processNode = (node) => {
     if (
       node.nodeType === 1 &&
-      node.tagName === "X-IMAGE" &&
-      node.classList?.contains("banner-image")
+      node.tagName === 'X-IMAGE' &&
+      node.classList?.contains('banner-image')
     ) {
-      if (node.getAttribute("src") !== TARGET_URL) {
-        node.setAttribute("src", TARGET_URL);
+      if (node.getAttribute('src') !== TARGET_URL) {
+        node.setAttribute('src', TARGET_URL)
       }
     }
-  };
+  }
 
   // 1. Check existing nodes
-  document.querySelectorAll("x-image.banner-image").forEach(processNode);
+  document.querySelectorAll('x-image.banner-image').forEach(processNode)
 
   // 3. Observe changes
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      if (mutation.type === "childList") {
-        mutation.addedNodes.forEach(processNode);
-      } else if (mutation.type === "attributes" && mutation.attributeName === "src") {
-        processNode(mutation.target);
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach(processNode)
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+        processNode(mutation.target)
       }
-    });
-  });
+    })
+  })
 
   observer.observe(document.documentElement, {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["src"],
-  });
-  if (location.pathname === "/landings/hotlist") {
+    attributeFilter: ['src'],
+  })
+  if (location.pathname === '/landings/hotlist') {
     // @ts-ignore
     window.__markReaded?.(
-      "x-view[data-topic]",
-      "x-text.hot-item-title-text",
-      "x-text.hot-item-title-text",
-    );
+      'x-view[data-topic]',
+      'x-text.hot-item-title-text',
+      'x-text.hot-item-title-text',
+    )
     // @ts-ignore
-    window.__keepScrollPosition("#hot-list-0[enable-scroll", 80);
+    window.__keepScrollPosition('#hot-list-0[enable-scroll', 80)
   }
 }
-const jsCode = `(${__$inject})()`;
+const jsCode = `(${__$inject})()`
 
 export default function DouyinHotlistScreen() {
   return (
@@ -70,5 +70,5 @@ export default function DouyinHotlistScreen() {
         }
       `}
     />
-  );
+  )
 }

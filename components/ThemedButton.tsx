@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   ActivityIndicator,
   Pressable,
@@ -6,23 +6,23 @@ import {
   StyleSheet,
   TextStyle,
   ViewStyle,
-} from "react-native";
+} from 'react-native'
 
-import { ThemedText } from "./ThemedText";
+import { ThemedText } from './ThemedText'
 
-export type ButtonType = "primary" | "secondary" | "danger";
+export type ButtonType = 'primary' | 'secondary' | 'danger'
 
 export interface ThemedButtonProps extends PressableProps {
-  title: string;
-  type?: ButtonType;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-  isLoading?: boolean;
+  title: string
+  type?: ButtonType
+  style?: ViewStyle
+  textStyle?: TextStyle
+  isLoading?: boolean
 }
 
 export function ThemedButton({
   title,
-  type = "primary",
+  type = 'primary',
   style,
   textStyle,
   isLoading,
@@ -31,27 +31,27 @@ export function ThemedButton({
 }: ThemedButtonProps) {
   const getBackgroundColor = (pressed: boolean) => {
     if (disabled) {
-      return "#ccc";
+      return '#ccc'
     }
 
     switch (type) {
-      case "primary":
-        return pressed ? "#0a7ea4" : "#0c96c4"; // Lighter teal, darker on press
-      case "danger":
-        return pressed ? "#ff4444" : "#ff6666";
-      case "secondary":
-        return pressed ? "#888" : "#aaa";
+      case 'primary':
+        return pressed ? '#0a7ea4' : '#0c96c4' // Lighter teal, darker on press
+      case 'danger':
+        return pressed ? '#ff4444' : '#ff6666'
+      case 'secondary':
+        return pressed ? '#888' : '#aaa'
       default:
-        return pressed ? "#0a7ea4" : "#0c96c4";
+        return pressed ? '#0a7ea4' : '#0c96c4'
     }
-  };
+  }
 
   const getTextColor = () => {
     if (disabled) {
-      return "#666";
+      return '#666'
     }
-    return "#fff";
-  };
+    return '#fff'
+  }
 
   return (
     <Pressable
@@ -69,7 +69,7 @@ export function ThemedButton({
         <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>{title}</ThemedText>
       )}
     </Pressable>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -77,12 +77,12 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minWidth: 48,
   },
   text: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
-});
+})

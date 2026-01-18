@@ -1,13 +1,13 @@
-import { Image, ImageProps, ImageSource } from "expo-image";
-import React, { useCallback, useState } from "react";
-import { StyleSheet } from "react-native";
+import { Image, ImageProps, ImageSource } from 'expo-image'
+import React, { useCallback, useState } from 'react'
+import { StyleSheet } from 'react-native'
 
-interface FallbackImageProps extends Omit<ImageProps, "source" | "onError"> {
-  source: ImageSource;
-  fallbackSource: ImageSource;
-  defaultSource?: ImageSource;
-  onError?: (error: any) => void;
-  onLoadSuccess?: () => void;
+interface FallbackImageProps extends Omit<ImageProps, 'source' | 'onError'> {
+  source: ImageSource
+  fallbackSource: ImageSource
+  defaultSource?: ImageSource
+  onError?: (error: any) => void
+  onLoadSuccess?: () => void
 }
 
 const FallbackImage: React.FC<FallbackImageProps> = ({
@@ -17,29 +17,29 @@ const FallbackImage: React.FC<FallbackImageProps> = ({
   style,
   onError,
   onLoadSuccess,
-  contentFit = "cover",
+  contentFit = 'cover',
   ...props
 }) => {
   // Use state to trigger re-render on error
-  const [isFallback, setIsFallback] = useState(false);
+  const [isFallback, setIsFallback] = useState(false)
 
   const handleError = useCallback(
     (event: any) => {
       if (!isFallback) {
-        setIsFallback(true);
-        onError?.(event);
+        setIsFallback(true)
+        onError?.(event)
       }
     },
     [isFallback, onError],
-  );
+  )
 
   const handleLoadSuccess = useCallback(() => {
     if (!isFallback) {
-      onLoadSuccess?.();
+      onLoadSuccess?.()
     }
-  }, [isFallback, onLoadSuccess]);
+  }, [isFallback, onLoadSuccess])
 
-  const displaySource = isFallback ? fallbackSource : source;
+  const displaySource = isFallback ? fallbackSource : source
 
   return (
     <Image
@@ -52,14 +52,14 @@ const FallbackImage: React.FC<FallbackImageProps> = ({
       contentFit={contentFit}
       transition={200}
     />
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
   },
-});
+})
 
-export default FallbackImage;
+export default FallbackImage

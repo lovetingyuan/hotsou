@@ -1,5 +1,5 @@
-import WebView from "@/components/WebView";
-import { getTabUrl, TabsName } from "@/constants/Tabs";
+import WebView from '@/components/WebView'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   // @ts-ignore
@@ -7,7 +7,7 @@ function __$inject() {
     'div[class^="index_content"]',
     'div[class^="index_left_"] > div:first-child',
     'div[class^="index_left_"] > div:first-child',
-  );
+  )
 }
 
 export default function FenghuangScreen() {
@@ -35,7 +35,7 @@ export default function FenghuangScreen() {
           padding-top: 32px;
         }
       `}
-      forbiddenUrls={["err.ifengcloud.ifeng.com/v1/api/hb"]}
+      forbiddenUrls={['err.ifengcloud.ifeng.com/v1/api/hb']}
     />
-  );
+  )
 }

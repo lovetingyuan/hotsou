@@ -1,9 +1,9 @@
-import WebView from "@/components/WebView";
-import { getTabUrl, TabsName } from "@/constants/Tabs";
+import WebView from '@/components/WebView'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   // rank-container hot-search
-  if (location.pathname.includes("newsapp/hot-content/")) {
+  if (location.pathname.includes('newsapp/hot-content/')) {
     // history.scrollRestoration = 'auto'
     // const tabsConfig = [
     //   {
@@ -43,23 +43,23 @@ function __$inject() {
     //   },
     // ]
     setInterval(() => {
-      const reload = document.querySelector(".page-status-error .page-reload");
+      const reload = document.querySelector('.page-status-error .page-reload')
       if (reload) {
         // @ts-ignore
-        reload.click();
+        reload.click()
       }
-    }, 200);
+    }, 200)
 
     // @ts-ignore
-    window.__markReaded?.(".s-item-wrapper", ".s-text", ".s-item-wrapper .s-text", (evt, title) => {
-      const text = title?.innerText;
+    window.__markReaded?.('.s-item-wrapper', '.s-text', '.s-item-wrapper .s-text', (evt, title) => {
+      const text = title?.innerText
       if (text) {
-        const url = "https://c.m.163.com/news/search?keyword=" + encodeURIComponent(text);
-        location.href = url;
-        evt.stopPropagation();
-        evt.preventDefault();
+        const url = 'https://c.m.163.com/news/search?keyword=' + encodeURIComponent(text)
+        location.href = url
+        evt.stopPropagation()
+        evt.preventDefault()
       }
-    });
+    })
 
     // const tabs = document.getElementById('tabContainer')
     // if (tabs) {
@@ -94,31 +94,31 @@ function __$inject() {
     // }
 
     document.addEventListener(
-      "click",
+      'click',
       (evt) => {
         // @ts-ignore
-        if (evt.target.closest(".s-item-wrapper")) {
+        if (evt.target.closest('.s-item-wrapper')) {
           // @ts-ignore
           localStorage.setItem(
-            "scroll-position",
+            'scroll-position',
             // @ts-ignore
-            document.querySelector(".swiper-slide-active .rank-container").scrollTop,
-          );
+            document.querySelector('.swiper-slide-active .rank-container').scrollTop,
+          )
         }
       },
       true,
-    );
-    const id = localStorage.getItem("scroll-position");
+    )
+    const id = localStorage.getItem('scroll-position')
     if (id) {
       const timer = setInterval(() => {
-        const nodes = document.querySelectorAll(".s-item-wrapper");
+        const nodes = document.querySelectorAll('.s-item-wrapper')
         if (nodes.length > 20) {
-          clearInterval(timer);
+          clearInterval(timer)
           // @ts-ignore
-          document.querySelector(".swiper-slide-active .rank-container").scrollTop = id;
+          document.querySelector('.swiper-slide-active .rank-container').scrollTop = id
         }
-      }, 200);
-      localStorage.removeItem("scroll-position");
+      }, 200)
+      localStorage.removeItem('scroll-position')
     }
   }
 }
@@ -161,7 +161,7 @@ export default function WangyiScreen() {
         }
       `}
       js={`(${__$inject})();true;`}
-      forbiddenUrls={["sentry.music.163.com", "m.163.com/newsapp/applinks.html"]}
+      forbiddenUrls={['sentry.music.163.com', 'm.163.com/newsapp/applinks.html']}
     />
-  );
+  )
 }

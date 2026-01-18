@@ -1,11 +1,11 @@
-import WebView from "@/components/WebView";
-import { getTabUrl, TabsName } from "@/constants/Tabs";
+import WebView from '@/components/WebView'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
-  if (location.hostname === "top.baidu.com") {
-    history.scrollRestoration = "auto";
+  if (location.hostname === 'top.baidu.com') {
+    history.scrollRestoration = 'auto'
     // @ts-ignore
-    window.__markReaded?.(".c-text-item", ".item-word", ".c-text-item .item-word");
+    window.__markReaded?.('.c-text-item', '.item-word', '.c-text-item .item-word')
   }
 }
 
@@ -20,7 +20,7 @@ export default function BaiduScreen() {
           display: none !important;
         }
       `}
-      forbiddenUrls={["activity.baidu.com/mbox", "wappass.baidu.com"]}
+      forbiddenUrls={['activity.baidu.com/mbox', 'wappass.baidu.com']}
     />
-  );
+  )
 }

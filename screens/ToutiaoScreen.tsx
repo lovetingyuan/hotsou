@@ -1,63 +1,63 @@
-import WebView from "@/components/WebView";
-import { getTabUrl, TabsName } from "@/constants/Tabs";
+import WebView from '@/components/WebView'
+import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
-  if (location.pathname.startsWith("/article/") || location.pathname.startsWith("/video/")) {
+  if (location.pathname.startsWith('/article/') || location.pathname.startsWith('/video/')) {
     setInterval(() => {
-      const cancelBtn = document.querySelector(".activate-modal .button.cancel");
+      const cancelBtn = document.querySelector('.activate-modal .button.cancel')
       if (cancelBtn) {
         // @ts-ignore
-        cancelBtn.click();
+        cancelBtn.click()
       }
-    }, 200);
+    }, 200)
     const readMore = setInterval(() => {
-      const readMoreBtn = document.querySelector(".toggle-button");
+      const readMoreBtn = document.querySelector('.toggle-button')
       if (readMoreBtn) {
-        clearInterval(readMore);
+        clearInterval(readMore)
         // @ts-ignore
-        readMoreBtn.click();
+        readMoreBtn.click()
       }
-    }, 100);
+    }, 100)
   }
-  if (location.pathname === "/feoffline/hotspot_and_local/html/hot_list/index.html") {
+  if (location.pathname === '/feoffline/hotspot_and_local/html/hot_list/index.html') {
     document.addEventListener(
-      "click",
+      'click',
       (evt) => {
         // @ts-ignore
-        if (evt.target.closest(".tt-show-monitor")) {
+        if (evt.target.closest('.tt-show-monitor')) {
           // @ts-ignore
-          localStorage.setItem("scroll-position", document.documentElement.scrollTop);
+          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
         }
       },
       true,
-    );
-    const id = localStorage.getItem("scroll-position");
+    )
+    const id = localStorage.getItem('scroll-position')
     if (id) {
       const timer = setInterval(() => {
-        const nodes = document.querySelectorAll(".tt-show-monitor");
+        const nodes = document.querySelectorAll('.tt-show-monitor')
         if (nodes.length > 20) {
-          clearInterval(timer);
+          clearInterval(timer)
           window.scrollTo({
             top: Number(id),
-          });
+          })
         }
-      }, 200);
-      localStorage.removeItem("scroll-position");
+      }, 200)
+      localStorage.removeItem('scroll-position')
     }
   }
-  if (location.pathname === "/search") {
+  if (location.pathname === '/search') {
     const reload = () => {
-      const results = document.getElementById("results");
-      if (results && results.textContent.includes("抱歉，未找到相关结果")) {
-        location.reload();
+      const results = document.getElementById('results')
+      if (results && results.textContent.includes('抱歉，未找到相关结果')) {
+        location.reload()
       }
-    };
-    if (document.readyState === "complete") {
-      reload();
+    }
+    if (document.readyState === 'complete') {
+      reload()
     } else {
-      window.addEventListener("load", () => {
-        reload();
-      });
+      window.addEventListener('load', () => {
+        reload()
+      })
     }
   }
 }
@@ -83,7 +83,7 @@ export default function ToutiaoScreen() {
           padding: 24px 0 !important;
         }
       `}
-      forbiddenUrls={["zijieapi.com", "article.zlink.toutiao.com"]}
+      forbiddenUrls={['zijieapi.com', 'article.zlink.toutiao.com']}
     />
-  );
+  )
 }
