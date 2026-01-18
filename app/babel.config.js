@@ -5,7 +5,6 @@ module.exports = function (api) {
     plugins: [
       './scripts/babel-plugin-function-source.js',
       './scripts/babel-plugin-inject-githash.js',
-      'react-native-reanimated/plugin',
     ],
     env: {
       production: {
