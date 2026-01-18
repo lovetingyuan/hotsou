@@ -1,16 +1,16 @@
-import WebView from '@/components/WebView'
-import { getTabUrl, TabsName } from '@/constants/Tabs'
+import WebView from "@/components/WebView";
+import { getTabUrl, TabsName } from "@/constants/Tabs";
 
 function __$inject() {
   setInterval(() => {
-    const btn = document.querySelector('.MobileModal-wrapper button')
+    const btn = document.querySelector(".MobileModal-wrapper button");
     if (btn) {
       // @ts-ignore
-      btn.click()
+      btn.click();
     }
-  }, 200)
+  }, 200);
   // @ts-ignore
-  window.__markReaded?.('.HotList-item', '.HotList-itemTitle', '.HotList-item .HotList-itemTitle')
+  window.__markReaded?.(".HotList-item", ".HotList-itemTitle", ".HotList-item .HotList-itemTitle");
 }
 
 export default function ZhihuScreen() {
@@ -19,10 +19,10 @@ export default function ZhihuScreen() {
       name={TabsName.zhihu}
       url={getTabUrl(TabsName.zhihu)!}
       forbiddenUrls={[
-        'zhihu-web-analytics.zhihu.com',
-        'datahub.zhihu.com',
-        'apm.zhihu.com',
-        'www.zhihu.com/oia/',
+        "zhihu-web-analytics.zhihu.com",
+        "datahub.zhihu.com",
+        "apm.zhihu.com",
+        "www.zhihu.com/oia/",
       ]}
       css={`
         .OpenInAppButton,
@@ -52,5 +52,5 @@ export default function ZhihuScreen() {
       `}
       js={`(${__$inject})()`}
     />
-  )
+  );
 }

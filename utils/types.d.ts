@@ -4,9 +4,9 @@
  */
 declare type UseStateByKey<K extends string, T> = Omit<
   {
-    [P in K]: T
+    [P in K]: T;
   } & {
-    [P in `set${Capitalize<K>}`]: (a: T) => void
+    [P in `set${Capitalize<K>}`]: (a: T) => void;
   },
-  ''
->
+  ""
+>;

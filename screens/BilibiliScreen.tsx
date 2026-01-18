@@ -1,68 +1,69 @@
-import WebView from '@/components/WebView'
-import { getTabUrl, TabsName } from '@/constants/Tabs'
+import WebView from "@/components/WebView";
+import { getTabUrl, TabsName } from "@/constants/Tabs";
 
 function __$inject() {
-  if (location.pathname === '/blackboard/activity-trending-topic.html') {
+  if (location.pathname === "/blackboard/activity-trending-topic.html") {
     // @ts-ignore
-    window.__markReaded?.('bili-open-app[schema]', '.trending-title', '.trending-title')
-    document.addEventListener('click', e => {
+    window.__markReaded?.("bili-open-app[schema]", ".trending-title", ".trending-title");
+    document.addEventListener("click", (e) => {
       // @ts-ignore
-      const item = e.target.closest('bili-open-app[schema]')
+      const item = e.target.closest("bili-open-app[schema]");
       if (item) {
-        e.preventDefault()
-        const word = item.__vue__?.data.keyword
+        e.preventDefault();
+        const word = item.__vue__?.data.keyword;
         if (word) {
-          const url = 'https://m.bilibili.com/search/?keyword=' + encodeURIComponent(word)
-          location.href = url
+          const url = "https://m.bilibili.com/search/?keyword=" + encodeURIComponent(word);
+          location.href = url;
         }
       } else {
         // @ts-ignore
-        const item2 = e.target.closest('m-open-app')
+        const item2 = e.target.closest("m-open-app");
         if (item2) {
-          const { pathname } = new URL(item2.getAttribute('schema'))
-          location.href = 'https://player.bilibili.com/player.html?aid=' + pathname.split('/').pop()
+          const { pathname } = new URL(item2.getAttribute("schema"));
+          location.href =
+            "https://player.bilibili.com/player.html?aid=" + pathname.split("/").pop();
         }
       }
-    })
+    });
 
     document.addEventListener(
-      'click',
-      evt => {
+      "click",
+      (evt) => {
         // @ts-ignore
-        if (evt.target.closest('bili-open-app[schema]')) {
+        if (evt.target.closest("bili-open-app[schema]")) {
           // @ts-ignore
-          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
+          localStorage.setItem("scroll-position", document.documentElement.scrollTop);
         }
       },
-      true
-    )
-    const id = localStorage.getItem('scroll-position')
+      true,
+    );
+    const id = localStorage.getItem("scroll-position");
     if (id) {
       const timer = setInterval(() => {
-        const nodes = document.querySelectorAll('bili-open-app')
+        const nodes = document.querySelectorAll("bili-open-app");
         if (nodes.length > 20) {
-          clearInterval(timer)
+          clearInterval(timer);
           window.scrollTo({
             top: Number(id),
-          })
+          });
         }
-      }, 200)
-      localStorage.removeItem('scroll-position')
+      }, 200);
+      localStorage.removeItem("scroll-position");
     }
-  } else if (location.pathname === '/search/') {
+  } else if (location.pathname === "/search/") {
     document.addEventListener(
-      'click',
-      e => {
+      "click",
+      (e) => {
         // @ts-ignore
-        const item = e.target.closest('.wx-tag.v-card-single[data-aid]')
+        const item = e.target.closest(".wx-tag.v-card-single[data-aid]");
         if (item) {
-          e.preventDefault()
-          const url = 'https://player.bilibili.com/player.html?aid=' + item.dataset.aid
-          location.href = url
+          e.preventDefault();
+          const url = "https://player.bilibili.com/player.html?aid=" + item.dataset.aid;
+          location.href = url;
         }
       },
-      true
-    )
+      true,
+    );
   }
 }
 
@@ -78,7 +79,7 @@ export default function BilibiliScreen() {
           display: none !important;
         }
       `}
-      forbiddenUrls={['data.bilibili.com']}
+      forbiddenUrls={["data.bilibili.com"]}
     />
-  )
+  );
 }

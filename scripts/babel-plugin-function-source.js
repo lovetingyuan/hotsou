@@ -1,22 +1,22 @@
-const { default: generate } = require('@babel/generator')
+const { default: generate } = require("@babel/generator");
 
-module.exports = babel => {
-  const { types: t } = babel
+module.exports = (babel) => {
+  const { types: t } = babel;
 
   return {
-    name: 'replace-function-with-variable',
+    name: "replace-function-with-variable",
     visitor: {
       FunctionDeclaration(path) {
-        const name = path.node.id?.name || ''
-        if (!name.startsWith('__$')) {
-          return
+        const name = path.node.id?.name || "";
+        if (!name.startsWith("__$")) {
+          return;
         }
-        const sourceCode = generate(path.node).code
-        const variableDeclaration = t.variableDeclaration('const', [
+        const sourceCode = generate(path.node).code;
+        const variableDeclaration = t.variableDeclaration("const", [
           t.variableDeclarator(t.identifier(name), t.stringLiteral(sourceCode)),
-        ])
-        path.replaceWith(variableDeclaration)
+        ]);
+        path.replaceWith(variableDeclaration);
       },
     },
-  }
-}
+  };
+};

@@ -1,10 +1,10 @@
-import WebView from '@/components/WebView'
-import { getTabUrl, TabsName } from '@/constants/Tabs'
+import WebView from "@/components/WebView";
+import { getTabUrl, TabsName } from "@/constants/Tabs";
 
 function __$inject() {
-  if (location.pathname.startsWith('/top/summary')) {
+  if (location.pathname.startsWith("/top/summary")) {
     // @ts-ignore
-    window.__markReaded?.('.list_a li', '.list_a li a span', '.list_a li a span')
+    window.__markReaded?.(".list_a li", ".list_a li a span", ".list_a li a span");
   }
 }
 
@@ -30,5 +30,5 @@ export default function WeiboScreen() {
       `}
       js={`(${__$inject})()`}
     />
-  )
+  );
 }

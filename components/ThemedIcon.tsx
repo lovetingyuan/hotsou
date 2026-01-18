@@ -1,13 +1,13 @@
-import Ionicons from '@expo/vector-icons/Ionicons'
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { useColorScheme } from '@/hooks/useColorScheme'
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function ThemedIcon(props: React.ComponentProps<typeof Ionicons>) {
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
   return (
     <Ionicons
       {...props}
-      color={props.color || (colorScheme === 'dark' ? 'white' : 'black')}
+      color={props.color || (colorScheme === "dark" ? "white" : "black")}
     ></Ionicons>
-  )
+  );
 }

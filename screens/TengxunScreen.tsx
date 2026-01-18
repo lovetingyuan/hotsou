@@ -1,38 +1,38 @@
-import WebView from '@/components/WebView'
-import { getTabUrl, TabsName } from '@/constants/Tabs'
+import WebView from "@/components/WebView";
+import { getTabUrl, TabsName } from "@/constants/Tabs";
 
 function __$inject() {
-  if (location.pathname === '/ranking') {
+  if (location.pathname === "/ranking") {
     // @ts-ignore
     window.__markReaded?.(
       '[dt-eid="em_item_article"]',
       '[class^="ranking-item_text"]',
-      '[dt-eid="em_item_article"] [class^="ranking-item_text"]'
-    )
+      '[dt-eid="em_item_article"] [class^="ranking-item_text"]',
+    );
 
     document.addEventListener(
-      'click',
-      evt => {
+      "click",
+      (evt) => {
         // @ts-ignore
         if (evt.target.closest('[dt-eid="em_item_article"]')) {
           // @ts-ignore
-          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
+          localStorage.setItem("scroll-position", document.documentElement.scrollTop);
         }
       },
-      true
-    )
-    const id = localStorage.getItem('scroll-position')
+      true,
+    );
+    const id = localStorage.getItem("scroll-position");
     if (id) {
       const timer = setInterval(() => {
-        const nodes = document.querySelectorAll('[dt-eid="em_item_article"]')
+        const nodes = document.querySelectorAll('[dt-eid="em_item_article"]');
         if (nodes.length > 20) {
-          clearInterval(timer)
+          clearInterval(timer);
           window.scrollTo({
             top: Number(id),
-          })
+          });
         }
-      }, 200)
-      localStorage.removeItem('scroll-position')
+      }, 200);
+      localStorage.removeItem("scroll-position");
     }
   }
 }
@@ -53,11 +53,11 @@ export default function TengxunScreen() {
         }
       `}
       forbiddenUrls={[
-        'h.trace.qq.com',
-        'otheve.beacon.qq.com',
-        'snowflake.qq.com',
-        'view.inews.qq.com/mobile',
+        "h.trace.qq.com",
+        "otheve.beacon.qq.com",
+        "snowflake.qq.com",
+        "view.inews.qq.com/mobile",
       ]}
     />
-  )
+  );
 }

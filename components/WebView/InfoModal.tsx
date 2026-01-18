@@ -1,5 +1,5 @@
-import * as Clipboard from 'expo-clipboard'
-import React from 'react'
+import * as Clipboard from "expo-clipboard";
+import React from "react";
 import {
   Linking,
   Modal,
@@ -9,22 +9,22 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
-} from 'react-native'
+} from "react-native";
 
-import { useColorScheme } from '@/hooks/useColorScheme'
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 // import { FloatingButton } from '../FloatingButton'
-import { ThemedButton } from '../ThemedButton'
-import { ThemedText } from '../ThemedText'
-import { ThemedView } from '../ThemedView'
+import { ThemedButton } from "../ThemedButton";
+import { ThemedText } from "../ThemedText";
+import { ThemedView } from "../ThemedView";
 
 export default function InfoModal(props: {
-  visible: boolean
-  title: string
-  url: string
-  closeModal: () => void
+  visible: boolean;
+  title: string;
+  url: string;
+  closeModal: () => void;
 }) {
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
   return (
     <Modal
       animationType="fade"
@@ -32,15 +32,15 @@ export default function InfoModal(props: {
       visible={props.visible}
       statusBarTranslucent={true}
       onRequestClose={() => {
-        props.closeModal()
+        props.closeModal();
       }}
     >
       <View style={styles.centeredView}>
         <ThemedView
-          style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
+          style={[styles.modalView, { shadowColor: colorScheme === "dark" ? "white" : "black" }]}
         >
-          <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }} selectable>
-            {props.title || '当前页面'}
+          <ThemedText style={{ fontWeight: "bold", fontSize: 18 }} selectable>
+            {props.title || "当前页面"}
           </ThemedText>
           <ScrollView style={{ maxHeight: 120 }}>
             <ThemedText selectable style={{ opacity: 0.7 }}>
@@ -50,18 +50,18 @@ export default function InfoModal(props: {
 
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               gap: 10,
               marginTop: 20,
-              justifyContent: 'flex-end',
-              flexWrap: 'wrap',
+              justifyContent: "flex-end",
+              flexWrap: "wrap",
             }}
           >
             <ThemedButton
               title="浏览器打开"
               onPress={() => {
-                Linking.openURL(props.url)
-                props.closeModal()
+                Linking.openURL(props.url);
+                props.closeModal();
               }}
             />
             <ThemedButton
@@ -70,10 +70,10 @@ export default function InfoModal(props: {
               onPress={() => {
                 Share.share({
                   title: props.title,
-                  message: props.title + '\n' + props.url,
+                  message: props.title + "\n" + props.url,
                   url: props.url,
-                })
-                props.closeModal()
+                });
+                props.closeModal();
               }}
             />
             <ThemedButton
@@ -81,38 +81,38 @@ export default function InfoModal(props: {
               type="secondary"
               onPress={() => {
                 Clipboard.setStringAsync(props.url).then(() => {
-                  ToastAndroid.show('已复制', ToastAndroid.SHORT)
-                })
-                props.closeModal()
+                  ToastAndroid.show("已复制", ToastAndroid.SHORT);
+                });
+                props.closeModal();
               }}
             />
           </View>
           <TouchableOpacity
             onPress={props.closeModal}
-            style={{ position: 'absolute', top: 10, right: 10, padding: 5 }}
+            style={{ position: "absolute", top: 10, right: 10, padding: 5 }}
             hitSlop={10}
           >
-            <ThemedText style={{ fontSize: 20, color: '#999' }}>✕</ThemedText>
+            <ThemedText style={{ fontSize: 20, color: "#999" }}>✕</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </View>
     </Modal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalView: {
     margin: 20,
     borderRadius: 10,
     paddingVertical: 25,
     paddingHorizontal: 20,
-    width: '80%',
+    width: "80%",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: 20,
   },
-})
+});

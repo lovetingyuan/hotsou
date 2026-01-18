@@ -4,10 +4,10 @@
  * Use two levels of REs to avoid REDOS.
  */
 
-let protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/
+let protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
 
-let localhostDomainRE = /^localhost[:?\d]*(?:[^:?\d]\S*)?$/
-let nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/
+let localhostDomainRE = /^localhost[:?\d]*(?:[^:?\d]\S*)?$/;
+let nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/;
 
 /**
  * Loosely validate a URL `string`.
@@ -16,48 +16,48 @@ let nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/
  * @return {Boolean}
  */
 export function isHttpUrl(string: string) {
-  if (typeof string !== 'string') {
-    return false
+  if (typeof string !== "string") {
+    return false;
   }
-  if (!string.startsWith('http://') && !string.startsWith('https://')) {
-    return false
+  if (!string.startsWith("http://") && !string.startsWith("https://")) {
+    return false;
   }
 
-  let match = string.match(protocolAndDomainRE)
+  let match = string.match(protocolAndDomainRE);
   if (!match) {
-    return false
+    return false;
   }
 
-  let everythingAfterProtocol = match[1]
+  let everythingAfterProtocol = match[1];
   if (!everythingAfterProtocol) {
-    return false
+    return false;
   }
 
   return !!(
     localhostDomainRE.test(everythingAfterProtocol) ||
     nonLocalhostDomainRE.test(everythingAfterProtocol)
-  )
+  );
 }
 
 export function getPageIcon(page?: { icon?: string; url?: string }) {
-  const defaultIcon = require('../assets/images/favicon.png')
+  const defaultIcon = require("../assets/images/favicon.png");
   if (!page) {
-    return defaultIcon
+    return defaultIcon;
   }
   if (page.icon) {
-    return { uri: page.icon }
+    return { uri: page.icon };
   }
   // If no specific icon, try to get favicon from favicon.im service
   if (page.url) {
     try {
       // Extract hostname
-      const urlObj = new URL(page.url)
-      const domain = urlObj.hostname
+      const urlObj = new URL(page.url);
+      const domain = urlObj.hostname;
       // Use favicon.im service which is reliable and free
-      return { uri: `https://favicon.im/${domain}?larger=true` }
+      return { uri: `https://favicon.im/${domain}?larger=true` };
     } catch (e) {
       // If URL parsing fails, fallback to default
     }
   }
-  return defaultIcon
+  return defaultIcon;
 }

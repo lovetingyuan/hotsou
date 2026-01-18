@@ -1,29 +1,29 @@
-import { useRoute } from '@react-navigation/native'
-import { Image, TouchableOpacity } from 'react-native'
+import { useRoute } from "@react-navigation/native";
+import { Image, TouchableOpacity } from "react-native";
 
-import { useStore } from '@/store'
-import { getPageIcon } from '@/utils'
+import { useStore } from "@/store";
+import { getPageIcon } from "@/utils";
 
-import ThemedIcon from './ThemedIcon'
-import { ThemedView } from './ThemedView'
+import ThemedIcon from "./ThemedIcon";
+import { ThemedView } from "./ThemedView";
 
 export default function HeaderRight() {
-  const { setReloadTab, setShowPageInfo, $tabsList, setShareInfo } = useStore()
+  const { setReloadTab, setShowPageInfo, $tabsList, setShareInfo } = useStore();
   // const { pathname } = props
-  const route = useRoute()
-  const page = $tabsList.find(t => t.name === route.name)
+  const route = useRoute();
+  const page = $tabsList.find((t) => t.name === route.name);
   if (!page) {
-    return null
+    return null;
   }
   return (
     <ThemedView
       style={{
-        flexDirection: 'row',
+        flexDirection: "row",
         flexShrink: 0,
-        alignItems: 'center',
+        alignItems: "center",
         paddingHorizontal: 18,
         gap: 14,
-        backgroundColor: 'transparent',
+        backgroundColor: "transparent",
       }}
     >
       {/* <Link href="/modal">
@@ -39,10 +39,10 @@ export default function HeaderRight() {
         activeOpacity={0.5}
         style={{ paddingVertical: 1, paddingHorizontal: 4, width: 36 }}
         onPress={() => {
-          setShowPageInfo([page.name])
+          setShowPageInfo([page.name]);
         }}
         onLongPress={() => {
-          setShareInfo([page.name])
+          setShareInfo([page.name]);
         }}
       >
         {/* <ThemedIcon name="information-circle-outline" size={28}></ThemedIcon> */}
@@ -59,15 +59,15 @@ export default function HeaderRight() {
       <TouchableOpacity
         activeOpacity={0.5}
         onLongPress={() => {
-          setReloadTab([page.name, true])
+          setReloadTab([page.name, true]);
         }}
         onPress={() => {
-          setReloadTab([page.name, false])
+          setReloadTab([page.name, false]);
         }}
         style={{ paddingVertical: 3, paddingHorizontal: 5, width: 36 }}
       >
         <ThemedIcon name="reload" size={24}></ThemedIcon>
       </TouchableOpacity>
     </ThemedView>
-  )
+  );
 }
