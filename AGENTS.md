@@ -6,29 +6,29 @@ This document outlines the development guidelines, build processes, and coding s
 
 ### Build & Run
 
-- **Android Development**: `npm run android`
+- **Android Development**: `npm run app:android`
   - Runs the app on a connected Android device or emulator.
-- **iOS Development**: `npm run ios`
+- **iOS Development**: `npm run app:ios`
   - Runs the app on the iOS Simulator.
-- **Web Development**: `npm run web`
+- **Web Development**: `npm run app:web`
   - Runs the app in a browser.
-- **Production Build (Android)**: `npm run build:android`
+- **Production Build (Android)**: `npm run app:build:android`
   - Uses `zx` scripts to generate a release APK/Bundle.
-- **Expo Start**: `npm start`
+- **Expo Start**: `npm run app:start`
   - Starts the Metro bundler.
+- **Server Development**: `npm run server:dev`
+  - Runs the server in development mode.
 
 ### Linting & Validation
 
 - **Lint**: `npm run lint`
-  - Executes `eslint` with `expo` configuration.
-  - Enforces import sorting (`simple-import-sort`).
-- **Type Checking**: `npx tsc --noEmit`
-  - Runs the TypeScript compiler to check for type errors without emitting files.
-  - **Requirement**: Code must be free of TypeScript errors before completion.
-- **Project Health**: `npm run doctor`
-  - Checks for Expo and dependency issues.
-- **Unused Code**: `npm run check-unused`
-  - Checks for unused files and exports.
+  - Executes linting across all workspaces.
+- **Type Checking**: `npm run type-check`
+  - Runs TypeScript compiler checks across all workspaces.
+- **Project Health**: `npm run app:doctor`
+  - Checks for Expo and dependency issues in the app.
+- **Unused Code**: `npm run app:check-unused`
+  - Checks for unused files and exports in the app.
 
 ### Testing
 
