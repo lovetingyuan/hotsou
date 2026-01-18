@@ -16,6 +16,7 @@
     "format": "oxfmt . --write",
     "check-unused": "knip",
     "doctor": "npx -y expo-doctor@latest",
+    "mcp:cloudflare": "npx -y mcp-remote https://bindings.mcp.cloudflare.com/mcp",
     "update-expo": "npm i -g eas-cli && npm install expo && npx expo install --fix && npm run doctor"
   },
   "dependencies": {

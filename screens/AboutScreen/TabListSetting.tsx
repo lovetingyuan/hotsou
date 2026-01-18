@@ -22,7 +22,7 @@ export default function TabListSetting() {
       return
     }
     const list = [...$tabsList]
-    const oldIndex = list.findIndex((v) => v.name === sortingItemName)
+    const oldIndex = list.findIndex(v => v.name === sortingItemName)
     if (oldIndex === -1) {
       return
     }
@@ -38,7 +38,7 @@ export default function TabListSetting() {
   }
 
   const sortingIndex = React.useMemo(() => {
-    return $tabsList.findIndex((v) => v.name === sortingItemName) + 1
+    return $tabsList.findIndex(v => v.name === sortingItemName) + 1
   }, [sortingItemName, $tabsList])
 
   return (
@@ -53,7 +53,7 @@ export default function TabListSetting() {
       >
         <ThemedText style={{ fontSize: 18, fontWeight: 'bold' }}># 频道列表：</ThemedText>
         <ThemedButton
-          title='添加'
+          title="添加"
           onPress={() => {
             setIsAdding(true)
           }}
@@ -80,11 +80,11 @@ export default function TabListSetting() {
                     }}
                   >
                     <ThemedText
-                      style={[styles.text, { color: '#0969da' }]}
+                      style={[styles.text, { color: '#0969da', lineHeight: 22 }]}
                       numberOfLines={2}
-                      ellipsizeMode='tail'
+                      ellipsizeMode="tail"
                     >
-                      {index + 1}. <ThemedIcon name='create-outline' size={18} color='#0969da' />{' '}
+                      {index + 1}. <ThemedIcon name="create-outline" size={18} color="#0969da" />{' '}
                       {item.title}
                     </ThemedText>
                   </TouchableOpacity>
@@ -97,19 +97,19 @@ export default function TabListSetting() {
 
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <TouchableOpacity onPress={() => setSortingItemName(item.name)} hitSlop={10}>
-                  <ThemedIcon name='swap-vertical-outline' size={24} style={styles.arrow} />
+                  <ThemedIcon name="swap-vertical-outline" size={24} style={styles.arrow} />
                 </TouchableOpacity>
                 <Switch
                   trackColor={{ false: '#767577', true: '#34C759' }}
                   thumbColor={item.show ? '#fff' : '#f4f3f4'}
-                  ios_backgroundColor='#3e3e3e'
+                  ios_backgroundColor="#3e3e3e"
                   value={item.show}
                   onValueChange={() => {
                     const list = [...get$tabsList()]
-                    const currentIndex = list.findIndex((v) => v.name === item.name)
+                    const currentIndex = list.findIndex(v => v.name === item.name)
                     const toShow = !list[currentIndex].show
                     if (!toShow) {
-                      const showedCount = list.filter((v) => v.show).length
+                      const showedCount = list.filter(v => v.show).length
                       if (showedCount === 1) {
                         ToastAndroid.show('不支持关闭全部', ToastAndroid.SHORT)
                         return
