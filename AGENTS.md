@@ -28,6 +28,7 @@
 
 - 基于 Hono 框架，部署在 Cloudflare Workers。
 - 接口的输入需要使用 `zod` 进行验证。
+- zod 返回的变量名必须以 Schema 结尾。
 - 使用 `chanfana` 处理 OpenAPI 规范(如果适用)。
 - API 设计需要符合 Restful api 的最佳实践。
 
@@ -49,6 +50,7 @@
 
 - 严禁杜撰类型，必须与官方文档和官方类型相符合。
 - 尽量不用类型断言以及 any 类型。
+- 尽量通过用 zod 定义 schema，然后推导出类型。
 
 ### 版本控制与提交
 

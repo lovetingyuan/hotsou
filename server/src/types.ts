@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 export type AppContext = Context<{ Bindings: Env }>
 
-export const Task = z.object({
+export const TaskSchema = z.object({
   name: Str({ example: 'lorem' }),
   slug: Str(),
   description: Str({ required: false }),
@@ -25,16 +25,18 @@ export const Task = z.object({
 			$enableTextSelect: boolean
 		}
  */
-export const UserData = z.object({
-  $tabsList: z.array(
-    z.object({
-      name: z.string(),
-      title: z.string(),
-      url: z.string(),
-      show: z.boolean(),
-      builtIn: z.boolean().optional(),
-      icon: z.string().optional(),
-    })
-  ),
+const TabItemSchema = z.object({
+  name: z.string(),
+  title: z.string(),
+  url: z.string(),
+  show: z.boolean(),
+  builtIn: z.boolean().optional(),
+  icon: z.string().optional(),
+})
+
+export const UserDataSchema = z.object({
+  $tabsList: z.array(TabItemSchema),
   $enableTextSelect: z.boolean(),
 })
+
+export type UserData = z.infer<typeof UserDataSchema>

@@ -1,6 +1,6 @@
 import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
-import { AppContext, UserData } from '../types'
+import { AppContext, UserDataSchema } from '../types'
 
 const UserApplicationDataUpsertSchema = {
   tags: ['Users'],
@@ -12,7 +12,7 @@ const UserApplicationDataUpsertSchema = {
     body: {
       content: {
         'application/json': {
-          schema: UserData,
+          schema: UserDataSchema,
         },
       },
     },
@@ -24,7 +24,7 @@ const UserApplicationDataUpsertSchema = {
         'application/json': {
           schema: z.object({
             success: Bool(),
-            result: UserData,
+            result: UserDataSchema,
           }),
         },
       },

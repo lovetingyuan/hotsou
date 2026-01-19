@@ -1,6 +1,6 @@
 import { Bool, Num, OpenAPIRoute } from 'chanfana'
 import { z } from 'zod'
-import { type AppContext, Task } from '../types'
+import { type AppContext, TaskSchema } from '../types'
 
 export class TaskList extends OpenAPIRoute {
   schema = {
@@ -27,7 +27,7 @@ export class TaskList extends OpenAPIRoute {
               series: z.object({
                 success: Bool(),
                 result: z.object({
-                  tasks: Task.array(),
+                  tasks: TaskSchema.array(),
                 }),
               }),
             }),

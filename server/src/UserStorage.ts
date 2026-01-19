@@ -1,7 +1,7 @@
 import { DurableObject } from 'cloudflare:workers'
-import { UserStorageStub } from './types'
+import { UserData } from './types'
 
-export class UserStorage extends DurableObject implements UserStorageStub {
+export class UserStorage extends DurableObject {
   sql: SqlStorage
 
   constructor(ctx: DurableObjectState, env: any) {
@@ -19,12 +19,12 @@ export class UserStorage extends DurableObject implements UserStorageStub {
   async getData(userId: string) {
     const cursor = this.sql.exec('SELECT data FROM user_data WHERE user_id = ?', userId)
     const result = cursor.toArray()
-    
+
     if (result.length === 0) {
       return null
     }
-    
-    return JSON.parse(result[0].data as string)
+
+    return JSON.parse(result[0].data as string) as UserData
   }
 
   async saveData(userId: string, data: any) {

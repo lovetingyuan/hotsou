@@ -1,6 +1,6 @@
 import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
-import { type AppContext, Task } from '../types'
+import { type AppContext, TaskSchema } from '../types'
 
 export class TaskDelete extends OpenAPIRoute {
   schema = {
@@ -20,7 +20,7 @@ export class TaskDelete extends OpenAPIRoute {
               series: z.object({
                 success: Bool(),
                 result: z.object({
-                  task: Task,
+                  task: TaskSchema,
                 }),
               }),
             }),

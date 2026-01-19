@@ -1,6 +1,6 @@
 import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
-import { AppContext, UserData } from '../types'
+import { AppContext, UserDataSchema } from '../types'
 
 const UserApplicationDataSchema = {
   tags: ['Users'],
@@ -17,7 +17,7 @@ const UserApplicationDataSchema = {
         'application/json': {
           schema: z.object({
             success: Bool(),
-            result: UserData,
+            result: UserDataSchema,
           }),
         },
       },
@@ -35,12 +35,12 @@ export class UserApplicationData extends OpenAPIRoute {
     console.log('Fetching data for userId:', userId)
 
     const id = c.env.USER_STORAGE.idFromName('global')
-    const stub = c.env.USER_STORAGE.get(id) //as unknown as UserStorageStub
+    const stub = c.env.USER_STORAGE.get(id) //as any
     const dataResult = await stub.getData(userId)
 
     return {
       success: true,
-      result: dataResult || {},
+      result: dataResult,
     }
   }
 }
