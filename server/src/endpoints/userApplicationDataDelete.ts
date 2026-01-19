@@ -29,7 +29,9 @@ export class UserApplicationDataDelete extends OpenAPIRoute {
     const data = await this.getValidatedData<typeof this.schema>()
     const { userId } = data.params
 
-    await c.env.USER_DATA_KV.delete(userId)
+    const id = c.env.USER_STORAGE.idFromName('global')
+    const stub = c.env.USER_STORAGE.get(id) // as unknown as UserStorageStub
+    await stub.deleteData(userId)
 
     return {
       success: true,

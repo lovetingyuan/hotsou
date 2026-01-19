@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "app:start": "npm run start -w hotsou",
-    "app:android": "npm run android -w hotsou",
+    "android": "npm run android -w hotsou",
+    "typegen": "npm run cf-typegen -w hotsou-server",
     "app:ios": "npm run ios -w hotsou",
     "app:web": "npm run web -w hotsou",
     "app:doctor": "npm run doctor -w hotsou",

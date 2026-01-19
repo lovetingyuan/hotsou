@@ -34,7 +34,7 @@ export const UserData = z.object({
       show: z.boolean(),
       builtIn: z.boolean().optional(),
       icon: z.string().optional(),
-    }),
+    })
   ),
   $enableTextSelect: z.boolean(),
 })

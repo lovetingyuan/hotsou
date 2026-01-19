@@ -44,6 +44,7 @@
 
 ### TypeScript
 
+对于 server 项目，每次改完必须首先运行 `npm run cf-typegen` 来重新更新类型。
 每次改完代码运行`npm run type-check`来进行类型校验。
 
 - 严禁杜撰类型，必须与官方文档和官方类型相符合。

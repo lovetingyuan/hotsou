@@ -51,3 +51,5 @@ console.log('User endpoints registered.')
 
 // Export the Hono app
 export default app
+
+export { UserStorage } from './UserStorage'

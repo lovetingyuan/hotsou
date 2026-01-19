@@ -7,14 +7,20 @@
   "name": "hotsou-server",
   "main": "src/index.ts",
   "compatibility_date": "2025-09-27",
-  "kv_namespaces": [
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "USER_STORAGE",
+        "class_name": "UserStorage",
+      },
+    ],
+  },
+  "migrations": [
     {
-      "binding": "USER_DATA_KV",
-      "id": "4123952d9fbf4b25a09ea5b5036e35e9",
-      "preview_id": "5c41f44abcb84b7fb2b829c5d43c3c5a",
+      "tag": "v1",
+      "new_classes": ["UserStorage"],
     },
   ],
-  "migrations": [],
   "observability": {
     "enabled": true,
   },
