@@ -22,14 +22,14 @@ function __$inject() {
   if (location.pathname === '/feoffline/hotspot_and_local/html/hot_list/index.html') {
     document.addEventListener(
       'click',
-      (evt) => {
+      evt => {
         // @ts-ignore
         if (evt.target.closest('.tt-show-monitor')) {
           // @ts-ignore
           localStorage.setItem('scroll-position', document.documentElement.scrollTop)
         }
       },
-      true,
+      true
     )
     const id = localStorage.getItem('scroll-position')
     if (id) {
@@ -59,6 +59,9 @@ function __$inject() {
         reload()
       })
     }
+    setTimeout(() => {
+      reload()
+    }, 800)
   }
 }
 
@@ -76,11 +79,15 @@ export default function ToutiaoScreen() {
         .m-top-padding,
         .m-bottom-bar,
         .m-index-tag,
-        .arco-masking {
+        .arco-masking,
+        .l-paragraph-expand {
           display: none !important;
         }
         .hot-list-footer {
           padding: 24px 0 !important;
+        }
+        .weitoutiao-paragraph {
+          max-height: none !important;
         }
       `}
       forbiddenUrls={['zijieapi.com', 'article.zlink.toutiao.com']}
