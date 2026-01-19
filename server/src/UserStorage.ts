@@ -31,8 +31,30 @@ export class UserStorage extends DurableObject {
     this.sql.exec(
       'INSERT INTO user_data (user_id, data) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data',
       userId,
-      JSON.stringify(data)
+      JSON.stringify(data),
     )
+  }
+
+  async createData(userId: string, data: UserDataType) {
+    const exists =
+      this.sql.exec('SELECT 1 FROM user_data WHERE user_id = ?', userId).toArray().length > 0
+    if (exists) {
+      throw new Error('User data already exists')
+    }
+    this.sql.exec(
+      'INSERT INTO user_data (user_id, data) VALUES (?, ?)',
+      userId,
+      JSON.stringify(data),
+    )
+  }
+
+  async updateData(userId: string, data: UserDataType) {
+    const exists =
+      this.sql.exec('SELECT 1 FROM user_data WHERE user_id = ?', userId).toArray().length > 0
+    if (!exists) {
+      throw new Error('User data not found')
+    }
+    this.sql.exec('UPDATE user_data SET data = ? WHERE user_id = ?', JSON.stringify(data), userId)
   }
 
   async deleteData(userId: string) {

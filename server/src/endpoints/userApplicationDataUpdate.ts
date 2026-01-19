@@ -2,9 +2,9 @@ import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
 import { AppContext, UserDataSchema } from '../types'
 
-const UserApplicationDataUpsertSchema = {
+const UserApplicationDataUpdateSchema = {
   tags: ['Users'],
-  summary: 'Create or Update user application data',
+  summary: 'Update user application data',
   request: {
     params: z.object({
       userId: Str({ description: 'The unique user ID' }),
@@ -19,7 +19,7 @@ const UserApplicationDataUpsertSchema = {
   },
   responses: {
     '200': {
-      description: 'Data saved successfully',
+      description: 'Data updated successfully',
       content: {
         'application/json': {
           schema: z.object({
@@ -29,20 +29,45 @@ const UserApplicationDataUpsertSchema = {
         },
       },
     },
+    '404': {
+      description: 'User data not found',
+      content: {
+        'application/json': {
+          schema: z.object({
+            success: Bool(),
+            error: Str(),
+          }),
+        },
+      },
+    },
   },
 }
 
-export class UserApplicationDataUpsert extends OpenAPIRoute {
-  schema = UserApplicationDataUpsertSchema
+export class UserApplicationDataUpdate extends OpenAPIRoute {
+  schema = UserApplicationDataUpdateSchema
 
   async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof UserApplicationDataUpsertSchema>()
+    const data = await this.getValidatedData<typeof UserApplicationDataUpdateSchema>()
     const { userId } = data.params
     const bodyData = data.body
 
     const id = c.env.USER_STORAGE.idFromName('global')
     const stub = c.env.USER_STORAGE.get(id)
-    await stub.saveData(userId, bodyData)
+
+    try {
+      await stub.updateData(userId, bodyData)
+    } catch (e: any) {
+      if (e.message.includes('User data not found')) {
+        return c.json(
+          {
+            success: false,
+            error: 'User data not found',
+          },
+          404,
+        )
+      }
+      throw e
+    }
 
     return {
       success: true,

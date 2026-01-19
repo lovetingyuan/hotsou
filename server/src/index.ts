@@ -5,8 +5,9 @@ import { TaskDelete } from './endpoints/taskDelete'
 import { TaskFetch } from './endpoints/taskFetch'
 import { TaskList } from './endpoints/taskList'
 import { UserApplicationData } from './endpoints/userApplicationData'
+import { UserApplicationDataCreate } from './endpoints/userApplicationDataCreate'
 import { UserApplicationDataDelete } from './endpoints/userApplicationDataDelete'
-import { UserApplicationDataUpsert } from './endpoints/userApplicationDataUpsert'
+import { UserApplicationDataUpdate } from './endpoints/userApplicationDataUpdate'
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
@@ -42,7 +43,8 @@ openapi.delete('/api/tasks/:taskSlug', TaskDelete)
 
 console.log('Registering User endpoints...')
 openapi.get('/api/users/:userId/application-data', UserApplicationData)
-openapi.put('/api/users/:userId/application-data', UserApplicationDataUpsert)
+openapi.post('/api/users/:userId/application-data', UserApplicationDataCreate)
+openapi.put('/api/users/:userId/application-data', UserApplicationDataUpdate)
 openapi.delete('/api/users/:userId/application-data', UserApplicationDataDelete)
 console.log('User endpoints registered.')
 
