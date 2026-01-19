@@ -41,10 +41,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
           />
           <View style={{ justifyContent: 'center' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <ThemedText
-                type="title"
-                style={{ fontSize: 24, lineHeight: 32 }}
-              >
+              <ThemedText type='title' style={{ fontSize: 24, lineHeight: 32 }}>
                 HotSou
               </ThemedText>
             </View>
@@ -54,7 +51,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
           </View>
         </View>
         <TouchableOpacity onPress={onShare} style={{ padding: 8 }}>
-          <ThemedIcon name="share-outline" size={24} />
+          <ThemedIcon name='share-outline' size={24} />
         </TouchableOpacity>
       </View>
       {children}

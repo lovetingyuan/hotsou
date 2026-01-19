@@ -17,7 +17,11 @@
     "server:dev": "npm run dev -w hotsou-server",
     "server:deploy": "npm run deploy -w hotsou-server",
     "lint": "npm run lint --workspaces --if-present",
-    "format": "npm run format --workspaces --if-present",
-    "type-check": "npm run type-check --workspaces --if-present"
+    "format": "oxfmt . --write",
+    "type-check": "npm run type-check --workspaces"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.24.0",
+    "typescript": "~5.9.2"
   }
 }

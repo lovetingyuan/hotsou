@@ -13,11 +13,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint --fix .",
-    "format": "oxfmt . --write",
     "check-unused": "knip",
-    "doctor": "npx -y expo-doctor@latest",
     "type-check": "tsc --noEmit",
-    "mcp:cloudflare": "npx -y mcp-remote https://bindings.mcp.cloudflare.com/mcp",
+    "doctor": "npx -y expo-doctor@latest",
     "update-expo": "npm i -g eas-cli && npm install expo && npx expo install --fix && npm run doctor"
   },
   "dependencies": {
@@ -52,7 +50,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/jest": "^29.5.12",
     "@types/react": "~19.1.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "dotenv": "^16.4.7",
@@ -62,9 +59,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "knip": "^5.80.0",
     "open": "^10.1.0",
-    "oxfmt": "^0.24.0",
     "semver": "^7.7.1",
-    "typescript": "~5.9.2",
     "zx": "^8.6.0"
   },
   "expo": {

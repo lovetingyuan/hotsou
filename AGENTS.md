@@ -1,137 +1,61 @@
-# Agent Instructions
+# Agent Instructions (代理指令)
 
-This document outlines the development guidelines, build processes, and coding standards for the `hotsou` Expo project. All agents and developers must adhere to these rules to maintain codebase consistency and quality.
+本文档概述了 `hotsou` 相关项目的开发指南、构建流程和代码规范。所有代理（Agents）和开发人员必须遵守这些规则，以保持代码库的一致性和质量。
+项目总体采用 monorepo 的形式组织，包含`app`和`server`两个子项目。借助于 npm workspace 实现的。主要的开发语言为`typescript`。
 
-## 1. Build, Lint, and Test Commands
+### App 工作区 (`app/`)
 
-### Build & Run
+基于 expo 开发的移动端 app，主要是提供各种网站的浏览功能。
 
-- **Android Development**: `npm run app:android`
-  - Runs the app on a connected Android device or emulator.
-- **iOS Development**: `npm run app:ios`
-  - Runs the app on the iOS Simulator.
-- **Web Development**: `npm run app:web`
-  - Runs the app in a browser.
-- **Production Build (Android)**: `npm run app:build:android`
-  - Uses `zx` scripts to generate a release APK/Bundle.
-- **Expo Start**: `npm run app:start`
-  - Starts the Metro bundler.
-- **Server Development**: `npm run server:dev`
-  - Runs the server in development mode.
+- 框架采用 expo，遵循 expo 官方最佳实践。
+- 路由采用的是 react-navigation，主路由采用的是抽屉路由。
+- 必须遵循业界的 react 最佳实践。
+- 单个组件行数最好不要超过 300 行，必要的时候进行合理的拆分和复用。
 
-### Linting & Validation
+项目目录结构：
 
-- **Lint**: `npm run lint`
-  - Executes linting across all workspaces.
-- **Type Checking**: `npm run type-check`
-  - Runs TypeScript compiler checks across all workspaces.
-- **Project Health**: `npm run app:doctor`
-  - Checks for Expo and dependency issues in the app.
-- **Unused Code**: `npm run app:check-unused`
-  - Checks for unused files and exports in the app.
+- **`App.tsx`**: 应用入口。
+- **`navigation/`**: 导航配置 (React Navigation)。
+- **`screens/`**: 全屏页面视图。
+- **`components/`**: 可复用的 UI 组件。
+- **`store/`**: 全局状态管理 (使用 `react-atomic-store`)。
+- **`utils/`**: 辅助函数和工具。
+- **`assets/`**: 静态资源。
 
-### Testing
+### Server 工作区 (`server/`)
 
-- **Current Status**: The project does not currently have a test runner script configured in `package.json`.
-- **Convention**: If adding tests, use **Jest** (referenced in `devDependencies`).
-- **Running a Single Test**: If Jest is configured in the future, use:
-  ```bash
-  npx jest path/to/file.test.ts
-  ```
-- **Requirement**: When modifying critical logic, verify behavior manually or add a temporary test script if feasible.
+该服务基于 Hono 和 Cloudflare Workers。主要用来为 app 提供 api 接口服务和数据存储。
 
-## 2. Code Style Guidelines
+- 基于 Hono 框架，部署在 Cloudflare Workers。
+- 接口的输入需要使用 `zod` 进行验证。
+- 使用 `chanfana` 处理 OpenAPI 规范(如果适用)。
+- API 设计需要符合 Restful api 的最佳实践。
 
-### General Formatting
+项目目录结构：
 
-- **Semicolons**: **Avoid semicolons** at the end of lines (Prevalent style in `App.tsx`, `screens/`).
-- **Quotes**: Use **single quotes** (`'`) for strings.
-- **Indentation**: Use **2 spaces** for indentation.
-- **Line Length**: Soft limit of 80-100 characters.
-- **Trailing Commas**: Use trailing commas where valid (ES5+).
+- `src/index.ts`: 入口文件。初始化 Hono 应用并注册 OpenAPI 路由。
+- `src/endpoints/`: 包含端点类。每个端点一个文件 (单文件单类)。
+- `src/types.ts`: 共享的类型定义。
+- `worker-configuration.d.ts`: 环境变量 (Bindings) 的类型定义。
 
-### Imports
+### 格式化 (Formatting)
 
-- **Aliases**: Always use the `@/` alias for internal imports.
-  - ✅ `import MyComponent from '@/components/MyComponent'`
-  - ❌ `import MyComponent from '../../components/MyComponent'`
-- **Sorting**: Imports must be sorted. ESLint will enforce this.
-  1. External dependencies (`react`, `react-native`, `expo`)
-  2. Internal absolute imports (`@/navigation`, `@/components`)
-  3. Relative imports (`./Header`)
-  4. Styles/Types.
+每次改完代码可以直接运行 `npm run format` 来进行格式化即可。
 
 ### TypeScript
 
-- **Strict Mode**: `strict: true` is enabled. Handle `null` and `undefined` explicitly.
-- **No Any**: Avoid `any`. Use `unknown` or specific types. Define interfaces for Props.
-- **Type Definitions**: Prefer `interface` for object shapes and `type` for unions/primitives.
-- **Props**: Export prop types for components, e.g., `export type MyComponentProps = { ... }`.
+每次改完代码运行`npm run type-check`来进行类型校验。
 
-### Naming Conventions
+- 严禁杜撰类型，必须与官方文档和官方类型相符合。
+- 尽量不用类型断言以及 any 类型。
 
-- **Files**: PascalCase for React components (e.g., `AboutScreen.tsx`), camelCase for utilities/hooks (e.g., `useColorScheme.ts`, `formatDate.ts`).
-- **Components**: PascalCase (e.g., `function NewsList() { ... }`).
-- **Variables/Functions**: camelCase.
-- **Constants**: UPPER_SNAKE_CASE for global constants.
-- **Styles**: `const styles = StyleSheet.create({ ... })`.
+### 版本控制与提交
 
-### React & Expo Best Practices
+- **注意**: 每一轮任务结束时，你必须输出一条符合 [Conventional Commits](https://www.conventionalcommits.org) 规范的 git commit message。
 
-- **Functional Components**: Use functional components with Hooks.
-- **Component Size**: Keep components under 300 lines. Refactor complex logic into Hooks or sub-components.
-- **Hooks**: Place all Hooks at the top of the component.
-- **Styles**: Use `StyleSheet.create`. Avoid inline styles for complex objects.
-- **Theming**: Use `useColorScheme` or `useThemeColor` hook for dark/light mode compatibility.
-- **Images**: Use `expo-image` for optimized image loading.
-- **Navigation**: Use type-safe navigation props (define types in `navigation/` types).
+### 文档和注释
 
-### Error Handling
-
-- **Async/Await**: Use `try/catch` blocks for all async operations.
-- **API Calls**: Validate API responses (e.g., using `zod`). Do not assume API structures.
-- **UI Feedback**: Provide user feedback on errors (alerts, toasts, or error boundaries).
-
-## 3. Project Structure & Organization
-
-- **`navigation/`**: Root navigation configuration.
-- **`screens/`**: Full-page screens (views).
-- **`components/`**: Reusable UI components.
-  - Group related components in subdirectories (e.g., `components/about/`).
-- **`store/`**: Global state management (using `react-atomic-store`).
-- **`hooks/`**: Custom React hooks.
-- **`utils/`**: Helper functions and utilities.
-- **`assets/`**: Static assets (images, fonts).
-
-## 4. Workflow Rules
-
-### API Usage
-
-- **Verification**: Do not invent APIs. Verify library usage via documentation or by checking existing code.
-- **Deprecations**: Watch out for deprecated Expo/React Native features.
-
-### Version Control & Commits
-
-- **Conventional Commits**: Use the [Conventional Commits](https://www.conventionalcommits.org) specification.
-  - `feat: ...` for new features.
-  - `fix: ...` for bug fixes.
-  - `refactor: ...` for code restructuring.
-  - `docs: ...` for documentation updates.
-  - `chore: ...` for build/tooling changes.
-- **Message**: Provide a clear description of the change.
-- You must output a git commit message at the end of each round task.
-
-### Documentation
-
-- **Comments**: Add comments for complex logic _only_. Explain "why", not "what".
-- **Updates**: If you change build scripts or strict patterns, update this file.
-
-## 5. Specific Implementation Details (Legacy/Context)
-
-- **WebView**: The app heavily relies on `react-native-webview` for displaying news sites.
-- **Custom Sites**: Users can add their own sites.
-- **Zod**: Used for schema validation.
-- **System UI**: `expo-system-ui` is used for background colors.
+- **注释**: 为复杂逻辑和关键功能添加注释。解释“为什么”，而不是“是什么”。
 
 ---
 

@@ -26,15 +26,15 @@ export const Task = z.object({
 		}
  */
 export const UserData = z.object({
-	$tabsList: z.array(
-		z.object({
-			name: z.string(),
-			title: z.string(),
-			url: z.string(),
-			show: z.boolean(),
-			builtIn: z.boolean().optional(),
-			icon: z.string().optional(),
-		})
-	),
-	$enableTextSelect: z.boolean(),
-});
+  $tabsList: z.array(
+    z.object({
+      name: z.string(),
+      title: z.string(),
+      url: z.string(),
+      show: z.boolean(),
+      builtIn: z.boolean().optional(),
+      icon: z.string().optional(),
+    }),
+  ),
+  $enableTextSelect: z.boolean(),
+})
