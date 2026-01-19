@@ -13,7 +13,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
         message: 'HotSou - 全网热搜聚合 https://github.com/lovetingyuan/hotsou',
         url: 'https://github.com/lovetingyuan/hotsou',
       })
-    } catch (error) {
+    } catch {
       // ignore
     }
   }

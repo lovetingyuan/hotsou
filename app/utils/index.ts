@@ -55,7 +55,7 @@ export function getPageIcon(page?: { icon?: string; url?: string }) {
       const domain = urlObj.hostname
       // Use favicon.im service which is reliable and free
       return { uri: `https://favicon.im/${domain}?larger=true` }
-    } catch (e) {
+    } catch {
       // If URL parsing fails, fallback to default
     }
   }
