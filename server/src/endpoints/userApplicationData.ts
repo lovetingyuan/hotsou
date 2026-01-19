@@ -35,12 +35,15 @@ export class UserApplicationData extends OpenAPIRoute {
     console.log('Fetching data for userId:', userId)
 
     const id = c.env.USER_STORAGE.idFromName('global')
-    const stub = c.env.USER_STORAGE.get(id) //as any
+    const stub = c.env.USER_STORAGE.get(id)
     const dataResult = await stub.getData(userId)
 
     return {
       success: true,
-      result: dataResult,
+      result: dataResult || {
+        $tabsList: [],
+        $enableTextSelect: false,
+      },
     }
   }
 }

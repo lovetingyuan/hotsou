@@ -30,7 +30,7 @@ export class UserApplicationDataDelete extends OpenAPIRoute {
     const { userId } = data.params
 
     const id = c.env.USER_STORAGE.idFromName('global')
-    const stub = c.env.USER_STORAGE.get(id) // as unknown as UserStorageStub
+    const stub = c.env.USER_STORAGE.get(id)
     await stub.deleteData(userId)
 
     return {

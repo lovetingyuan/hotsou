@@ -8,6 +8,7 @@ declare namespace Cloudflare {
 	}
 	interface Env {
 		USER_STORAGE: DurableObjectNamespace<import("./src/index").UserStorage>;
+		OPENAPI_KEY: string;
 	}
 }
 interface Env extends Cloudflare.Env {}

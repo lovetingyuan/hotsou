@@ -41,7 +41,7 @@ export class UserApplicationDataUpsert extends OpenAPIRoute {
     const bodyData = data.body
 
     const id = c.env.USER_STORAGE.idFromName('global')
-    const stub = c.env.USER_STORAGE.get(id) //as unknown as UserStorageStub
+    const stub = c.env.USER_STORAGE.get(id)
     await stub.saveData(userId, bodyData)
 
     return {

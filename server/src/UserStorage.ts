@@ -1,5 +1,5 @@
 import { DurableObject } from 'cloudflare:workers'
-import { UserData } from './types'
+import { UserDataType } from './types'
 
 export class UserStorage extends DurableObject {
   sql: SqlStorage
@@ -24,10 +24,10 @@ export class UserStorage extends DurableObject {
       return null
     }
 
-    return JSON.parse(result[0].data as string) as UserData
+    return JSON.parse(result[0].data as string) as UserDataType
   }
 
-  async saveData(userId: string, data: any) {
+  async saveData(userId: string, data: UserDataType) {
     this.sql.exec(
       'INSERT INTO user_data (user_id, data) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data',
       userId,

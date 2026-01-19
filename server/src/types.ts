@@ -39,4 +39,4 @@ export const UserDataSchema = z.object({
   $enableTextSelect: z.boolean(),
 })
 
-export type UserData = z.infer<typeof UserDataSchema>
+export type UserDataType = z.infer<typeof UserDataSchema>
