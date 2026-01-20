@@ -7,6 +7,10 @@
   "name": "hotsou-server",
   "main": "src/index.ts",
   "compatibility_date": "2025-09-27",
+  "dev": {
+    "host": "0.0.0.0",
+    "port": 8787
+  },
   "durable_objects": {
     "bindings": [
       {

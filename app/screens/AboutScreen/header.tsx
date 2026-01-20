@@ -37,9 +37,11 @@ function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => voi
       ToastAndroid.show('邮箱格式不正确', ToastAndroid.SHORT)
       return
     }
+    console.log(9999, 333, email)
 
     try {
       const response = await openapi.getUserApplicationData(email)
+      console.log(9999, 333, response)
 
       if (!response.success || !response.result) {
         const { $tabsList, $enableTextSelect } = getStoreState()
@@ -49,21 +51,17 @@ function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => voi
         }
         await openapi.createUserApplicationData(email, userData)
 
-        Alert.alert(
-          '注册成功',
-          `您的邮箱 ${email} 已经接收到了注册邮件，请保存好其中的恢复码。`,
-          [
-            {
-              text: '确定',
-              onPress: () => {
-                const methods = getStoreMethods()
-                methods.set$userEmail(email)
-                setEmail('')
-                onClose()
-              },
+        Alert.alert('注册成功', `您的邮箱 ${email} 已经接收到了注册邮件，请保存好其中的恢复码。`, [
+          {
+            text: '确定',
+            onPress: () => {
+              const methods = getStoreMethods()
+              methods.set$userEmail(email)
+              setEmail('')
+              onClose()
             },
-          ]
-        )
+          },
+        ])
       } else {
         const methods = getStoreMethods()
         methods.set$userEmail(email)

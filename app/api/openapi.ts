@@ -1,27 +1,23 @@
-const BASE_URL = __DEV__ 
+const BASE_URL = __DEV__
   ? process.env.API_BASE_URL_DEV || 'http://127.0.0.1:8787'
   : process.env.API_BASE_URL_PROD || 'http://hotsou.tingyuan.in'
 
 export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public response?: any
-  ) {
+  constructor(message: string, public status: number, public response?: any) {
     super(message)
     this.name = 'ApiError'
   }
 }
 
 export interface UserApplicationData {
-  $tabsList: Array<{
+  $tabsList: {
     name: string
     title: string
     url: string
     show: boolean
     builtIn?: boolean
     icon?: string
-  }>
+  }[]
   $enableTextSelect: boolean
 }
 
@@ -45,7 +41,7 @@ export class OpenApiClient {
     headers?: HeadersInit
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`
-
+    console.log(3423, url, body)
     try {
       const response = await fetch(url, {
         method,
@@ -55,18 +51,16 @@ export class OpenApiClient {
         },
         body: body ? JSON.stringify(body) : undefined,
       })
-
+      console.log(9999, response)
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-        throw new ApiError(
-          errorData.error || 'Request failed',
-          response.status,
-          errorData
-        )
+        throw new ApiError(errorData.error || 'Request failed', response.status, errorData)
       }
 
       return await response.json()
     } catch (error) {
+      console.log(9999, 333, error)
+
       if (error instanceof ApiError) {
         throw error
       }
@@ -74,9 +68,7 @@ export class OpenApiClient {
     }
   }
 
-  async getUserApplicationData(
-    userId: string
-  ): Promise<ApiResponse<UserApplicationData>> {
+  async getUserApplicationData(userId: string): Promise<ApiResponse<UserApplicationData>> {
     return this.request<ApiResponse<UserApplicationData>>(
       'GET',
       `/api/users/${encodeURIComponent(userId)}/application-data`
