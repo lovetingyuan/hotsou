@@ -16,7 +16,9 @@ import { ThemedTextInput } from '@/components/ThemedInput'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { getStoreMethods, useStore } from '@/store'
+import { getStoreMethods, useStore, getStoreState } from '@/store'
+import { openapi } from '@/api/openapi'
+import { UserApplicationData } from '@/api/openapi'
 
 function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('')
@@ -29,16 +31,48 @@ function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => voi
     }, 100)
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       ToastAndroid.show('邮箱格式不正确', ToastAndroid.SHORT)
       return
     }
-    const methods = getStoreMethods()
-    methods.set$userEmail(email)
-    setEmail('')
-    onClose()
+
+    try {
+      const response = await openapi.getUserApplicationData(email)
+
+      if (!response.success || !response.result) {
+        const { $tabsList, $enableTextSelect } = getStoreState()
+        const userData: UserApplicationData = {
+          $tabsList: $tabsList,
+          $enableTextSelect: $enableTextSelect,
+        }
+        await openapi.createUserApplicationData(email, userData)
+
+        Alert.alert(
+          '注册成功',
+          `您的邮箱 ${email} 已经接收到了注册邮件，请保存好其中的恢复码。`,
+          [
+            {
+              text: '确定',
+              onPress: () => {
+                const methods = getStoreMethods()
+                methods.set$userEmail(email)
+                setEmail('')
+                onClose()
+              },
+            },
+          ]
+        )
+      } else {
+        const methods = getStoreMethods()
+        methods.set$userEmail(email)
+        setEmail('')
+        onClose()
+      }
+    } catch (error: any) {
+      ToastAndroid.show(error.message || '登录失败，请重试', ToastAndroid.SHORT)
+    }
   }
 
   const handleCancel = () => {
