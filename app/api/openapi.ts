@@ -1,4 +1,4 @@
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://your-api-domain.com'
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://hotsou-server.your-account.workers.dev'
 
 export class ApiError extends Error {
   constructor(
