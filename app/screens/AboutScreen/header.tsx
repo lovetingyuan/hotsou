@@ -1,13 +1,22 @@
 import { Image } from 'expo-image'
 import React, { useRef, useState } from 'react'
-import { KeyboardAvoidingView, Modal, StyleSheet, TextInput, ToastAndroid, View } from 'react-native'
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Modal,
+  StyleSheet,
+  TextInput,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 import { ThemedButton } from '@/components/ThemedButton'
 import { ThemedTextInput } from '@/components/ThemedInput'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { getStoreMethods, useStore } from '@/store'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { getStoreMethods, useStore } from '@/store'
 
 function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('')
@@ -77,7 +86,19 @@ function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => voi
 
 export default function AboutHeader({ children }: { children?: React.ReactNode }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const { $userEmail } = useStore()
+  const { $userEmail, set$userEmail } = useStore()
+
+  const handleLogout = () => {
+    Alert.alert('退出登录', '确定要退出登录吗？', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '确定',
+        onPress: () => {
+          set$userEmail('')
+        },
+      },
+    ])
+  }
 
   return (
     <>
@@ -109,7 +130,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
             />
             <View style={{ justifyContent: 'center' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <ThemedText type='title' style={{ fontSize: 24, lineHeight: 32 }}>
+                <ThemedText type="title" style={{ fontSize: 24, lineHeight: 32 }}>
                   HotSou
                 </ThemedText>
               </View>
@@ -119,7 +140,9 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
             </View>
           </View>
           {$userEmail ? (
-            <ThemedText style={{ fontSize: 14, opacity: 0.8 }}>{$userEmail}</ThemedText>
+            <TouchableOpacity onPress={handleLogout}>
+              <ThemedText style={{ fontSize: 14, opacity: 0.8 }}>{$userEmail}</ThemedText>
+            </TouchableOpacity>
           ) : (
             <ThemedButton title="登录" onPress={() => setShowLoginModal(true)} />
           )}
