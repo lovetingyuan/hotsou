@@ -1,4 +1,6 @@
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://hotsou-server.your-account.workers.dev'
+const BASE_URL = __DEV__ 
+  ? process.env.API_BASE_URL_DEV || 'http://127.0.0.1:8787'
+  : process.env.API_BASE_URL_PROD || 'http://hotsou.tingyuan.in'
 
 export class ApiError extends Error {
   constructor(
