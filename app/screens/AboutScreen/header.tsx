@@ -1,18 +1,29 @@
 import { Image } from 'expo-image'
-import React, { useState } from 'react'
-import { Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useRef, useState } from 'react'
+import { KeyboardAvoidingView, Modal, StyleSheet, TextInput, ToastAndroid, View } from 'react-native'
 
+import { ThemedButton } from '@/components/ThemedButton'
+import { ThemedTextInput } from '@/components/ThemedInput'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { getStoreMethods, useStore } from '@/store'
 import { useColorScheme } from '@/hooks/useColorScheme'
+
 function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('')
+  const inputRef = useRef<TextInput>(null)
   const colorScheme = useColorScheme()
+
+  const onShow = () => {
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 100)
+  }
 
   const handleConfirm = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
+      ToastAndroid.show('邮箱格式不正确', ToastAndroid.SHORT)
       return
     }
     const methods = getStoreMethods()
@@ -26,57 +37,40 @@ function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => voi
     onClose()
   }
 
+  if (!visible) {
+    return null
+  }
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="fade"
       onRequestClose={onClose}
+      onShow={onShow}
     >
-      <Pressable
-        style={styles.modalOverlay}
-        onPress={onClose}
-      >
-        <Pressable
-          style={[
-            styles.modalContent,
-            { backgroundColor: colorScheme === 'dark' ? '#1c1c1e' : '#fff' }
-          ]}
-          onPress={(e) => e.stopPropagation()}
+      <KeyboardAvoidingView behavior="padding" style={styles.centeredView}>
+        <ThemedView
+          style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
         >
-          <ThemedText type="defaultSemiBold" style={styles.modalTitle}>登录</ThemedText>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: colorScheme === 'dark' ? '#2c2c2e' : '#f2f2f6',
-                color: colorScheme === 'dark' ? '#fff' : '#000',
-                borderColor: colorScheme === 'dark' ? '#3a3a3c' : '#e5e5ea'
-              }
-            ]}
+          <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>登录</ThemedText>
+          <ThemedTextInput
+            ref={inputRef}
             placeholder="请输入邮箱"
-            placeholderTextColor="#999"
+            style={styles.input}
             value={email}
             onChangeText={setEmail}
-            autoCapitalize="none"
             keyboardType="email-address"
+            autoCapitalize="none"
           />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={handleCancel}
-            >
-              <Text style={styles.buttonText}>取消</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.confirmButton]}
-              onPress={handleConfirm}
-            >
-              <Text style={styles.confirmButtonText}>确定</Text>
-            </TouchableOpacity>
+          <View
+            style={{ flexDirection: 'row', gap: 30, marginTop: 20, justifyContent: 'flex-end' }}
+          >
+            <ThemedButton title="取消" type="secondary" onPress={handleCancel} />
+            <ThemedButton title="确定" onPress={handleConfirm} />
           </View>
-        </Pressable>
-      </Pressable>
+        </ThemedView>
+      </KeyboardAvoidingView>
     </Modal>
   )
 }
@@ -127,12 +121,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
           {$userEmail ? (
             <ThemedText style={{ fontSize: 14, opacity: 0.8 }}>{$userEmail}</ThemedText>
           ) : (
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={() => setShowLoginModal(true)}
-            >
-              <ThemedText style={styles.loginButtonText}>登录</ThemedText>
-            </TouchableOpacity>
+            <ThemedButton title="登录" onPress={() => setShowLoginModal(true)} />
           )}
         </View>
         {children}
@@ -143,66 +132,31 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
 }
 
 const styles = StyleSheet.create({
-  modalOverlay: {
+  input: {
+    borderBottomWidth: 1,
+    paddingHorizontal: 4,
+    fontSize: 16,
+  },
+  centeredView: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  modalContent: {
-    width: '80%',
-    padding: 24,
-    borderRadius: 12,
-  },
-  modalTitle: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#e5e5ea',
-  },
-  confirmButton: {
-    backgroundColor: '#007AFF',
-  },
-  buttonText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  confirmButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  loginButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#007AFF',
-  },
-  loginButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '500',
+  modalView: {
+    margin: 20,
+    borderRadius: 10,
+    paddingVertical: 25,
+    paddingHorizontal: 20,
+    width: '70%',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    flexDirection: 'column',
+    gap: 20,
   },
 })
