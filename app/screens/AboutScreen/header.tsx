@@ -4,7 +4,7 @@ import { Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View }
 
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { getStoreMethods } from '@/store'
+import { getStoreMethods, useStore } from '@/store'
 import { useColorScheme } from '@/hooks/useColorScheme'
 function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('')
@@ -83,8 +83,7 @@ function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => voi
 
 export default function AboutHeader({ children }: { children?: React.ReactNode }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const { useStore } = require('@/store')
-  const userEmail = useStore((state: { $userEmail: string }) => state.$userEmail)
+  const { $userEmail } = useStore()
 
   return (
     <>
@@ -125,8 +124,8 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
               </ThemedText>
             </View>
           </View>
-          {userEmail ? (
-            <ThemedText style={{ fontSize: 14, opacity: 0.8 }}>{userEmail}</ThemedText>
+          {$userEmail ? (
+            <ThemedText style={{ fontSize: 14, opacity: 0.8 }}>{$userEmail}</ThemedText>
           ) : (
             <TouchableOpacity
               style={styles.loginButton}
