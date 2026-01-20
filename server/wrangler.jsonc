@@ -18,7 +18,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["UserStorage"],
+      "new_sqlite_classes": ["UserStorage"]
     },
   ],
   "observability": {
