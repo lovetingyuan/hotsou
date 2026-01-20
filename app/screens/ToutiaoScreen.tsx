@@ -22,14 +22,14 @@ function __$inject() {
   if (location.pathname === '/feoffline/hotspot_and_local/html/hot_list/index.html') {
     document.addEventListener(
       'click',
-      evt => {
+      (evt) => {
         // @ts-ignore
         if (evt.target.closest('.tt-show-monitor')) {
           // @ts-ignore
           localStorage.setItem('scroll-position', document.documentElement.scrollTop)
         }
       },
-      true
+      true,
     )
     const id = localStorage.getItem('scroll-position')
     if (id) {
