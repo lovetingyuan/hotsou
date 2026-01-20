@@ -18,6 +18,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
           flexDirection: 'row',
           alignItems: 'center',
           marginBottom: 20,
+          gap: 16,
         }}
       >
         <Image
