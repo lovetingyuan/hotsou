@@ -26,6 +26,7 @@ const getAppValue = () => {
     douyinHotId: '',
     douyinVideoId: '',
     activeTab: '',
+    $userEmail: '',
   }
 }
 
