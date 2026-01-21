@@ -9,35 +9,6 @@ import { UserApplicationDataCreate } from './endpoints/userApplicationDataCreate
 import { UserApplicationDataDelete } from './endpoints/userApplicationDataDelete'
 import { UserApplicationDataUpdate } from './endpoints/userApplicationDataUpdate'
 
-// Print local network IP addresses for development
-if (typeof require !== 'undefined') {
-  try {
-    const os = require('os')
-    const networkInterfaces = os.networkInterfaces()
-    const addresses: string[] = []
-    
-    for (const name of Object.keys(networkInterfaces)) {
-      for (const iface of networkInterfaces[name] || []) {
-        if (iface.family === 'IPv4' && !iface.internal) {
-          addresses.push(iface.address)
-        }
-      }
-    }
-    
-    if (addresses.length > 0) {
-      console.log('\n========================================')
-      console.log('Server accessible at:')
-      addresses.forEach(addr => {
-        console.log(`  http://${addr}:8787`)
-      })
-      console.log('  http://localhost:8787')
-      console.log('========================================\n')
-    }
-  } catch (e) {
-    // Ignore errors in production environment
-  }
-}
-
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
 console.log('Hono app initialized')
