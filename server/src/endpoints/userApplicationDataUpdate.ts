@@ -55,7 +55,7 @@ export class UserApplicationDataUpdate extends OpenAPIRoute {
     const stub = c.env.USER_STORAGE.get(id)
 
     try {
-      await stub.updateData(userEmail, bodyData)
+      await stub.updateData(bodyData)
     } catch (e: any) {
       if (e.message.includes('User data not found')) {
         return c.json(

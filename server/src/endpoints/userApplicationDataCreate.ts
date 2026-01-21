@@ -55,7 +55,7 @@ export class UserApplicationDataCreate extends OpenAPIRoute {
     const stub = c.env.USER_STORAGE.get(id)
 
     try {
-      await stub.createData(userEmail, bodyData)
+      await stub.createData(bodyData)
     } catch (e: any) {
       if (e.message.includes('User data already exists')) {
         return c.json(

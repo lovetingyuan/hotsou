@@ -36,7 +36,8 @@ export class UserApplicationData extends OpenAPIRoute {
 
     const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
-    const dataResult = await stub.getData(userEmail)
+
+    const dataResult = await stub.getData()
 
     return {
       success: true,
