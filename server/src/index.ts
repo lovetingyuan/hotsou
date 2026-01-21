@@ -42,10 +42,10 @@ openapi.get('/api/tasks/:taskSlug', TaskFetch)
 openapi.delete('/api/tasks/:taskSlug', TaskDelete)
 
 console.log('Registering User endpoints...')
-openapi.get('/api/users/:userId/application-data', UserApplicationData)
-openapi.post('/api/users/:userId/application-data', UserApplicationDataCreate)
-openapi.put('/api/users/:userId/application-data', UserApplicationDataUpdate)
-openapi.delete('/api/users/:userId/application-data', UserApplicationDataDelete)
+openapi.get('/api/users/:userEmail/application-data', UserApplicationData)
+openapi.post('/api/users/:userEmail/application-data', UserApplicationDataCreate)
+openapi.put('/api/users/:userEmail/application-data', UserApplicationDataUpdate)
+openapi.delete('/api/users/:userEmail/application-data', UserApplicationDataDelete)
 console.log('User endpoints registered.')
 
 // You may also register routes for non OpenAPI directly on Hono

@@ -7,7 +7,7 @@ const UserApplicationDataCreateSchema = {
   summary: 'Create user application data',
   request: {
     params: z.object({
-      userId: Str({ description: 'The unique user ID' }),
+      userEmail: Str({ description: 'The unique user Email' }),
     }),
     body: {
       content: {
@@ -48,14 +48,14 @@ export class UserApplicationDataCreate extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof UserApplicationDataCreateSchema>()
-    const { userId } = data.params
+    const { userEmail } = data.params
     const bodyData = data.body
 
-    const id = c.env.USER_STORAGE.idFromName('global')
+    const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
 
     try {
-      await stub.createData(userId, bodyData)
+      await stub.createData(userEmail, bodyData)
     } catch (e: any) {
       if (e.message.includes('User data already exists')) {
         return c.json(

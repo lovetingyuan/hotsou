@@ -7,7 +7,7 @@ const UserApplicationDataSchema = {
   summary: 'Get user application data',
   request: {
     params: z.object({
-      userId: Str({ description: 'The unique user ID' }),
+      userEmail: Str({ description: 'The unique user Email' }),
     }),
   },
   responses: {
@@ -31,12 +31,12 @@ export class UserApplicationData extends OpenAPIRoute {
   async handle(c: AppContext) {
     console.log('UserApplicationData endpoint hit')
     const data = await this.getValidatedData<typeof UserApplicationDataSchema>()
-    const { userId } = data.params
-    console.log('Fetching data for userId:', userId)
+    const { userEmail } = data.params
+    console.log('Fetching data for userEmail:', userEmail)
 
-    const id = c.env.USER_STORAGE.idFromName('global')
+    const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
-    const dataResult = await stub.getData(userId)
+    const dataResult = await stub.getData(userEmail)
 
     return {
       success: true,

@@ -8,7 +8,7 @@ export class UserApplicationDataDelete extends OpenAPIRoute {
     summary: 'Delete user application data',
     request: {
       params: z.object({
-        userId: Str({ description: 'The unique user ID' }),
+        userEmail: Str({ description: 'The unique user Email' }),
       }),
     },
     responses: {
@@ -27,11 +27,11 @@ export class UserApplicationDataDelete extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>()
-    const { userId } = data.params
+    const { userEmail } = data.params
 
-    const id = c.env.USER_STORAGE.idFromName('global')
+    const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
-    await stub.deleteData(userId)
+    await stub.deleteData(userEmail)
 
     return {
       success: true,

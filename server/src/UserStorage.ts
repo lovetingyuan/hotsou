@@ -16,8 +16,8 @@ export class UserStorage extends DurableObject {
     `)
   }
 
-  async getData(userId: string) {
-    const cursor = this.sql.exec('SELECT data FROM user_data WHERE user_id = ?', userId)
+  async getData(userEmail: string) {
+    const cursor = this.sql.exec('SELECT data FROM user_data WHERE user_id = ?', userEmail)
     const result = cursor.toArray()
 
     if (result.length === 0) {
@@ -27,37 +27,37 @@ export class UserStorage extends DurableObject {
     return JSON.parse(result[0].data as string) as UserDataType
   }
 
-  async saveData(userId: string, data: UserDataType) {
+  async saveData(userEmail: string, data: UserDataType) {
     this.sql.exec(
       'INSERT INTO user_data (user_id, data) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data',
-      userId,
+      userEmail,
       JSON.stringify(data),
     )
   }
 
-  async createData(userId: string, data: UserDataType) {
+  async createData(userEmail: string, data: UserDataType) {
     const exists =
-      this.sql.exec('SELECT 1 FROM user_data WHERE user_id = ?', userId).toArray().length > 0
+      this.sql.exec('SELECT 1 FROM user_data WHERE user_id = ?', userEmail).toArray().length > 0
     if (exists) {
       throw new Error('User data already exists')
     }
     this.sql.exec(
       'INSERT INTO user_data (user_id, data) VALUES (?, ?)',
-      userId,
+      userEmail,
       JSON.stringify(data),
     )
   }
 
-  async updateData(userId: string, data: UserDataType) {
+  async updateData(userEmail: string, data: UserDataType) {
     const exists =
-      this.sql.exec('SELECT 1 FROM user_data WHERE user_id = ?', userId).toArray().length > 0
+      this.sql.exec('SELECT 1 FROM user_data WHERE user_id = ?', userEmail).toArray().length > 0
     if (!exists) {
       throw new Error('User data not found')
     }
-    this.sql.exec('UPDATE user_data SET data = ? WHERE user_id = ?', JSON.stringify(data), userId)
+    this.sql.exec('UPDATE user_data SET data = ? WHERE user_id = ?', JSON.stringify(data), userEmail)
   }
 
-  async deleteData(userId: string) {
-    this.sql.exec('DELETE FROM user_data WHERE user_id = ?', userId)
+  async deleteData(userEmail: string) {
+    this.sql.exec('DELETE FROM user_data WHERE user_id = ?', userEmail)
   }
 }

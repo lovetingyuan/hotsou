@@ -7,7 +7,7 @@ const UserApplicationDataUpdateSchema = {
   summary: 'Update user application data',
   request: {
     params: z.object({
-      userId: Str({ description: 'The unique user ID' }),
+      userEmail: Str({ description: 'The unique user Email' }),
     }),
     body: {
       content: {
@@ -48,14 +48,14 @@ export class UserApplicationDataUpdate extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof UserApplicationDataUpdateSchema>()
-    const { userId } = data.params
+    const { userEmail } = data.params
     const bodyData = data.body
 
-    const id = c.env.USER_STORAGE.idFromName('global')
+    const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
 
     try {
-      await stub.updateData(userId, bodyData)
+      await stub.updateData(userEmail, bodyData)
     } catch (e: any) {
       if (e.message.includes('User data not found')) {
         return c.json(
