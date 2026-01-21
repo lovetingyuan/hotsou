@@ -17,7 +17,7 @@ const UserApplicationDataSchema = {
         'application/json': {
           schema: z.object({
             success: Bool(),
-            result: UserDataSchema,
+            result: UserDataSchema.nullable(),
           }),
         },
       },
@@ -40,10 +40,7 @@ export class UserApplicationData extends OpenAPIRoute {
 
     return {
       success: true,
-      result: dataResult || {
-        $tabsList: [],
-        $enableTextSelect: false,
-      },
+      result: dataResult,
     }
   }
 }
