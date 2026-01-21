@@ -1,8 +1,4 @@
-import { getStoreState } from '@/store'
-
-const BASE_URL = __DEV__
-  ? process.env.API_BASE_URL_DEV || 'http://127.0.0.1:8787'
-  : process.env.API_BASE_URL_PROD || 'http://hotsou.tingyuan.in'
+const BASE_URL = __DEV__ ? 'http://192.168.1.2:8787' : 'http://hotsou.tingyuan.in'
 
 export class ApiError extends Error {
   constructor(

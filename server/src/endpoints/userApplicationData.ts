@@ -10,7 +10,7 @@ const UserApplicationDataSchema = {
       userEmail: Str({ description: 'The unique user Email' }),
     }),
     headers: z.object({
-      authorization: Str({ description: 'Bearer token' }),
+      authorization: z.string().optional(),
     }),
   },
   responses: {
@@ -44,9 +44,34 @@ export class UserApplicationData extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     console.log('UserApplicationData endpoint hit')
-    const data = await this.getValidatedData<typeof UserApplicationDataSchema>()
+    const data = await this.getValidatedData<typeof UserApplicationDataSchema>().catch((err) => {
+      console.log(999, err)
+    })
+
+    if (!data || !data.params || !data.params.userEmail) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid request: userEmail is required',
+        },
+        400,
+      )
+    }
+
     const { userEmail } = data.params
     const { authorization } = data.headers
+
+    if (!authorization) {
+      return c.json(
+        {
+          success: false,
+          error: 'Unauthorized: Authorization header is required',
+        },
+        401,
+      )
+    }
+
+    console.log('UserApplicationData endpoint hit222')
 
     // Extract token
     const token = authorization.replace(/^Bearer\s+/i, '')

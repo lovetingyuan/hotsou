@@ -11,14 +11,14 @@ import {
   View,
 } from 'react-native'
 
+import type { UserApplicationData } from '@/api/openapi'
+import { openapi } from '@/api/openapi'
 import { ThemedButton } from '@/components/ThemedButton'
 import { ThemedTextInput } from '@/components/ThemedInput'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { getStoreMethods, useStore, getStoreState } from '@/store'
-import { openapi } from '@/api/openapi'
-import { UserApplicationData } from '@/api/openapi'
+import { getStoreMethods, getStoreState, useStore } from '@/store'
 
 function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('')

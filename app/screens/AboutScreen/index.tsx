@@ -1,6 +1,6 @@
+import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { LayoutAnimation, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
 
 import { ExternalLink } from '@/components/ExternalLink'
 import ThemedIcon from '@/components/ThemedIcon'

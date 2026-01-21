@@ -10,7 +10,7 @@ const UserApplicationDataUpdateSchema = {
       userEmail: Str({ description: 'The unique user Email' }),
     }),
     headers: z.object({
-      authorization: Str({ description: 'Bearer token' }),
+      authorization: z.string().optional(),
     }),
     body: {
       content: {
@@ -51,6 +51,17 @@ export class UserApplicationDataUpdate extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof UserApplicationDataUpdateSchema>()
+
+    if (!data || !data.headers || !data.headers.authorization) {
+      return c.json(
+        {
+          success: false,
+          error: 'Unauthorized: Authorization header is required',
+        },
+        401,
+      )
+    }
+
     const { userEmail } = data.params
     const { authorization } = data.headers
     const bodyData = data.body
