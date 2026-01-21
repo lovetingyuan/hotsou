@@ -9,6 +9,9 @@ const UserApplicationDataUpdateSchema = {
     params: z.object({
       userEmail: Str({ description: 'The unique user Email' }),
     }),
+    headers: z.object({
+      authorization: Str({ description: 'Bearer token' }),
+    }),
     body: {
       content: {
         'application/json': {
@@ -49,10 +52,25 @@ export class UserApplicationDataUpdate extends OpenAPIRoute {
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof UserApplicationDataUpdateSchema>()
     const { userEmail } = data.params
+    const { authorization } = data.headers
     const bodyData = data.body
+
+    const token = authorization.replace(/^Bearer\s+/i, '')
 
     const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
+
+    const isAuthorized = await stub.verifyToken(token)
+
+    if (!isAuthorized) {
+      return c.json(
+        {
+          success: false,
+          error: 'Unauthorized: Invalid token',
+        },
+        401,
+      )
+    }
 
     try {
       await stub.updateData(bodyData)

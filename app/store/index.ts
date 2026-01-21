@@ -27,6 +27,7 @@ const getAppValue = () => {
     douyinVideoId: '',
     activeTab: '',
     $userEmail: '',
+    $authToken: '',
   }
 }
 

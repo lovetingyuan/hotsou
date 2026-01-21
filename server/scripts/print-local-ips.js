@@ -13,7 +13,7 @@ for (const name of Object.keys(networkInterfaces)) {
 
 console.log('\n========================================')
 console.log('Server accessible at:')
-addresses.forEach(addr => {
+addresses.forEach((addr) => {
   console.log(`  http://${addr}:8787`)
 })
 console.log('  http://localhost:8787')

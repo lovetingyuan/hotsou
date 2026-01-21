@@ -10,6 +10,9 @@ export class UserApplicationDataDelete extends OpenAPIRoute {
       params: z.object({
         userEmail: Str({ description: 'The unique user Email' }),
       }),
+      headers: z.object({
+        authorization: Str({ description: 'Bearer token' }),
+      }),
     },
     responses: {
       '200': {
@@ -28,9 +31,24 @@ export class UserApplicationDataDelete extends OpenAPIRoute {
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>()
     const { userEmail } = data.params
+    const { authorization } = data.headers
+
+    const token = authorization.replace(/^Bearer\s+/i, '')
 
     const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
+
+    const isAuthorized = await stub.verifyToken(token)
+
+    if (!isAuthorized) {
+      return c.json(
+        {
+          success: false,
+          error: 'Unauthorized: Invalid token',
+        },
+        401,
+      )
+    }
     await stub.deleteData()
 
     return {

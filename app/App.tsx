@@ -11,6 +11,7 @@ import { Platform } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import InitApp from '@/components/InitApp'
+import { DataSync } from '@/components/DataSync'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import RootNavigator from '@/navigation'
 
@@ -27,6 +28,7 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <InitApp>
         <StatusBar style='auto' />
+        <DataSync />
         <NavigationContainer>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <RootNavigator />

@@ -86,29 +86,29 @@ function LoginModal({ visible, onClose }: { visible: boolean; onClose: () => voi
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType='fade'
       onRequestClose={onClose}
       onShow={onShow}
     >
-      <KeyboardAvoidingView behavior="padding" style={styles.centeredView}>
+      <KeyboardAvoidingView behavior='padding' style={styles.centeredView}>
         <ThemedView
           style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
         >
           <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>登录</ThemedText>
           <ThemedTextInput
             ref={inputRef}
-            placeholder="请输入邮箱"
+            placeholder='请输入邮箱'
             style={styles.input}
             value={email}
             onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
+            keyboardType='email-address'
+            autoCapitalize='none'
           />
           <View
             style={{ flexDirection: 'row', gap: 30, marginTop: 20, justifyContent: 'flex-end' }}
           >
-            <ThemedButton title="取消" type="secondary" onPress={handleCancel} />
-            <ThemedButton title="确定" onPress={handleConfirm} />
+            <ThemedButton title='取消' type='secondary' onPress={handleCancel} />
+            <ThemedButton title='确定' onPress={handleConfirm} />
           </View>
         </ThemedView>
       </KeyboardAvoidingView>
@@ -162,7 +162,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
             />
             <View style={{ justifyContent: 'center' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <ThemedText type="title" style={{ fontSize: 24, lineHeight: 32 }}>
+                <ThemedText type='title' style={{ fontSize: 24, lineHeight: 32 }}>
                   HotSou
                 </ThemedText>
               </View>
@@ -176,7 +176,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
               <ThemedText style={{ fontSize: 14, opacity: 0.8 }}>{$userEmail}</ThemedText>
             </TouchableOpacity>
           ) : (
-            <ThemedButton title="登录" onPress={() => setShowLoginModal(true)} />
+            <ThemedButton title='登录' onPress={() => setShowLoginModal(true)} />
           )}
         </View>
         {children}
