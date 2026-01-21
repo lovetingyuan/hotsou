@@ -1,4 +1,4 @@
-import { Bool, OpenAPIRoute, Str } from 'chanfana'
+import { Bool, OpenAPIRoute } from 'chanfana'
 import { z } from 'zod'
 import { AppContext } from '../types'
 
@@ -8,7 +8,7 @@ export class UserApplicationDataDelete extends OpenAPIRoute {
     summary: 'Delete user application data',
     request: {
       params: z.object({
-        userEmail: Str({ description: 'The unique user Email' }),
+        userEmail: z.string().email(),
       }),
       headers: z.object({
         authorization: z.string().optional(),

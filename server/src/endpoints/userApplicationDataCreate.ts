@@ -1,4 +1,4 @@
-import { Bool, OpenAPIRoute, Str } from 'chanfana'
+import { Bool, OpenAPIRoute } from 'chanfana'
 import { z } from 'zod'
 import { AppContext, UserDataSchema } from '../types'
 
@@ -7,7 +7,7 @@ const UserApplicationDataCreateSchema = {
   summary: 'Create user application data',
   request: {
     params: z.object({
-      userEmail: Str({ description: 'The unique user Email' }),
+      userEmail: z.string().email(),
     }),
     headers: z.object({
       authorization: z.string().optional(),
@@ -38,7 +38,7 @@ const UserApplicationDataCreateSchema = {
         'application/json': {
           schema: z.object({
             success: Bool(),
-            error: Str(),
+            error: z.string(),
           }),
         },
       },
