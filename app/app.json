@@ -43,7 +43,9 @@
       ],
       "expo-secure-store"
     ],
-    "experiments": {},
+    "experiments": {
+      "reactCompiler": true
+    },
     "extra": {
       "eas": {
         "projectId": "8dc9d1fe-0fde-4416-a5f9-6f2947b0ccd4"

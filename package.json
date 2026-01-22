@@ -23,6 +23,7 @@
     "type-check": "npm run type-check --workspaces"
   },
   "devDependencies": {
+    "eslint-plugin-react-compiler": "^19.1.0-rc.2",
     "oxfmt": "^0.24.0",
     "typescript": "~5.9.2"
   }
