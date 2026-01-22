@@ -40,3 +40,28 @@ export const UserDataSchema = z.object({
 })
 
 export type UserDataType = z.infer<typeof UserDataSchema>
+
+// ==================== Auth Schemas ====================
+
+export const AuthEmailSchema = z.object({
+  email: z.string().email(),
+})
+
+export const AuthOtpRequestSchema = z.object({
+  email: z.string().email(),
+})
+
+export const AuthVerifyRequestSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(6),
+})
+
+export const AuthStatusRequestSchema = z.object({
+  email: z.string().email(),
+  token: z.string().uuid(),
+})
+
+export const AuthLogoutRequestSchema = z.object({
+  email: z.string().email(),
+  token: z.string().uuid(),
+})

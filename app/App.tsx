@@ -10,8 +10,8 @@ import React from 'react'
 import { Platform } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import InitApp from '@/components/InitApp'
 import { DataSync } from '@/components/DataSync'
+import InitApp from '@/components/InitApp'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import RootNavigator from '@/navigation'
 

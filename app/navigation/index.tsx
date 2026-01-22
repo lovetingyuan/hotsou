@@ -2,16 +2,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
 import { Share, TouchableOpacity } from 'react-native'
 
-import AboutScreen from '@/screens/AboutScreen'
 import ThemedIcon from '@/components/ThemedIcon'
-import LoginScreen from '@/screens/LoginScreen'
+import AboutScreen from '@/screens/AboutScreen'
 
 import DrawerNavigator from './DrawerNavigator'
 
 export type RootStackParamList = {
   Drawer: undefined
   About: undefined
-  Login: undefined
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -42,14 +40,6 @@ function RootNavigator() {
               <ThemedIcon name='share-outline' size={24} />
             </TouchableOpacity>
           ),
-        }}
-      />
-      <Stack.Screen
-        name='Login'
-        component={LoginScreen}
-        options={{
-          title: '登录',
-          headerShown: false,
         }}
       />
     </Stack.Navigator>

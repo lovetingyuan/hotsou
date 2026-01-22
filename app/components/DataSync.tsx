@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
-import { ToastAndroid, Platform } from 'react-native'
+import { Platform, ToastAndroid } from 'react-native'
 
+import { AppContextValueType, getStoreState, StoredKeys, useStore } from '@/store'
 import { userApi } from '@/utils/api'
-import { useStore, getStoreState, AppContextValueType, StoredKeys } from '@/store'
 
 export function DataSync() {
   const { $userEmail, $authToken, $tabsList, $enableTextSelect } = useStore()

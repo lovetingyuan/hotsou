@@ -7,6 +7,8 @@ import { TaskList } from './endpoints/taskList'
 import { AuthOtp } from './endpoints/authOtp'
 import { AuthVerify } from './endpoints/authVerify'
 import { AuthCheckRegistered } from './endpoints/authCheckRegistered'
+import { AuthStatus } from './endpoints/authStatus'
+import { AuthLogout } from './endpoints/authLogout'
 import { UserApplicationData } from './endpoints/userApplicationData'
 import { UserApplicationDataCreate } from './endpoints/userApplicationDataCreate'
 import { UserApplicationDataDelete } from './endpoints/userApplicationDataDelete'
@@ -48,6 +50,8 @@ console.log('Registering Auth endpoints...')
 openapi.post('/api/auth/otp', AuthOtp)
 openapi.post('/api/auth/verify', AuthVerify)
 openapi.post('/api/auth/check-registered', AuthCheckRegistered)
+openapi.post('/api/auth/status', AuthStatus)
+openapi.post('/api/auth/logout', AuthLogout)
 console.log('Auth endpoints registered.')
 
 console.log('Registering User endpoints...')

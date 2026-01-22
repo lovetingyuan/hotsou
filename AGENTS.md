@@ -54,7 +54,7 @@
 
 ### 版本控制与提交
 
-- **注意**: 每一轮任务结束时，你必须输出一条符合 [Conventional Commits](https://www.conventionalcommits.org) 规范的 git commit message。
+- **注意[CRITICAL]**: 每一轮任务结束时，你必须输出一条符合 [Conventional Commits](https://www.conventionalcommits.org) 规范的 git commit message。
 
 ### 文档和注释
 

@@ -1,8 +1,8 @@
-import { OpenAPIRoute, Str, Bool } from 'chanfana'
+import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
 import { AppContext } from '../types'
 
-const AuthVerifySchema = {
+const AuthVerifyRequestSchema = {
   tags: ['Auth'],
   summary: 'Verify OTP and get token',
   request: {
@@ -25,6 +25,7 @@ const AuthVerifySchema = {
           schema: z.object({
             success: Bool(),
             token: Str(),
+            isNewUser: Bool(),
           }),
         },
       },
@@ -44,10 +45,10 @@ const AuthVerifySchema = {
 }
 
 export class AuthVerify extends OpenAPIRoute {
-  schema = AuthVerifySchema
+  schema = AuthVerifyRequestSchema
 
   async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof AuthVerifySchema>()
+    const data = await this.getValidatedData<typeof AuthVerifyRequestSchema>()
     const { email, otp } = data.body
 
     const id = c.env.USER_STORAGE.idFromName(email)
@@ -59,20 +60,24 @@ export class AuthVerify extends OpenAPIRoute {
       return c.json(
         {
           success: false,
-          error: 'Invalid or expired OTP',
+          error: '验证码错误或已过期',
         },
         400,
       )
     }
 
-    // Generate Token
+    // 生成 Token
     const token = crypto.randomUUID()
 
-    await stub.saveToken(token, email)
+    // 保存 Token，并获取是否为新用户
+    const { isNewUser } = await stub.saveToken(token, email)
+
+    console.log(`[AUTH] User ${email} logged in, isNewUser: ${isNewUser}`)
 
     return {
       success: true,
       token: token,
+      isNewUser: isNewUser,
     }
   }
 }

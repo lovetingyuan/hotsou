@@ -8,6 +8,7 @@ declare namespace Cloudflare {
   }
   interface Env {
     OPENAPI_KEY: string
+    RESEND_API_KEY: string
     USER_STORAGE: DurableObjectNamespace<import('./src/index').UserStorage>
   }
 }
