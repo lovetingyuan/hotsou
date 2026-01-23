@@ -49,7 +49,6 @@ export default function TabListSetting() {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 20,
           borderBottomWidth: 1,
           borderBottomColor: '#e2e2e2',
           paddingBottom: 10,
@@ -94,15 +93,7 @@ export default function TabListSetting() {
         {activeTab === 'channel' ? (
           $tabsList.map((item, index) => {
             return (
-              <View
-                key={item.name}
-                style={[
-                  styles.item,
-                  {
-                    borderTopWidth: index === 0 ? 1 : 0,
-                  },
-                ]}
-              >
+              <View key={item.name} style={styles.item}>
                 <View style={{ flexShrink: 1 }}>
                   {!item.builtIn ? (
                     <TouchableOpacity
@@ -174,15 +165,7 @@ export default function TabListSetting() {
         ) : (
           $favorList.map((item, index) => {
             return (
-              <View
-                key={item.url}
-                style={[
-                  styles.item,
-                  {
-                    borderTopWidth: index === 0 ? 1 : 0,
-                  },
-                ]}
-              >
+              <View key={item.url} style={styles.item}>
                 <View style={{ flexShrink: 1 }}>
                   <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
                     <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
