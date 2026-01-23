@@ -1,5 +1,13 @@
 import React from 'react'
-import { StyleSheet, Switch, ToastAndroid, TouchableOpacity, View, Linking } from 'react-native'
+import {
+  StyleSheet,
+  Switch,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+  Linking,
+  Alert,
+} from 'react-native'
 
 import { ThemedButton } from '@/components/ThemedButton'
 import ThemedIcon from '@/components/ThemedIcon'
@@ -175,11 +183,19 @@ export default function TabListSetting() {
                 </View>
                 <TouchableOpacity
                   onPress={() => {
-                    set$favorList($favorList.filter((v) => v.url !== item.url))
+                    Alert.alert('确认删除', '确定要删除这项收藏吗？', [
+                      { text: '取消', style: 'cancel' },
+                      {
+                        text: '确定',
+                        onPress: () => {
+                          set$favorList($favorList.filter((v) => v.url !== item.url))
+                        },
+                      },
+                    ])
                   }}
                   hitSlop={10}
                 >
-                  <ThemedIcon name='trash-outline' size={24} color='#ff4d4f' />
+                  <ThemedIcon name='trash-outline' size={20} color='#ff4d4f' />
                 </TouchableOpacity>
               </View>
             )
