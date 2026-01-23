@@ -79,26 +79,23 @@ export default function TabListSetting() {
         </TouchableOpacity>
       </View>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 14,
-        }}
-      >
-        <ThemedText style={{ fontSize: 18, fontWeight: 'bold' }}>
-          # {activeTab === 'channel' ? '频道列表' : '我的收藏'}：
-        </ThemedText>
-        {activeTab === 'channel' && (
+      {activeTab === 'channel' && (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            marginBottom: 14,
+          }}
+        >
           <ThemedButton
             title='添加'
             onPress={() => {
               setIsAdding(true)
             }}
           />
-        )}
-      </View>
+        </View>
+      )}
 
       <View>
         {activeTab === 'channel' ? (
