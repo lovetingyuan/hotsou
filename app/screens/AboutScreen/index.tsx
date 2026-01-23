@@ -7,7 +7,6 @@ import ThemedIcon from '@/components/ThemedIcon'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { useStore } from '@/store'
 
 import AboutHeader from './header'
 import TabListSetting from './TabListSetting'
@@ -89,9 +88,6 @@ function AboutScreen() {
   const navigation = useNavigation()
   const colorScheme = useColorScheme()
   const backgroundColor = colorScheme === 'dark' ? '#000' : '#f2f2f6'
-  const { $userEmail } = useStore()
-
-  const isLoggedIn = !!$userEmail
 
   return (
     <ThemedView style={{ flex: 1, backgroundColor }}>
@@ -123,25 +119,6 @@ function AboutScreen() {
               <ThemedIcon name='logo-github' size={20} color='#888' />
             </ThemedView>
           </ExternalLink>
-          <TouchableOpacity
-            onPress={() => (isLoggedIn ? null : (navigation as any).navigate('Login'))}
-            activeOpacity={0.6}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <ThemedText style={{ color: isLoggedIn ? '#888' : undefined }}>
-              {isLoggedIn ? `已登录: ${$userEmail}` : '登录账户'}
-            </ThemedText>
-            {isLoggedIn ? (
-              <ThemedIcon name='checkmark-circle' size={20} color='#34C759' />
-            ) : (
-              <ThemedIcon name='chevron-forward' size={20} color='#888' />
-            )}
-          </TouchableOpacity>
         </Section>
       </ScrollView>
     </ThemedView>
