@@ -60,6 +60,7 @@ export default function TabListSetting() {
           borderBottomWidth: 1,
           borderBottomColor: '#e2e2e2',
           paddingBottom: 10,
+          minHeight: 45,
         }}
       >
         <View style={{ flexDirection: 'row', gap: 20 }}>
