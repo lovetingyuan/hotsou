@@ -47,55 +47,48 @@ export default function TabListSetting() {
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'flex-start',
-          gap: 20,
+          justifyContent: 'space-between',
+          alignItems: 'center',
           marginBottom: 20,
           borderBottomWidth: 1,
           borderBottomColor: '#e2e2e2',
           paddingBottom: 10,
         }}
       >
-        <TouchableOpacity onPress={() => setActiveTab('channel')}>
-          <ThemedText
-            style={{
-              fontSize: 18,
-              fontWeight: activeTab === 'channel' ? 'bold' : 'normal',
-              color: activeTab === 'channel' ? '#0969da' : undefined,
-            }}
-          >
-            频道列表
-          </ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveTab('favorite')}>
-          <ThemedText
-            style={{
-              fontSize: 18,
-              fontWeight: activeTab === 'favorite' ? 'bold' : 'normal',
-              color: activeTab === 'favorite' ? '#0969da' : undefined,
-            }}
-          >
-            我的收藏
-          </ThemedText>
-        </TouchableOpacity>
-      </View>
+        <View style={{ flexDirection: 'row', gap: 20 }}>
+          <TouchableOpacity onPress={() => setActiveTab('channel')}>
+            <ThemedText
+              style={{
+                fontSize: 18,
+                fontWeight: activeTab === 'channel' ? 'bold' : 'normal',
+                color: activeTab === 'channel' ? '#0969da' : undefined,
+              }}
+            >
+              频道列表
+            </ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('favorite')}>
+            <ThemedText
+              style={{
+                fontSize: 18,
+                fontWeight: activeTab === 'favorite' ? 'bold' : 'normal',
+                color: activeTab === 'favorite' ? '#0969da' : undefined,
+              }}
+            >
+              我的收藏
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
 
-      {activeTab === 'channel' && (
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            marginBottom: 14,
-          }}
-        >
+        {activeTab === 'channel' && (
           <ThemedButton
             title='添加'
             onPress={() => {
               setIsAdding(true)
             }}
           />
-        </View>
-      )}
+        )}
+      </View>
 
       <View>
         {activeTab === 'channel' ? (
