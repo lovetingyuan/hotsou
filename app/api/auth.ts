@@ -1,4 +1,4 @@
-const BASE_URL = __DEV__ ? 'http://192.168.1.8:8787' : 'http://hotsou.tingyuan.in'
+const BASE_URL = __DEV__ ? 'http://192.168.1.14:8787' : 'http://hotsou.tingyuan.in'
 
 // ==================== Response Types ====================
 

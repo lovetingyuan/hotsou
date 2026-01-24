@@ -1,11 +1,7 @@
-const BASE_URL = __DEV__ ? 'http://192.168.1.2:8787' : 'http://hotsou.tingyuan.in'
+const BASE_URL = __DEV__ ? 'http://192.168.1.14:8787' : 'http://hotsou.tingyuan.in'
 
 export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public response?: any,
-  ) {
+  constructor(message: string, public status: number, public response?: any) {
     super(message)
     this.name = 'ApiError'
   }
@@ -40,7 +36,7 @@ export class OpenApiClient {
     method: string,
     path: string,
     body?: any,
-    headers?: HeadersInit,
+    headers?: HeadersInit
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`
     console.log(3423, url, body)
@@ -73,18 +69,18 @@ export class OpenApiClient {
   async getUserApplicationData(userId: string): Promise<ApiResponse<UserApplicationData>> {
     return this.request<ApiResponse<UserApplicationData>>(
       'GET',
-      `/api/users/${encodeURIComponent(userId)}/application-data`,
+      `/api/users/${encodeURIComponent(userId)}/application-data`
     )
   }
 
   async createUserApplicationData(
     userId: string,
-    data: UserApplicationData,
+    data: UserApplicationData
   ): Promise<ApiResponse<UserApplicationData>> {
     return this.request<ApiResponse<UserApplicationData>>(
       'POST',
       `/api/users/${encodeURIComponent(userId)}/application-data`,
-      data,
+      data
     )
   }
 }

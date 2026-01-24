@@ -13,6 +13,11 @@ const getAppValue = () => {
     shareInfo: [''] as [string],
     clickTab: [''] as [string],
     clearSelection: 0,
+    $favorList: [] as {
+      title: string
+      url: string
+      created_at: number
+    }[],
     $tabsList: JSON.parse(JSON.stringify(TabsList)) as {
       name: string
       title: string
@@ -26,8 +31,7 @@ const getAppValue = () => {
     douyinHotId: '',
     douyinVideoId: '',
     activeTab: '',
-    $userEmail: '',
-    $authToken: '',
+    isLogin: false,
   }
 }
 

@@ -1,12 +1,12 @@
 import React from 'react'
 import {
+  Alert,
+  Linking,
   StyleSheet,
   Switch,
   ToastAndroid,
   TouchableOpacity,
   View,
-  Linking,
-  Alert,
 } from 'react-native'
 
 import { ThemedButton } from '@/components/ThemedButton'
@@ -31,7 +31,7 @@ export default function TabListSetting() {
       return
     }
     const list = [...$tabsList]
-    const oldIndex = list.findIndex((v) => v.name === sortingItemName)
+    const oldIndex = list.findIndex(v => v.name === sortingItemName)
     if (oldIndex === -1) {
       return
     }
@@ -47,7 +47,7 @@ export default function TabListSetting() {
   }
 
   const sortingIndex = React.useMemo(() => {
-    return $tabsList.findIndex((v) => v.name === sortingItemName) + 1
+    return $tabsList.findIndex(v => v.name === sortingItemName) + 1
   }, [sortingItemName, $tabsList])
 
   return (
@@ -90,7 +90,7 @@ export default function TabListSetting() {
 
         {activeTab === 'channel' && (
           <ThemedButton
-            title='添加'
+            title="添加"
             onPress={() => {
               setIsAdding(true)
             }}
@@ -114,9 +114,9 @@ export default function TabListSetting() {
                       <ThemedText
                         style={[styles.text, { color: '#0969da', lineHeight: 22 }]}
                         numberOfLines={2}
-                        ellipsizeMode='tail'
+                        ellipsizeMode="tail"
                       >
-                        {index + 1}. <ThemedIcon name='create-outline' size={18} color='#0969da' />{' '}
+                        {index + 1}. <ThemedIcon name="create-outline" size={18} color="#0969da" />{' '}
                         {item.title}
                       </ThemedText>
                     </TouchableOpacity>
@@ -129,19 +129,19 @@ export default function TabListSetting() {
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <TouchableOpacity onPress={() => setSortingItemName(item.name)} hitSlop={10}>
-                    <ThemedIcon name='swap-vertical-outline' size={24} style={styles.arrow} />
+                    <ThemedIcon name="swap-vertical-outline" size={24} style={styles.arrow} />
                   </TouchableOpacity>
                   <Switch
                     trackColor={{ false: '#767577', true: '#34C759' }}
                     thumbColor={item.show ? '#fff' : '#f4f3f4'}
-                    ios_backgroundColor='#3e3e3e'
+                    ios_backgroundColor="#3e3e3e"
                     value={item.show}
                     onValueChange={() => {
                       const list = [...get$tabsList()]
-                      const currentIndex = list.findIndex((v) => v.name === item.name)
+                      const currentIndex = list.findIndex(v => v.name === item.name)
                       const toShow = !list[currentIndex].show
                       if (!toShow) {
-                        const showedCount = list.filter((v) => v.show).length
+                        const showedCount = list.filter(v => v.show).length
                         if (showedCount === 1) {
                           ToastAndroid.show('不支持关闭全部', ToastAndroid.SHORT)
                           return
@@ -168,7 +168,7 @@ export default function TabListSetting() {
           })
         ) : $favorList.length === 0 ? (
           <View style={{ paddingVertical: 40, alignItems: 'center', gap: 10 }}>
-            <ThemedIcon name='star-outline' size={48} color='#ccc' />
+            <ThemedIcon name="star-outline" size={48} color="#ccc" />
             <ThemedText style={{ color: '#999' }}>暂无收藏项</ThemedText>
           </View>
         ) : (
@@ -177,7 +177,7 @@ export default function TabListSetting() {
               <View key={item.url} style={styles.item}>
                 <View style={{ flexShrink: 1 }}>
                   <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
-                    <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
+                    <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode="tail">
                       {index + 1}. {item.title}
                     </ThemedText>
                   </TouchableOpacity>
@@ -189,14 +189,14 @@ export default function TabListSetting() {
                       {
                         text: '确定',
                         onPress: () => {
-                          set$favorList($favorList.filter((v) => v.url !== item.url))
+                          set$favorList($favorList.filter(v => v.url !== item.url))
                         },
                       },
                     ])
                   }}
                   hitSlop={10}
                 >
-                  <ThemedIcon name='trash-outline' size={20} color='#ff4d4f' />
+                  <ThemedIcon name="trash-outline" size={20} color="#ff4d4f" />
                 </TouchableOpacity>
               </View>
             )

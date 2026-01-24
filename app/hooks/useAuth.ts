@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import * as authApi from '@/api/auth'
+import { getStoreMethods } from '@/store'
 import {
   clearAuthData,
   clearToken,
@@ -13,6 +14,7 @@ export interface AuthState {
   isLoading: boolean
   isLoggedIn: boolean
   email: string | null
+  token: string | null
   // 弹窗控制
   showLoginModal: boolean
   showReAuthModal: boolean
@@ -37,6 +39,7 @@ export function useAuth(): UseAuthReturn {
     isLoading: true,
     isLoggedIn: false,
     email: null,
+    token: null,
     showLoginModal: false,
     showReAuthModal: false,
   })
@@ -55,6 +58,7 @@ export function useAuth(): UseAuthReturn {
           isLoading: false,
           isLoggedIn: false,
           email: null,
+          token: null,
         }))
         return
       }
@@ -66,6 +70,7 @@ export function useAuth(): UseAuthReturn {
           isLoading: false,
           isLoggedIn: false,
           email: email,
+          token: null,
           showReAuthModal: true,
         }))
         return
@@ -76,15 +81,18 @@ export function useAuth(): UseAuthReturn {
 
       if (statusResult.valid) {
         // 登录有效
+        let currentToken = token
         if (statusResult.newToken) {
           // 需要刷新 token
           await updateToken(statusResult.newToken)
+          currentToken = statusResult.newToken
         }
         setState((prev) => ({
           ...prev,
           isLoading: false,
           isLoggedIn: true,
           email: email,
+          token: currentToken,
         }))
       } else {
         // 登录无效（token 过期），弹出重新验证弹窗
@@ -93,6 +101,7 @@ export function useAuth(): UseAuthReturn {
           isLoading: false,
           isLoggedIn: false,
           email: email,
+          token: null,
           showReAuthModal: true,
         }))
       }
@@ -109,6 +118,10 @@ export function useAuth(): UseAuthReturn {
   useEffect(() => {
     initAuth()
   }, [initAuth])
+
+  useEffect(() => {
+    getStoreMethods().setIsLogin(state.isLoggedIn)
+  }, [state.isLoggedIn])
 
   /**
    * 打开登录弹窗
@@ -152,6 +165,7 @@ export function useAuth(): UseAuthReturn {
           ...prev,
           isLoggedIn: true,
           email: email,
+          token: result.token as string,
           showLoginModal: false,
           showReAuthModal: false,
         }))
@@ -183,6 +197,7 @@ export function useAuth(): UseAuthReturn {
       ...prev,
       isLoggedIn: false,
       email: null,
+      token: null,
     }))
   }, [])
 

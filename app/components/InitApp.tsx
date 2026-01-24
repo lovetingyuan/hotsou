@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
 import { Alert, Linking, ToastAndroid } from 'react-native'
 
+import { useAuth } from '@/hooks/useAuth'
 import { fulfillStoreKeys, getStoreState, subscribeStore, useStore } from '@/store'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
@@ -28,6 +29,7 @@ fulfillStoreKeys()
 
 function App(props: React.PropsWithChildren) {
   const { initialed, get$checkAppUpdateTime, set$checkAppUpdateTime } = useStore()
+  useAuth()
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   })

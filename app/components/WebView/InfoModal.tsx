@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { useStore } from '@/store'
 
 // import { FloatingButton } from '../FloatingButton'
 import { ThemedButton } from '../ThemedButton'
@@ -25,9 +26,33 @@ export default function InfoModal(props: {
   closeModal: () => void
 }) {
   const colorScheme = useColorScheme()
+  const { $favorList, set$favorList } = useStore()
+
+  const isFavorite = React.useMemo(() => {
+    return $favorList.some(item => item.url === props.url)
+  }, [$favorList, props.url])
+
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      set$favorList($favorList.filter(item => item.url !== props.url))
+      ToastAndroid.show('已取消收藏', ToastAndroid.SHORT)
+    } else {
+      set$favorList([
+        {
+          title: props.title || '无标题',
+          url: props.url,
+          created_at: Date.now(),
+        },
+        ...$favorList,
+      ])
+      ToastAndroid.show('收藏成功', ToastAndroid.SHORT)
+    }
+    props.closeModal()
+  }
+
   return (
     <Modal
-      animationType='fade'
+      animationType="fade"
       transparent={true}
       visible={props.visible}
       statusBarTranslucent={true}
@@ -58,15 +83,20 @@ export default function InfoModal(props: {
             }}
           >
             <ThemedButton
-              title='浏览器打开'
+              title={isFavorite ? '取消收藏' : '收藏'}
+              type={isFavorite ? 'secondary' : 'primary'}
+              onPress={toggleFavorite}
+            />
+            <ThemedButton
+              title="浏览器打开"
               onPress={() => {
                 Linking.openURL(props.url)
                 props.closeModal()
               }}
             />
             <ThemedButton
-              title='分享'
-              type='primary'
+              title="分享"
+              type="primary"
               onPress={() => {
                 Share.share({
                   title: props.title,
@@ -77,8 +107,8 @@ export default function InfoModal(props: {
               }}
             />
             <ThemedButton
-              title='复制链接'
-              type='secondary'
+              title="复制链接"
+              type="secondary"
               onPress={() => {
                 Clipboard.setStringAsync(props.url).then(() => {
                   ToastAndroid.show('已复制', ToastAndroid.SHORT)

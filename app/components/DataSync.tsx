@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react'
 import { Platform, ToastAndroid } from 'react-native'
 
-import { AppContextValueType, getStoreState, StoredKeys, useStore } from '@/store'
+import { AppContextValueType, getStoreState, useStore } from '@/store'
 import { userApi } from '@/utils/api'
+import { getAuthData } from '@/utils/secureStore'
 
 export function DataSync() {
-  const { $userEmail, $authToken, $tabsList, $enableTextSelect } = useStore()
+  const { isLogin, $tabsList, $enableTextSelect } = useStore()
   const previousDataRef = useRef<{
     $tabsList: AppContextValueType['$tabsList']
     $enableTextSelect: AppContextValueType['$enableTextSelect']
@@ -23,7 +24,12 @@ export function DataSync() {
     }
 
     const syncToServer = async (data: AppContextValueType) => {
-      if (!$userEmail || !$authToken || syncingRef.current) {
+      if (!isLogin || syncingRef.current) {
+        return
+      }
+
+      const { email, token } = await getAuthData()
+      if (!email || !token) {
         return
       }
 
@@ -35,13 +41,13 @@ export function DataSync() {
           $enableTextSelect: data.$enableTextSelect,
         }
 
-        const checkData = await userApi.getData($userEmail, $authToken)
+        const checkData = await userApi.getData(email, token)
 
         if (checkData.success) {
           if (checkData.result) {
-            await userApi.updateData($userEmail, $authToken, syncData)
+            await userApi.updateData(email, token, syncData)
           } else {
-            await userApi.createData($userEmail, $authToken, syncData)
+            await userApi.createData(email, token, syncData)
           }
           showToast('数据已同步到服务器')
         }
@@ -67,7 +73,7 @@ export function DataSync() {
         $enableTextSelect,
       }
     }
-  }, [$tabsList, $enableTextSelect, $userEmail, $authToken])
+  }, [$tabsList, $enableTextSelect, isLogin])
 
   return null
 }
