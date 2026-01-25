@@ -310,7 +310,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
                 </ThemedText>
               </View>
               <ThemedText style={{ fontSize: 14, opacity: 0.6, fontWeight: '500' }}>
-                全网热搜聚合
+                主流热搜聚合
               </ThemedText>
             </View>
           </View>

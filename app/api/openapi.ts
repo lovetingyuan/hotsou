@@ -1,4 +1,4 @@
-const BASE_URL = __DEV__ ? 'http://192.168.1.14:8787' : 'http://hotsou.tingyuan.in'
+import { BASE_URL } from './baseUrl'
 
 export class ApiError extends Error {
   constructor(message: string, public status: number, public response?: any) {

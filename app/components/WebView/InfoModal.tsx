@@ -29,12 +29,12 @@ export default function InfoModal(props: {
   const { $favorList, set$favorList } = useStore()
 
   const isFavorite = React.useMemo(() => {
-    return $favorList.some(item => item.url === props.url)
+    return $favorList.some((item) => item.url === props.url)
   }, [$favorList, props.url])
 
   const toggleFavorite = () => {
     if (isFavorite) {
-      set$favorList($favorList.filter(item => item.url !== props.url))
+      set$favorList($favorList.filter((item) => item.url !== props.url))
       ToastAndroid.show('已取消收藏', ToastAndroid.SHORT)
     } else {
       set$favorList([
@@ -52,7 +52,7 @@ export default function InfoModal(props: {
 
   return (
     <Modal
-      animationType="fade"
+      animationType='fade'
       transparent={true}
       visible={props.visible}
       statusBarTranslucent={true}
@@ -88,15 +88,15 @@ export default function InfoModal(props: {
               onPress={toggleFavorite}
             />
             <ThemedButton
-              title="浏览器打开"
+              title='浏览器打开'
               onPress={() => {
                 Linking.openURL(props.url)
                 props.closeModal()
               }}
             />
             <ThemedButton
-              title="分享"
-              type="primary"
+              title='分享'
+              type='primary'
               onPress={() => {
                 Share.share({
                   title: props.title,
@@ -107,8 +107,8 @@ export default function InfoModal(props: {
               }}
             />
             <ThemedButton
-              title="复制链接"
-              type="secondary"
+              title='复制链接'
+              type='secondary'
               onPress={() => {
                 Clipboard.setStringAsync(props.url).then(() => {
                   ToastAndroid.show('已复制', ToastAndroid.SHORT)

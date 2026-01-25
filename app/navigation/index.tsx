@@ -19,7 +19,7 @@ function RootNavigator() {
     try {
       await Share.share({
         title: 'HotSou',
-        message: 'HotSou - 全网热搜聚合 https://github.com/lovetingyuan/hotsou',
+        message: 'HotSou - 主流热搜聚合 https://github.com/lovetingyuan/hotsou',
         url: 'https://github.com/lovetingyuan/hotsou',
       })
     } catch {

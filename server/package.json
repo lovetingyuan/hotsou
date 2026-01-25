@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "node scripts/print-local-ips.js && wrangler dev",
-    "start": "node scripts/print-local-ips.js && wrangler dev",
+    "dev": "wrangler dev",
     "cf-typegen": "wrangler types",
     "type-check": "tsc --noEmit"
   },

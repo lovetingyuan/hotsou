@@ -1,6 +1,6 @@
-const BASE_URL = __DEV__ ? 'http://192.168.1.14:8787' : 'http://hotsou.tingyuan.in'
-
 // ==================== Response Types ====================
+
+import { BASE_URL } from './baseUrl'
 
 export interface OtpResponse {
   success: boolean
