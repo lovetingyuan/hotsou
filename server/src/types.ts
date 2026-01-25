@@ -34,12 +34,15 @@ const TabItemSchema = z.object({
   icon: z.string().optional(),
 })
 
-export const UserDataSchema = z.object({
-  $tabsList: z.array(TabItemSchema),
-  $enableTextSelect: z.boolean(),
-})
+export const UserDataSchema = z.record(z.string(), z.any())
 
 export type UserDataType = z.infer<typeof UserDataSchema>
+
+export const SyncOperationSchema = z.object({
+  set: z.any().optional(),
+  delete: z.array(z.string()).optional(),
+  get: z.array(z.string()).optional(),
+})
 
 // ==================== Auth Schemas ====================
 

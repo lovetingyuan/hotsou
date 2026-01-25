@@ -134,17 +134,27 @@ export const userApi = {
     return Schema.parse(responseData)
   },
 
-  deleteData: async (email: string, token: string) => {
+  sync: async (
+    email: string,
+    token: string,
+    payload: {
+      set?: Record<string, any>
+      delete?: string[]
+      get?: string[]
+    },
+  ) => {
     const Schema = z.object({
       success: z.boolean(),
+      result: z.record(z.string(), z.any()),
       error: z.string().optional(),
     })
 
-    const data = await request(`/api/users/${encodeURIComponent(email)}/application-data`, {
-      method: 'DELETE',
+    const data = await request(`/api/users/${encodeURIComponent(email)}/sync`, {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify(payload),
     })
 
     return Schema.parse(data)

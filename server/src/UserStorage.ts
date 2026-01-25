@@ -1,9 +1,6 @@
 import { DurableObject } from 'cloudflare:workers'
 import { UserDataType } from './types'
 
-const APP_DATA_KEY = 'appData'
-
-// 时间常量
 const OTP_EXPIRY_MS = 60 * 1000 // 1分钟
 const OTP_COOLDOWN_MS = 60 * 1000 // 60秒冷却
 const TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000 // 1周
@@ -25,33 +22,45 @@ export class UserStorage extends DurableObject {
     super(ctx, env)
   }
 
-  async getData() {
-    const data = await this.ctx.storage.get<UserDataType>(APP_DATA_KEY)
-    return data || null
-  }
-
-  async saveData(data: UserDataType) {
-    await this.ctx.storage.put(APP_DATA_KEY, data)
-  }
-
-  async createData(data: UserDataType) {
-    const existing = await this.ctx.storage.get(APP_DATA_KEY)
-    if (existing) {
-      throw new Error('User data already exists')
+  async syncData(ops: { set?: Record<string, any>; delete?: string[]; get?: string[] }) {
+    // 1. Delete
+    if (ops.delete && ops.delete.length > 0) {
+      // Validate keys
+      const invalidKeys = ops.delete.filter((k) => !k.startsWith('$'))
+      if (invalidKeys.length > 0) {
+        throw new Error(
+          `Invalid keys for delete: ${invalidKeys.join(', ')}. Keys must start with '$'`,
+        )
+      }
+      await this.ctx.storage.delete(ops.delete)
     }
-    await this.ctx.storage.put(APP_DATA_KEY, data)
-  }
 
-  async updateData(data: UserDataType) {
-    const existing = await this.ctx.storage.get(APP_DATA_KEY)
-    if (!existing) {
-      throw new Error('User data not found')
+    // 2. Set
+    if (ops.set) {
+      // Validate keys
+      const invalidKeys = Object.keys(ops.set).filter((k) => !k.startsWith('$'))
+      if (invalidKeys.length > 0) {
+        throw new Error(`Invalid keys for set: ${invalidKeys.join(', ')}. Keys must start with '$'`)
+      }
+      await this.ctx.storage.put(ops.set)
     }
-    await this.ctx.storage.put(APP_DATA_KEY, data)
-  }
 
-  async deleteData() {
-    await this.ctx.storage.delete(APP_DATA_KEY)
+    // 3. Get
+    const result: Record<string, any> = {}
+    if (ops.get && ops.get.length > 0) {
+      // Validate keys
+      const invalidKeys = ops.get.filter((k) => !k.startsWith('$'))
+      if (invalidKeys.length > 0) {
+        throw new Error(`Invalid keys for get: ${invalidKeys.join(', ')}. Keys must start with '$'`)
+      }
+      const values = await this.ctx.storage.get(ops.get)
+      // Merge into result
+      for (const [key, value] of values) {
+        result[key] = value
+      }
+    }
+
+    return result
   }
 
   // ==================== Auth methods ====================

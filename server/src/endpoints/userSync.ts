@@ -1,10 +1,10 @@
 import { Bool, OpenAPIRoute } from 'chanfana'
 import { z } from 'zod'
-import { AppContext, UserDataSchema } from '../types'
+import { AppContext, SyncOperationSchema } from '../types'
 
-const UserApplicationDataUpdateSchema = {
+export const UserSyncSchema = {
   tags: ['Users'],
-  summary: 'Update user application data',
+  summary: 'Sync user data (get, set, delete)',
   request: {
     params: z.object({
       userEmail: z.string().email(),
@@ -15,25 +15,36 @@ const UserApplicationDataUpdateSchema = {
     body: {
       content: {
         'application/json': {
-          schema: UserDataSchema,
+          schema: SyncOperationSchema,
         },
       },
     },
   },
   responses: {
     '200': {
-      description: 'Data updated successfully',
+      description: 'Sync successful',
       content: {
         'application/json': {
           schema: z.object({
             success: Bool(),
-            result: UserDataSchema,
+            result: z.any(),
           }),
         },
       },
     },
-    '404': {
-      description: 'User data not found',
+    '400': {
+      description: 'Bad Request',
+      content: {
+        'application/json': {
+          schema: z.object({
+            success: Bool(),
+            error: z.string(),
+          }),
+        },
+      },
+    },
+    '401': {
+      description: 'Unauthorized',
       content: {
         'application/json': {
           schema: z.object({
@@ -46,11 +57,11 @@ const UserApplicationDataUpdateSchema = {
   },
 }
 
-export class UserApplicationDataUpdate extends OpenAPIRoute {
-  schema = UserApplicationDataUpdateSchema
+export class UserSync extends OpenAPIRoute {
+  schema = UserSyncSchema as any
 
   async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof UserApplicationDataUpdateSchema>()
+    const data = await this.getValidatedData<any>()
 
     if (!data || !data.headers || !data.headers.authorization) {
       return c.json(
@@ -64,16 +75,16 @@ export class UserApplicationDataUpdate extends OpenAPIRoute {
 
     const { userEmail } = data.params
     const { authorization } = data.headers
-    const bodyData = data.body
+    const syncOps = data.body
 
     const token = authorization.replace(/^Bearer\s+/i, '')
 
     const id = c.env.USER_STORAGE.idFromName(userEmail)
     const stub = c.env.USER_STORAGE.get(id)
 
-    const isAuthorized = await stub.verifyToken(token)
+    const verifyResult = await stub.verifyToken(token)
 
-    if (!isAuthorized) {
+    if (!verifyResult.valid) {
       return c.json(
         {
           success: false,
@@ -84,23 +95,20 @@ export class UserApplicationDataUpdate extends OpenAPIRoute {
     }
 
     try {
-      await stub.updateData(bodyData)
+      const result = await stub.syncData(syncOps)
+      // @ts-ignore
+      return c.json({
+        success: true,
+        result,
+      })
     } catch (e: any) {
-      if (e.message.includes('User data not found')) {
-        return c.json(
-          {
-            success: false,
-            error: 'User data not found',
-          },
-          404,
-        )
-      }
-      throw e
-    }
-
-    return {
-      success: true,
-      result: bodyData,
+      return c.json(
+        {
+          success: false,
+          error: e.message || 'Sync failed',
+        },
+        400,
+      )
     }
   }
 }

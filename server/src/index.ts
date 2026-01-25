@@ -9,10 +9,7 @@ import { AuthVerify } from './endpoints/authVerify'
 import { AuthCheckRegistered } from './endpoints/authCheckRegistered'
 import { AuthStatus } from './endpoints/authStatus'
 import { AuthLogout } from './endpoints/authLogout'
-import { UserApplicationData } from './endpoints/userApplicationData'
-import { UserApplicationDataCreate } from './endpoints/userApplicationDataCreate'
-import { UserApplicationDataDelete } from './endpoints/userApplicationDataDelete'
-import { UserApplicationDataUpdate } from './endpoints/userApplicationDataUpdate'
+import { UserSync } from './endpoints/userSync'
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
@@ -55,10 +52,7 @@ openapi.post('/api/auth/logout', AuthLogout)
 console.log('Auth endpoints registered.')
 
 console.log('Registering User endpoints...')
-openapi.get('/api/users/:userEmail/application-data', UserApplicationData)
-openapi.post('/api/users/:userEmail/application-data', UserApplicationDataCreate)
-openapi.put('/api/users/:userEmail/application-data', UserApplicationDataUpdate)
-openapi.delete('/api/users/:userEmail/application-data', UserApplicationDataDelete)
+openapi.post('/api/users/:userEmail/sync', UserSync)
 console.log('User endpoints registered.')
 
 // You may also register routes for non OpenAPI directly on Hono

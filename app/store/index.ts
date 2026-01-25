@@ -125,3 +125,5 @@ export const fulfillStoreKeys = () => {
       throw err
     })
 }
+
+export const SyncDataKeys: StoredKeys[] = ['$tabsList', '$enableTextSelect', '$favorList'] as const
