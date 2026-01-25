@@ -34,12 +34,6 @@ export function DataSync() {
   useEffect(() => {
     if (!isLogin) return
 
-    const showToast = (message: string) => {
-      if (Platform.OS === 'android') {
-        ToastAndroid.show(message, ToastAndroid.SHORT)
-      }
-    }
-
     const performInitialSync = async () => {
       if (!isLogin || syncingRef.current) return
 
@@ -74,7 +68,7 @@ export function DataSync() {
                 }
               }
             })
-            showToast('数据已从服务器恢复')
+            // showToast('数据已从服务器恢复')
           } else {
             // Client Wins: Upload local data to server
             // Construct payload from current store state
@@ -88,7 +82,7 @@ export function DataSync() {
               set: payload,
             })
             previousDataRef.current = { ...payload }
-            showToast('本地数据已同步到服务器')
+            // showToast('本地数据已同步到服务器')
           }
         }
       } catch (error) {
