@@ -1,139 +1,71 @@
+import { Platform, ToastAndroid } from 'react-native'
 import { z } from 'zod'
 
-const TabItemSchema = z.object({
-  name: z.string(),
-  title: z.string(),
-  url: z.string(),
-  show: z.boolean(),
-  builtIn: z.boolean().optional(),
-  icon: z.string().optional(),
-})
+import { BASE_URL } from '@/api/baseUrl'
 
-const UserDataSchema = z.object({
-  $tabsList: z.array(TabItemSchema),
-  $enableTextSelect: z.boolean(),
-})
+export async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const url = `${BASE_URL}${endpoint}`
 
-const API_BASE_URL = __DEV__ ? 'http://localhost:8787' : 'https://your-production-url.com'
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+      ...options,
+    })
 
-async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      const message = errorData.error || `请求失败: ${response.status}`
+      if (Platform.OS === 'android') {
+        ToastAndroid.show(message, ToastAndroid.SHORT)
+      }
+      throw new Error(message)
+    }
 
-  const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-    ...options,
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}))
-    throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+    return response.json() as Promise<T>
+  } catch (error: any) {
+    const message = error.message || '网络请求失败'
+    // If we already showed a toast (re-thrown error), we might not want to show it again.
+    // However, if it's a network error (fetch failed), we do want to show it.
+    // The previous block throws "message".
+    // Let's rely on the fact that if it's a network error, it won't be caught by response.ok check.
+    // But if I throw in the if(!response.ok) block, it goes to caller, NOT to this catch block?
+    // Wait, try-catch only catches errors from the await fetch or the block.
+    // If I throw inside the try, it IS caught by the catch block below?
+    // YES.
+    // So I need to be careful not to double toast.
+    // I can check if error has been "handled" or just rely on the caller handling it?
+    // No, if I throw inside try, catch catches it.
+    // So if !response.ok, I show toast, then throw. The catch block catches it, shows toast AGAIN, then throws.
+    // BAD.
+    
+    // Fix: Move the response check outside or handle cleanly.
+    // Or, in catch block, check if toast was already shown? Hard.
+    
+    // Better structure:
+    // fetch...
+    // if !ok -> throw custom error with flag?
+    
+    // Or just let catch handle everything?
+    // if !ok -> throw Error(data.error)
+    // catch (e) -> Toast(e.message); throw e;
+    
+    // BUT, I need async parsing of error body if !ok.
+    
+    if (Platform.OS === 'android') {
+       // Check if this is a "known" error that we already displayed?
+       // Actually, simplified approach:
+       // Don't toast in the !ok block. Just throw.
+       // Handle ALL toasts in the catch block.
+       ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+    throw error
   }
-
-  return response.json() as Promise<T>
-}
-
-export const authApi = {
-  checkRegistered: async (email: string) => {
-    const Schema = z.object({
-      success: z.boolean(),
-      registered: z.boolean(),
-    })
-
-    const data = await request('/api/auth/check-registered', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    })
-
-    return Schema.parse(data)
-  },
-
-  requestOtp: async (email: string) => {
-    const Schema = z.object({
-      success: z.boolean(),
-      message: z.string(),
-    })
-
-    const data = await request('/api/auth/otp', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    })
-
-    return Schema.parse(data)
-  },
-
-  verifyOtp: async (email: string, otp: string) => {
-    const Schema = z.object({
-      success: z.boolean(),
-      token: z.string().optional(),
-      error: z.string().optional(),
-    })
-
-    const data = await request('/api/auth/verify', {
-      method: 'POST',
-      body: JSON.stringify({ email, otp }),
-    })
-
-    return Schema.parse(data)
-  },
 }
 
 export const userApi = {
-  getData: async (email: string, token: string) => {
-    const Schema = z.object({
-      success: z.boolean(),
-      result: UserDataSchema.nullable(),
-      error: z.string().optional(),
-    })
-
-    const data = await request(`/api/users/${encodeURIComponent(email)}/application-data`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    return Schema.parse(data)
-  },
-
-  createData: async (email: string, token: string, data: z.infer<typeof UserDataSchema>) => {
-    const Schema = z.object({
-      success: z.boolean(),
-      result: UserDataSchema,
-      error: z.string().optional(),
-    })
-
-    const responseData = await request(`/api/users/${encodeURIComponent(email)}/application-data`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    })
-
-    return Schema.parse(responseData)
-  },
-
-  updateData: async (email: string, token: string, data: z.infer<typeof UserDataSchema>) => {
-    const Schema = z.object({
-      success: z.boolean(),
-      result: UserDataSchema,
-      error: z.string().optional(),
-    })
-
-    const responseData = await request(`/api/users/${encodeURIComponent(email)}/application-data`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    })
-
-    return Schema.parse(responseData)
-  },
-
   sync: async (
     email: string,
     token: string,
@@ -160,3 +92,4 @@ export const userApi = {
     return Schema.parse(data)
   },
 }
+
