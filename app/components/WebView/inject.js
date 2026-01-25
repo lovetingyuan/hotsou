@@ -102,20 +102,19 @@ function __$injectBeforeLoad() {
     window.addEventListener('beforeunload', saveScrollPosition)
   }
 
-  window.__markReaded = (containerClass, textClass, textsClass, onClick) => {
+  window.__markReaded = (containerClass, textClass, textsClass) => {
     window.document.addEventListener(
       'click',
       (evt) => {
         const itemElement = evt.target.closest(containerClass)
         if (itemElement) {
-          const title = itemElement.querySelector(textClass)
+          const title =
+            typeof textClass === 'function'
+              ? textClass(itemElement)
+              : itemElement.querySelector(textClass)
           if (title) {
-            const ret = onClick?.(evt, title)
-            if (ret === false) {
-              return
-            }
             const clicked = JSON.parse(window.localStorage.getItem('__clicked__') || '{}')
-            const titleText = title.innerText
+            const titleText = title.nodeType === 3 ? title.textContent : title.innerText
             const now = Date.now()
             clicked[titleText] = now
             for (const t in clicked) {
@@ -130,15 +129,29 @@ function __$injectBeforeLoad() {
       true,
     )
 
-    window.setInterval(() => {
+    const timer = window.setInterval(() => {
       const clicked = JSON.parse(window.localStorage.getItem('__clicked__') || '{}')
-      const items = window.document.querySelectorAll(textsClass)
-      items.forEach((ele) => {
-        if (ele.innerText in clicked) {
-          ele.style.opacity = 0.4
+      if (typeof textsClass === 'function') {
+        const result = textsClass()
+        for (const text in result) {
+          if (text in clicked) {
+            result[text].style.opacity = 0.4
+          }
         }
-      })
+      } else {
+        const items = window.document.querySelectorAll(textsClass)
+        items.forEach((ele) => {
+          if (ele.innerText in clicked) {
+            ele.style.opacity = 0.4
+          }
+        })
+      }
     }, 100)
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        clearInterval(timer)
+      }, 3000)
+    })
   }
 
   window.__injectCss = () => {

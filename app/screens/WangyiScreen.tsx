@@ -50,17 +50,34 @@ function __$inject() {
       }
     }, 200)
 
+    // (evt, title) => {
+    //       const text = title?.innerText
+    //       if (text) {
+    //         const url = 'https://c.m.163.com/news/search?keyword=' + encodeURIComponent(text)
+    //         location.href = url
+    //         evt.stopPropagation()
+    //         evt.preventDefault()
+    //       }
+    //     }
     // @ts-ignore
-    window.__markReaded?.('.s-item-wrapper', '.s-text', '.s-item-wrapper .s-text', (evt, title) => {
-      const text = title?.innerText
-      if (text) {
-        const url = 'https://c.m.163.com/news/search?keyword=' + encodeURIComponent(text)
-        location.href = url
-        evt.stopPropagation()
-        evt.preventDefault()
-      }
-    })
-
+    window.__markReaded?.('.s-item-wrapper', '.s-text', '.s-item-wrapper .s-text')
+    window.addEventListener(
+      'click',
+      (e) => {
+        // @ts-ignore
+        const container = e.target.closest('.s-item-wrapper')
+        if (container) {
+          e.preventDefault()
+          // e.stopPropagation()
+          const text = container.querySelector('.s-text').innerText
+          const url = 'https://c.m.163.com/news/search?keyword=' + encodeURIComponent(text)
+          setTimeout(() => {
+            location.href = url
+          })
+        }
+      },
+      true,
+    )
     // const tabs = document.getElementById('tabContainer')
     // if (tabs) {
     //   const observer = new MutationObserver(mutations => {

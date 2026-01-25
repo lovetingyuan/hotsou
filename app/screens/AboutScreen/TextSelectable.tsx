@@ -20,7 +20,6 @@ export default function TextSelectable() {
         value={$enableTextSelect}
         onValueChange={() => {
           set$enableTextSelect((v) => !v)
-          ToastAndroid.show('刷新后生效', ToastAndroid.SHORT)
         }}
       />
     </ThemedView>
