@@ -67,7 +67,7 @@ export class UserSync extends OpenAPIRoute {
       return c.json(
         {
           success: false,
-          error: 'Unauthorized: Authorization header is required',
+          error: '未授权：缺少 Authorization 头',
         },
         401,
       )
@@ -88,7 +88,7 @@ export class UserSync extends OpenAPIRoute {
       return c.json(
         {
           success: false,
-          error: 'Unauthorized: Invalid token',
+          error: '未授权：Token 无效或已过期',
         },
         401,
       )
@@ -105,7 +105,7 @@ export class UserSync extends OpenAPIRoute {
       return c.json(
         {
           success: false,
-          error: e.message || 'Sync failed',
+          error: e.message || '同步失败',
         },
         400,
       )

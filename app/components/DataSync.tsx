@@ -1,14 +1,6 @@
-import React, { useEffect, useRef } from 'react'
-import { Platform, ToastAndroid } from 'react-native'
+import { useEffect, useRef } from 'react'
 
-import {
-  AppContextValueType,
-  getStoreMethods,
-  getStoreState,
-  subscribeStore,
-  SyncDataKeys,
-  useStore,
-} from '@/store'
+import { getStoreMethods, getStoreState, subscribeStore, SyncDataKeys, useStore } from '@/store'
 import { userApi } from '@/utils/api'
 import { getAuthData } from '@/utils/secureStore'
 
@@ -27,18 +19,26 @@ export function DataSync() {
       isFirstLoginSync.current = true
     } else {
       // Clean up if logged out
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
     }
   }, [isLogin])
 
   useEffect(() => {
-    if (!isLogin) return
+    if (!isLogin) {
+      return
+    }
 
     const performInitialSync = async () => {
-      if (!isLogin || syncingRef.current) return
+      if (!isLogin || syncingRef.current) {
+        return
+      }
 
       const { email, token } = await getAuthData()
-      if (!email || !token) return
+      if (!email || !token) {
+        return
+      }
 
       syncingRef.current = true
       try {
@@ -64,7 +64,7 @@ export function DataSync() {
                 // Since methods are dynamic, we cast or use specific knowledge
                 const methodKey = `set${key}` as keyof typeof methods
                 if (methods[methodKey]) {
-                  ;(methods[methodKey] as Function)(remoteData[key])
+                  methods[methodKey](remoteData[key])
                 }
               }
             })
@@ -94,7 +94,9 @@ export function DataSync() {
     }
 
     const performUpdateSync = async () => {
-      if (!isLogin || isFirstLoginSync.current) return
+      if (!isLogin || isFirstLoginSync.current) {
+        return
+      }
 
       const changes: Record<string, any> = {}
       let hasChanges = false
@@ -111,9 +113,13 @@ export function DataSync() {
         }
       })
 
-      if (!hasChanges) return
+      if (!hasChanges) {
+        return
+      }
 
-      if (syncingRef.current) return
+      if (syncingRef.current) {
+        return
+      }
       syncingRef.current = true
 
       const { email, token } = await getAuthData()
@@ -140,8 +146,10 @@ export function DataSync() {
     performInitialSync()
 
     // 2. Subscribe to changes
-    const unsubscribe = subscribeStore((newState) => {
-      if (isFirstLoginSync.current) return
+    const unsubscribe = subscribeStore(newState => {
+      if (isFirstLoginSync.current) {
+        return
+      }
 
       // Check if any SyncDataKeys changed
       let hasChanges = false
@@ -156,7 +164,9 @@ export function DataSync() {
       })
 
       if (hasChanges) {
-        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current)
+        }
         debounceTimerRef.current = setTimeout(() => {
           performUpdateSync()
         }, 2000)
@@ -165,7 +175,9 @@ export function DataSync() {
 
     return () => {
       unsubscribe()
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
     }
   }, [isLogin])
 

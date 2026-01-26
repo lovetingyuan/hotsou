@@ -39,7 +39,6 @@ export class OpenApiClient {
     headers?: HeadersInit
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`
-    console.log(3423, url, body)
     try {
       const response = await fetch(url, {
         method,
@@ -57,8 +56,6 @@ export class OpenApiClient {
 
       return await response.json()
     } catch (error) {
-      console.log(9999, 333, error)
-
       if (error instanceof ApiError) {
         throw error
       }

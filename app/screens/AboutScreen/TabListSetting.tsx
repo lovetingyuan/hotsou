@@ -98,7 +98,7 @@ export default function TabListSetting() {
         )}
       </View>
 
-      <View>
+      <View style={{ minHeight: 100 }}>
         {activeTab === 'channel' ? (
           $tabsList.map((item, index) => {
             return (
@@ -173,13 +173,20 @@ export default function TabListSetting() {
           </View>
         ) : (
           $favorList.map((item, index) => {
+            const date = new Date(item.created_at)
+            const dateStr = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+
             return (
               <View key={item.url} style={styles.item}>
                 <View style={{ flexShrink: 1 }}>
-                  <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
+                  <TouchableOpacity
+                    onPress={() => Linking.openURL(item.url)}
+                    style={{ flexDirection: 'row', alignItems: 'center' }}
+                  >
                     <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
                       {index + 1}. {item.title}
                     </ThemedText>
+                    <ThemedText style={styles.favorTime}>{dateStr}</ThemedText>
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
@@ -238,6 +245,11 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'left',
     fontSize: 17,
+  },
+  favorTime: {
+    fontSize: 12,
+    color: '#999',
+    marginLeft: 8,
   },
   arrow: {
     fontSize: 24,

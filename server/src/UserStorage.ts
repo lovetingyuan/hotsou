@@ -28,9 +28,7 @@ export class UserStorage extends DurableObject {
       // Validate keys
       const invalidKeys = ops.delete.filter((k) => !k.startsWith('$'))
       if (invalidKeys.length > 0) {
-        throw new Error(
-          `Invalid keys for delete: ${invalidKeys.join(', ')}. Keys must start with '$'`,
-        )
+        throw new Error(`删除键名无效: ${invalidKeys.join(', ')}。键名必须以 '$' 开头`)
       }
       await this.ctx.storage.delete(ops.delete)
     }
@@ -40,7 +38,7 @@ export class UserStorage extends DurableObject {
       // Validate keys
       const invalidKeys = Object.keys(ops.set).filter((k) => !k.startsWith('$'))
       if (invalidKeys.length > 0) {
-        throw new Error(`Invalid keys for set: ${invalidKeys.join(', ')}. Keys must start with '$'`)
+        throw new Error(`设置键名无效: ${invalidKeys.join(', ')}。键名必须以 '$' 开头`)
       }
       await this.ctx.storage.put(ops.set)
     }
@@ -51,7 +49,7 @@ export class UserStorage extends DurableObject {
       // Validate keys
       const invalidKeys = ops.get.filter((k) => !k.startsWith('$'))
       if (invalidKeys.length > 0) {
-        throw new Error(`Invalid keys for get: ${invalidKeys.join(', ')}. Keys must start with '$'`)
+        throw new Error(`获取键名无效: ${invalidKeys.join(', ')}。键名必须以 '$' 开头`)
       }
       const values = await this.ctx.storage.get(ops.get)
       // Merge into result

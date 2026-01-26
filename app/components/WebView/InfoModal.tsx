@@ -16,6 +16,7 @@ import { useStore } from '@/store'
 
 // import { FloatingButton } from '../FloatingButton'
 import { ThemedButton } from '../ThemedButton'
+import { ThemedTextInput } from '../ThemedInput'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 
@@ -27,6 +28,11 @@ export default function InfoModal(props: {
 }) {
   const colorScheme = useColorScheme()
   const { $favorList, set$favorList } = useStore()
+  const [editableTitle, setEditableTitle] = React.useState(props.title || '无标题')
+
+  React.useEffect(() => {
+    setEditableTitle(props.title || '无标题')
+  }, [props.title])
 
   const isFavorite = React.useMemo(() => {
     return $favorList.some((item) => item.url === props.url)
@@ -39,7 +45,7 @@ export default function InfoModal(props: {
     } else {
       set$favorList([
         {
-          title: props.title || '无标题',
+          title: editableTitle || '无标题',
           url: props.url,
           created_at: Date.now(),
         },
@@ -60,72 +66,83 @@ export default function InfoModal(props: {
         props.closeModal()
       }}
     >
-      <View style={styles.centeredView}>
-        <ThemedView
-          style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
-        >
-          <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }} selectable>
-            {props.title || '当前页面'}
-          </ThemedText>
-          <ScrollView style={{ maxHeight: 120 }}>
-            <ThemedText selectable style={{ opacity: 0.7 }}>
-              {props.url}
-            </ThemedText>
-          </ScrollView>
+      <TouchableOpacity style={styles.centeredView} activeOpacity={1} onPress={props.closeModal}>
+        <TouchableOpacity activeOpacity={1}>
+          <ThemedView
+            style={[styles.modalView, { shadowColor: colorScheme === 'dark' ? 'white' : 'black' }]}
+          >
+            <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>页面信息</ThemedText>
+            <ThemedTextInput
+              style={{
+                borderBottomWidth: 1,
+                padding: 6,
+                fontSize: 16,
+              }}
+              value={editableTitle}
+              onChangeText={setEditableTitle}
+              placeholder='输入自定义标题'
+              placeholderTextColor='#888'
+            />
+            <ScrollView style={{ maxHeight: 120 }}>
+              <ThemedText selectable style={{ opacity: 0.7 }}>
+                {props.url}
+              </ThemedText>
+            </ScrollView>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 10,
-              marginTop: 20,
-              justifyContent: 'flex-end',
-              flexWrap: 'wrap',
-            }}
-          >
-            <ThemedButton
-              title={isFavorite ? '取消收藏' : '收藏'}
-              type={isFavorite ? 'secondary' : 'primary'}
-              onPress={toggleFavorite}
-            />
-            <ThemedButton
-              title='浏览器打开'
-              onPress={() => {
-                Linking.openURL(props.url)
-                props.closeModal()
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 10,
+                marginTop: 20,
+                justifyContent: 'flex-end',
+                flexWrap: 'wrap',
               }}
-            />
-            <ThemedButton
-              title='分享'
-              type='primary'
-              onPress={() => {
-                Share.share({
-                  title: props.title,
-                  message: props.title + '\n' + props.url,
-                  url: props.url,
-                })
-                props.closeModal()
-              }}
-            />
-            <ThemedButton
-              title='复制链接'
-              type='secondary'
-              onPress={() => {
-                Clipboard.setStringAsync(props.url).then(() => {
-                  ToastAndroid.show('已复制', ToastAndroid.SHORT)
-                })
-                props.closeModal()
-              }}
-            />
-          </View>
-          <TouchableOpacity
-            onPress={props.closeModal}
-            style={{ position: 'absolute', top: 10, right: 10, padding: 5 }}
-            hitSlop={10}
-          >
-            <ThemedText style={{ fontSize: 20, color: '#999' }}>✕</ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
-      </View>
+            >
+              <ThemedButton
+                title={isFavorite ? '取消收藏' : '收藏'}
+                type={isFavorite ? 'secondary' : 'primary'}
+                onPress={toggleFavorite}
+              />
+              <ThemedButton
+                title='浏览器打开'
+                onPress={() => {
+                  Linking.openURL(props.url)
+                  props.closeModal()
+                }}
+              />
+              <ThemedButton
+                title='分享'
+                type='primary'
+                onPress={() => {
+                  Share.share({
+                    title: editableTitle,
+                    message: editableTitle + '\n' + props.url,
+                    url: props.url,
+                  })
+                  props.closeModal()
+                }}
+              />
+              <ThemedButton
+                title='复制链接'
+                type='secondary'
+                onPress={() => {
+                  Clipboard.setStringAsync(props.url).then(() => {
+                    ToastAndroid.show('已复制', ToastAndroid.SHORT)
+                  })
+                  props.closeModal()
+                }}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={props.closeModal}
+              style={{ position: 'absolute', top: 10, right: 10, padding: 5 }}
+              hitSlop={10}
+            >
+              <ThemedText style={{ fontSize: 20, color: '#999' }}>✕</ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   )
 }

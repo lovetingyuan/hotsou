@@ -40,26 +40,26 @@ export async function request<T>(endpoint: string, options?: RequestInit): Promi
     // No, if I throw inside try, catch catches it.
     // So if !response.ok, I show toast, then throw. The catch block catches it, shows toast AGAIN, then throws.
     // BAD.
-    
+
     // Fix: Move the response check outside or handle cleanly.
     // Or, in catch block, check if toast was already shown? Hard.
-    
+
     // Better structure:
     // fetch...
     // if !ok -> throw custom error with flag?
-    
+
     // Or just let catch handle everything?
     // if !ok -> throw Error(data.error)
     // catch (e) -> Toast(e.message); throw e;
-    
+
     // BUT, I need async parsing of error body if !ok.
-    
+
     if (Platform.OS === 'android') {
-       // Check if this is a "known" error that we already displayed?
-       // Actually, simplified approach:
-       // Don't toast in the !ok block. Just throw.
-       // Handle ALL toasts in the catch block.
-       ToastAndroid.show(message, ToastAndroid.SHORT)
+      // Check if this is a "known" error that we already displayed?
+      // Actually, simplified approach:
+      // Don't toast in the !ok block. Just throw.
+      // Handle ALL toasts in the catch block.
+      ToastAndroid.show(message, ToastAndroid.SHORT)
     }
     throw error
   }
@@ -92,4 +92,3 @@ export const userApi = {
     return Schema.parse(data)
   },
 }
-

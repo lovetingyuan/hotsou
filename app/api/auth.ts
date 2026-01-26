@@ -183,7 +183,7 @@ export async function logout(email: string, token: string): Promise<boolean> {
 
     const data = await response.json()
     if (!response.ok) {
-        showToast(data.error || '退出登录失败')
+      showToast(data.error || '退出登录失败')
     }
     return data.success
   } catch (error) {
