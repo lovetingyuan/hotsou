@@ -57,30 +57,32 @@ const assertResponseOk = async (url, name) => {
   )
 }
 
-const parseBuildJson = stdout => {
-  const lines = stdout
-    .trim()
-    .split('\n')
-    .filter(line => line.trim())
+const parseBuildJson = output => {
+  const text = output.trim()
+  if (!text) {
+    throw new Error('EAS build output is empty')
+  }
 
-  const jsonObjects = []
-  for (const line of lines) {
-    if (!line.trim().startsWith('{')) {
-      continue
+  const startIndexes = []
+  for (let i = 0; i < text.length; i += 1) {
+    if (text[i] === '{') {
+      startIndexes.push(i)
     }
+  }
+
+  for (let i = startIndexes.length - 1; i >= 0; i -= 1) {
+    const slice = text.slice(startIndexes[i])
     try {
-      jsonObjects.push(JSON.parse(line))
+      const parsed = JSON.parse(slice)
+      if (parsed && parsed.status) {
+        return parsed
+      }
     } catch {
       continue
     }
   }
 
-  const candidates = jsonObjects.filter(item => item && item.status)
-  if (candidates.length === 0) {
-    throw new Error('Unable to parse EAS build JSON output')
-  }
-
-  return candidates[candidates.length - 1]
+  throw new Error('Unable to parse EAS build JSON output')
 }
 
 const ensureGitSynced = async () => {
@@ -126,7 +128,10 @@ const main = async () => {
     await assertResponseOk('https://api.expo.dev', 'Expo API')
     log.success('Expo API reachable')
 
-    const easUser = await withRetry(2, () => $`npx -y eas-cli@latest whoami`, 'EAS login')
+    await withRetry(2, () => $`eas --version`, 'EAS CLI version')
+    log.success('EAS CLI available')
+
+    const easUser = await withRetry(2, () => $`eas whoami`, 'EAS login')
     if (!easUser.stdout.trim()) {
       throw new Error('EAS not logged in')
     }
@@ -172,10 +177,10 @@ const main = async () => {
   let buildResult
   try {
     log.info('Starting EAS production build...')
-    const { stdout } = await spinner('EAS building...', () => {
-      return $`npx -y eas-cli@latest build --platform android --profile production --message ${changelog} --json --non-interactive --wait`
+    const { stdout, stderr } = await spinner('EAS building...', () => {
+      return $`eas build --platform android --profile production --message ${changelog} --json --non-interactive --wait`
     })
-    buildResult = parseBuildJson(stdout)
+    buildResult = parseBuildJson(`${stdout}\n${stderr}`)
 
     if (buildResult.status !== 'FINISHED') {
       throw new Error(`Build status is ${buildResult.status}`)
