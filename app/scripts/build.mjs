@@ -63,22 +63,29 @@ const parseBuildJson = output => {
     throw new Error('EAS build output is empty')
   }
 
-  const startIndexes = []
-  for (let i = 0; i < text.length; i += 1) {
-    if (text[i] === '{') {
-      startIndexes.push(i)
-    }
-  }
-
-  for (let i = startIndexes.length - 1; i >= 0; i -= 1) {
-    const slice = text.slice(startIndexes[i])
-    try {
-      const parsed = JSON.parse(slice)
-      if (parsed && parsed.status) {
-        return parsed
-      }
-    } catch {
+  for (let start = text.length - 1; start >= 0; start -= 1) {
+    if (text[start] !== '{') {
       continue
+    }
+    let depth = 0
+    for (let end = start; end < text.length; end += 1) {
+      const char = text[end]
+      if (char === '{') {
+        depth += 1
+      } else if (char === '}') {
+        depth -= 1
+        if (depth === 0) {
+          const slice = text.slice(start, end + 1)
+          try {
+            const parsed = JSON.parse(slice)
+            if (parsed && parsed.status) {
+              return parsed
+            }
+          } catch {
+            break
+          }
+        }
+      }
     }
   }
 
