@@ -146,7 +146,7 @@ export function DataSync() {
     performInitialSync()
 
     // 2. Subscribe to changes
-    const unsubscribe = subscribeStore(newState => {
+    const unsubscribe = subscribeStore((newState) => {
       if (isFirstLoginSync.current) {
         return
       }

@@ -12,10 +12,10 @@ usePowerShell()
 $.verbose = false
 
 const log = {
-  info: msg => console.log(chalk.blue('ℹ'), msg),
-  success: msg => console.log(chalk.green('✔'), msg),
-  warn: msg => console.log(chalk.yellow('⚠'), msg),
-  error: msg => console.log(chalk.red('✖'), msg),
+  info: (msg) => console.log(chalk.blue('ℹ'), msg),
+  success: (msg) => console.log(chalk.green('✔'), msg),
+  warn: (msg) => console.log(chalk.yellow('⚠'), msg),
+  error: (msg) => console.log(chalk.red('✖'), msg),
 }
 
 const APP_JSON_PATH = 'app.json'
@@ -26,7 +26,7 @@ const REPO_URL = 'https://github.com/lovetingyuan/hotsou'
 
 const readAppJson = () => JSON.parse(fs.readFileSync(APP_JSON_PATH, 'utf8'))
 
-const writeAppJson = data => {
+const writeAppJson = (data) => {
   fs.writeFileSync(APP_JSON_PATH, JSON.stringify(data, null, 2))
 }
 
@@ -38,7 +38,7 @@ const withRetry = async (attempts, task, label) => {
     } catch (err) {
       lastError = err
       log.warn(`${label} failed (attempt ${i + 1}/${attempts})`)
-      await new Promise(resolve => setTimeout(resolve, 800 * (i + 1)))
+      await new Promise((resolve) => setTimeout(resolve, 800 * (i + 1)))
     }
   }
   throw lastError
@@ -53,31 +53,51 @@ const assertResponseOk = async (url, name) => {
         throw new Error(`${name} responded with ${res.status}`)
       }
     },
-    `${name} check`
+    `${name} check`,
   )
 }
 
-const parseBuildJson = output => {
+const parseBuildJson = (output) => {
   const text = output.trim()
   if (!text) {
     throw new Error('EAS build output is empty')
   }
 
-  const start = text.lastIndexOf('[')
-  const end = text.lastIndexOf(']')
-  if (start === -1 || end === -1 || end <= start) {
-    throw new Error('Unable to locate JSON array in EAS build output')
+  // 从后往前找到可能的 JSON 数组，使用括号匹配确保找到正确的完整数组
+  let searchPos = text.length - 1
+  while (searchPos >= 0) {
+    const start = text.lastIndexOf('[', searchPos)
+    if (start === -1) break
+
+    // 使用栈来匹配括号，找到对应的 ']'
+    let depth = 0
+    let end = -1
+    for (let i = start; i < text.length; i++) {
+      if (text[i] === '[') depth++
+      else if (text[i] === ']') depth--
+
+      if (depth === 0) {
+        end = i
+        break
+      }
+    }
+
+    if (end !== -1) {
+      const slice = text.slice(start, end + 1)
+      try {
+        const parsed = JSON.parse(slice)
+        if (Array.isArray(parsed) && parsed[0]?.status) {
+          return parsed[0]
+        }
+      } catch {
+        // JSON 解析失败，继续尝试前一个 '['
+      }
+    }
+
+    searchPos = start - 1
   }
 
-  const slice = text.slice(start, end + 1)
-  const parsed = JSON.parse(slice)
-  const build = Array.isArray(parsed) ? parsed[0] : parsed
-
-  if (!build || !build.status) {
-    throw new Error('Parsed build output missing status')
-  }
-
-  return build
+  throw new Error('Unable to locate valid JSON array in EAS build output')
 }
 
 const ensureGitSynced = async () => {
@@ -252,12 +272,12 @@ const main = async () => {
 
   const releaseNotes = changelog
     .split('  ')
-    .filter(line => line.trim())
-    .map(line => `- ${line}`)
+    .filter((line) => line.trim())
+    .map((line) => `- ${line}`)
     .join('\n')
 
   const releaseUrl = `${REPO_URL}/releases/new?tag=v${newVersion}&title=v${newVersion}&body=${encodeURIComponent(
-    releaseNotes
+    releaseNotes,
   )}`
 
   try {
@@ -273,7 +293,7 @@ const main = async () => {
   log.success('Build script completed')
 }
 
-main().catch(err => {
+main().catch((err) => {
   log.error('Unexpected error')
   log.error(err.message)
   process.exit(1)
