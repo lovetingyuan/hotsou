@@ -1,5 +1,5 @@
 #!/usr/bin/env zx
-/* eslint-disable no-console */
+
 import { createWriteStream } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 
@@ -67,14 +67,19 @@ const parseBuildJson = (output) => {
   let searchPos = text.length - 1
   while (searchPos >= 0) {
     const start = text.lastIndexOf('[', searchPos)
-    if (start === -1) break
+    if (start === -1) {
+      break
+    }
 
     // 使用栈来匹配括号，找到对应的 ']'
     let depth = 0
     let end = -1
     for (let i = start; i < text.length; i++) {
-      if (text[i] === '[') depth++
-      else if (text[i] === ']') depth--
+      if (text[i] === '[') {
+        depth++
+      } else if (text[i] === ']') {
+        depth--
+      }
 
       if (depth === 0) {
         end = i
@@ -276,20 +281,14 @@ const main = async () => {
     .map((line) => `- ${line}`)
     .join('\n')
 
-  const releaseUrl = `${REPO_URL}/releases/new?tag=v${newVersion}&title=v${newVersion}&body=${encodeURIComponent(
-    releaseNotes,
-  )}`
+  // 构造 GitHub release URL 并在浏览器中打开
+  const releaseUrl = new URL(`${REPO_URL}/releases/new`)
+  releaseUrl.searchParams.set('tag', `v${newVersion}`)
+  releaseUrl.searchParams.set('title', `v${newVersion}`)
+  releaseUrl.searchParams.set('body', releaseNotes)
 
-  try {
-    await spinner('Creating GitHub release...', async () => {
-      await $`gh release create v${newVersion} --title v${newVersion} --notes ${releaseNotes}`
-    })
-    log.success('GitHub release created')
-  } catch (err) {
-    log.warn('Failed to create GitHub release via gh, opening browser fallback')
-    log.warn(err.message)
-    await open(releaseUrl)
-  }
+  log.info('Opening browser to create GitHub release...')
+  await open(releaseUrl.toString())
   log.success('Build script completed')
 }
 

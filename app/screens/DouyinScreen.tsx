@@ -7,7 +7,7 @@ function __$inject() {
     window.__markReaded?.(
       'x-view[data-topic]',
       'x-text.hot-item-title-text',
-      'x-text.hot-item-title-text',
+      'x-text.hot-item-title-text'
     )
     // @ts-ignore
     window.__keepScrollPosition('#hot-list-0[enable-scroll', 80)
@@ -22,16 +22,11 @@ export default function DouyinHotlistScreen() {
       url={getTabUrl(TabsName.douyin)!}
       js={jsCode}
       css={`
-        x-view[data-index]:has(x-image.hot-item-index-top),
-        x-foldview-slot-drag-ng,
-        div[data-tag='header'] {
+        x-view[data-index]:has(x-image.hot-item-index-top) {
           display: none !important;
         }
         #hot-list-0 {
           padding-bottom: 50px !important;
-        }
-        x-foldview-slot-ng {
-          margin-top: 14px;
         }
       `}
     />
