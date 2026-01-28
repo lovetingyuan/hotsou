@@ -63,33 +63,21 @@ const parseBuildJson = output => {
     throw new Error('EAS build output is empty')
   }
 
-  for (let start = text.length - 1; start >= 0; start -= 1) {
-    if (text[start] !== '{') {
-      continue
-    }
-    let depth = 0
-    for (let end = start; end < text.length; end += 1) {
-      const char = text[end]
-      if (char === '{') {
-        depth += 1
-      } else if (char === '}') {
-        depth -= 1
-        if (depth === 0) {
-          const slice = text.slice(start, end + 1)
-          try {
-            const parsed = JSON.parse(slice)
-            if (parsed && parsed.status) {
-              return parsed
-            }
-          } catch {
-            break
-          }
-        }
-      }
-    }
+  const start = text.lastIndexOf('[')
+  const end = text.lastIndexOf(']')
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error('Unable to locate JSON array in EAS build output')
   }
 
-  throw new Error('Unable to parse EAS build JSON output')
+  const slice = text.slice(start, end + 1)
+  const parsed = JSON.parse(slice)
+  const build = Array.isArray(parsed) ? parsed[0] : parsed
+
+  if (!build || !build.status) {
+    throw new Error('Parsed build output missing status')
+  }
+
+  return build
 }
 
 const ensureGitSynced = async () => {
