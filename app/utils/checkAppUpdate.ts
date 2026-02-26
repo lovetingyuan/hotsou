@@ -1,8 +1,8 @@
 export default async function checkAppUpdate() {
-  const { data: list } = await fetch(
-    'https://tingyuan.in/api/github/releases?user=lovetingyuan&repo=hotsou',
+  const { result } = await fetch(
+    'https://tingyuan.in/api/app/version',
   ).then((r) => r.json())
-  const latest = list[0]
+  const latest = result?.version
   if (latest) {
     const version = latest.version.slice(1)
     return {

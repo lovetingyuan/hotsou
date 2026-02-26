@@ -1,5 +1,6 @@
 import { fromHono } from 'chanfana'
 import { Hono } from 'hono'
+import { AppVersion } from './endpoints/appVersion'
 import { TaskCreate } from './endpoints/taskCreate'
 import { TaskDelete } from './endpoints/taskDelete'
 import { TaskFetch } from './endpoints/taskFetch'
@@ -54,6 +55,10 @@ console.log('Auth endpoints registered.')
 console.log('Registering User endpoints...')
 openapi.post('/api/users/:userEmail/sync', UserSync)
 console.log('User endpoints registered.')
+
+console.log('Registering App endpoints...')
+openapi.get('/api/app/version', AppVersion)
+console.log('App endpoints registered.')
 
 // You may also register routes for non OpenAPI directly on Hono
 // app.get('/test', (c) => c.text('Hono!'))
