@@ -39,6 +39,24 @@ export function isHttpUrl(string: string) {
   )
 }
 
+export function normalizeUrl(string: string): string | null {
+  if (typeof string !== 'string') {
+    return null
+  }
+  const trimmed = string.trim()
+  if (!trimmed) {
+    return null
+  }
+  let normalized = trimmed
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+    normalized = 'https://' + trimmed
+  }
+  if (isHttpUrl(normalized)) {
+    return normalized
+  }
+  return null
+}
+
 export function getPageIcon(page?: { icon?: string; url?: string }) {
   const defaultIcon = require('../assets/images/favicon.png')
   if (!page) {

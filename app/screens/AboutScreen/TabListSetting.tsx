@@ -16,6 +16,7 @@ import { ThemedView } from '@/components/ThemedView'
 import { useStore } from '@/store'
 
 import { EditingModal } from './EditingModal'
+import { FavoriteModal, type FavoriteItem } from './FavoriteModal'
 import { SortingModal } from './SortingModal'
 
 export default function TabListSetting() {
@@ -25,6 +26,8 @@ export default function TabListSetting() {
   const [editingName, setEditingName] = React.useState('')
   const [isAdding, setIsAdding] = React.useState(false)
   const [sortingItemName, setSortingItemName] = React.useState<string | null>(null)
+  const [isFavoriteModalVisible, setIsFavoriteModalVisible] = React.useState(false)
+  const [editingFavorite, setEditingFavorite] = React.useState<FavoriteItem | undefined>(undefined)
 
   const handleSortConfirm = (newOrder: number) => {
     if (!sortingItemName) {
@@ -88,11 +91,19 @@ export default function TabListSetting() {
           </TouchableOpacity>
         </View>
 
-        {activeTab === 'channel' && (
+        {activeTab === 'channel' ? (
           <ThemedButton
             title='添加'
             onPress={() => {
               setIsAdding(true)
+            }}
+          />
+        ) : (
+          <ThemedButton
+            title='添加'
+            onPress={() => {
+              setEditingFavorite(undefined)
+              setIsFavoriteModalVisible(true)
             }}
           />
         )}
@@ -180,7 +191,11 @@ export default function TabListSetting() {
               <View key={item.url} style={styles.item}>
                 <View style={{ flexShrink: 1 }}>
                   <TouchableOpacity
-                    onPress={() => Linking.openURL(item.url)}
+                    onPress={() => {
+                      setEditingFavorite(item)
+                      setIsFavoriteModalVisible(true)
+                    }}
+                    onLongPress={() => Linking.openURL(item.url)}
                     style={{ flexDirection: 'row', alignItems: 'center' }}
                   >
                     <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
@@ -225,6 +240,31 @@ export default function TabListSetting() {
         maxOrder={$tabsList.length}
         closeModal={() => setSortingItemName(null)}
         onConfirm={handleSortConfirm}
+      />
+      <FavoriteModal
+        visible={isFavoriteModalVisible}
+        initialData={editingFavorite}
+        onClose={() => {
+          setIsFavoriteModalVisible(false)
+          setEditingFavorite(undefined)
+        }}
+        onSave={(item) => {
+          const existsIndex = $favorList.findIndex((v) => v.url === item.url)
+          if (existsIndex !== -1 && (!editingFavorite || editingFavorite.url !== item.url)) {
+            ToastAndroid.show('该网址已收藏', ToastAndroid.SHORT)
+            return
+          }
+          if (editingFavorite) {
+            set$favorList($favorList.map((v) => (v.url === editingFavorite.url ? item : v)))
+          } else {
+            set$favorList([item, ...$favorList])
+          }
+        }}
+        onDelete={() => {
+          if (editingFavorite) {
+            set$favorList($favorList.filter((v) => v.url !== editingFavorite.url))
+          }
+        }}
       />
     </ThemedView>
   )
