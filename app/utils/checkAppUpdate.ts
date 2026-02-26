@@ -1,5 +1,6 @@
-import { request } from './api'
 import { z } from 'zod'
+
+import { request } from './api'
 
 const AppVersionResponseSchema = z.object({
   success: z.boolean(),

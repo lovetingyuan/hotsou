@@ -7,7 +7,7 @@ function __$inject() {
     window.__markReaded?.(
       'x-view[data-topic]',
       'x-text.hot-item-title-text',
-      'x-text.hot-item-title-text'
+      'x-text.hot-item-title-text',
     )
     // @ts-ignore
     window.__keepScrollPosition('#hot-list-0[enable-scroll', 80)

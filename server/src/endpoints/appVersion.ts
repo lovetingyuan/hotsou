@@ -31,8 +31,8 @@ export class AppVersion extends OpenAPIRoute {
   }
 
   async handle(c: AppContext) {
-    const html = await fetch('https://github.com/lovetingyuan/hotsou/releases/').then(
-      (r) => r.text(),
+    const html = await fetch('https://github.com/lovetingyuan/hotsou/releases/').then((r) =>
+      r.text(),
     )
     const $ = cheerio.load(html)
     const $item = $('.Box-body').first()
