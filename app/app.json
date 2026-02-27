@@ -13,9 +13,10 @@
     },
     "android": {
       "adaptiveIcon": {
+        "backgroundColor": "#e5edff",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
-        "backgroundColor": "#0a7ea4"
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "package": "com.tingyuan.hotsou"
     },
@@ -28,9 +29,10 @@
       [
         "expo-splash-screen",
         {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#feedee",
-          "image": "./assets/images/splash-icon.png"
+          "backgroundColor": "#e5edff"
         }
       ],
       [

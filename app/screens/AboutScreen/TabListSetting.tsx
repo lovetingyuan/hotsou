@@ -192,10 +192,6 @@ export default function TabListSetting() {
                 <View style={{ flexShrink: 1 }}>
                   <TouchableOpacity
                     onPress={() => Linking.openURL(item.url)}
-                    onLongPress={() => {
-                      setEditingFavorite(item)
-                      setIsFavoriteModalVisible(true)
-                    }}
                     style={{ flexDirection: 'row', alignItems: 'center' }}
                   >
                     <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
