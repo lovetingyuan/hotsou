@@ -5,9 +5,9 @@
   "description": "show u sth fake, clown, actor, stupid",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --go",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "node ./scripts/prepare-android.js && expo start --android",
+    "android": "node ./scripts/prepare-android.js && expo start --android --go",
     "build:android": "zx scripts/build.mjs",
     "update:android": "eas update --branch production --platform android",
     "ios": "expo start --ios",
