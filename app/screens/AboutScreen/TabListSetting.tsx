@@ -16,7 +16,7 @@ import { ThemedView } from '@/components/ThemedView'
 import { useStore } from '@/store'
 
 import { EditingModal } from './EditingModal'
-import { FavoriteModal, type FavoriteItem } from './FavoriteModal'
+import { type FavoriteItem, FavoriteModal } from './FavoriteModal'
 import { SortingModal } from './SortingModal'
 
 export default function TabListSetting() {
