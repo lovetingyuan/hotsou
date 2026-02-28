@@ -60,9 +60,15 @@ function LoginModal({
       setOtp('')
       setError('')
       setLoading(false)
-      // reauth 模式下自动发送验证码
+      // reauth 模式下询问用户是否发送验证码
       if (mode === 'reauth' && initialEmail) {
-        handleSendOtpInternal(initialEmail)
+        Alert.alert('登录已过期', `是否向 ${initialEmail} 发送验证码重新登录？`, [
+          { text: '取消', style: 'cancel', onPress: onClose },
+          {
+            text: '确定',
+            onPress: () => handleSendOtpInternal(initialEmail),
+          },
+        ])
       }
     }
   }, [visible, mode, initialEmail])
