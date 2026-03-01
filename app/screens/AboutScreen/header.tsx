@@ -18,6 +18,7 @@ import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useAuth } from '@/hooks/useAuth'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { useThemeColor } from '@/hooks/useThemeColor'
 
 type ModalStep = 'email' | 'otp'
 
@@ -51,6 +52,7 @@ function LoginModal({
   const emailInputRef = useRef<TextInput>(null)
   const otpInputRef = useRef<TextInput>(null)
   const colorScheme = useColorScheme()
+  const primaryColor = useThemeColor({}, 'primary')
 
   // 重置状态
   useEffect(() => {
@@ -218,7 +220,7 @@ function LoginModal({
                   </ThemedText>
                 ) : (
                   <TouchableOpacity onPress={handleResendOtp} disabled={loading}>
-                    <ThemedText style={{ fontSize: 12, color: '#007bff' }}>
+                    <ThemedText style={{ fontSize: 12, color: primaryColor }}>
                       重新发送验证码
                     </ThemedText>
                   </TouchableOpacity>

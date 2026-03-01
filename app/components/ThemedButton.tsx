@@ -8,6 +8,8 @@ import {
   ViewStyle,
 } from 'react-native'
 
+import { useThemeColor } from '@/hooks/useThemeColor'
+
 import { ThemedText } from './ThemedText'
 
 export type ButtonType = 'primary' | 'secondary' | 'danger'
@@ -29,6 +31,8 @@ export function ThemedButton({
   disabled,
   ...rest
 }: ThemedButtonProps) {
+  const primaryColor = useThemeColor({}, 'primary')
+
   const getBackgroundColor = (pressed: boolean) => {
     if (disabled) {
       return '#ccc'
@@ -36,13 +40,13 @@ export function ThemedButton({
 
     switch (type) {
       case 'primary':
-        return pressed ? '#0a7ea4' : '#0c96c4' // Lighter teal, darker on press
+        return pressed ? primaryColor + 'cc' : primaryColor // 80% opacity on press
       case 'danger':
         return pressed ? '#ff4444' : '#ff6666'
       case 'secondary':
         return pressed ? '#888' : '#aaa'
       default:
-        return pressed ? '#0a7ea4' : '#0c96c4'
+        return pressed ? primaryColor + 'cc' : primaryColor
     }
   }
 

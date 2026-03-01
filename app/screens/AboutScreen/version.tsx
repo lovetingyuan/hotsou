@@ -1,16 +1,18 @@
 import * as Application from 'expo-application'
 import * as Updates from 'expo-updates'
 import React from 'react'
-import { Alert, Linking, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Alert, Linking, ToastAndroid, TouchableOpacity, View } from 'react-native'
 
 import { ExternalLink } from '@/components/ExternalLink'
 import { ThemedText } from '@/components/ThemedText'
+import { useThemeColor } from '@/hooks/useThemeColor'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
 // @ts-ignore
 const gitHash = typeof GIT_HASH === 'string' ? GIT_HASH : 'N/A'
 
 export default function Version() {
+  const primaryColor = useThemeColor({}, 'primary')
   const [latestVersion, setLatestVersion] = React.useState<null | {
     version: string
     downloadUrl: string
@@ -65,19 +67,21 @@ export default function Version() {
             ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
           }}
         >
-          <Text style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}>
+          <ThemedText style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}>
             🎉 有更新：{latestVersion?.version} 点击下载⬇
-          </Text>
+          </ThemedText>
         </ExternalLink>
       ) : (
-        <Text style={{ fontSize: 16, color: '#888' }}>暂无更新</Text>
+        <ThemedText style={{ fontSize: 16, color: '#888' }}>暂无更新</ThemedText>
       )
     }
     return checking ? (
-      <Text style={{ fontSize: 16, color: '#888', fontStyle: 'italic' }}>⏳ 正在检查...</Text>
+      <ThemedText style={{ fontSize: 16, color: '#888', fontStyle: 'italic' }}>
+        ⏳ 正在检查...
+      </ThemedText>
     ) : (
       <TouchableOpacity activeOpacity={0.5} onPress={handleCheckAppUpdate}>
-        <Text style={{ color: '#0065da', fontSize: 16 }}>检查更新</Text>
+        <ThemedText style={{ color: primaryColor, fontSize: 16 }}>检查更新</ThemedText>
       </TouchableOpacity>
     )
   }

@@ -7,6 +7,7 @@ import ThemedIcon from '@/components/ThemedIcon'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { useThemeColor } from '@/hooks/useThemeColor'
 
 import AboutHeader from './header'
 import TabListSetting from './TabListSetting'
@@ -36,6 +37,7 @@ function Section({ children, title }: { children: React.ReactNode; title?: strin
 
 function Disclaimer() {
   const [expanded, setExpanded] = React.useState(false)
+  const primaryColor = useThemeColor({}, 'primary')
 
   const toggleExpand = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
@@ -69,14 +71,14 @@ function Disclaimer() {
           alignSelf: 'flex-end',
         }}
       >
-        <ThemedText style={{ fontSize: 14, color: '#007AFF' }}>
+        <ThemedText style={{ fontSize: 14, color: primaryColor }}>
           {expanded ? '收起' : '展开更多'}
         </ThemedText>
 
         <ThemedIcon
           name={expanded ? 'chevron-up' : 'chevron-down'}
           size={16}
-          color='#007AFF'
+          color={primaryColor}
           style={{ marginLeft: 4 }}
         />
       </TouchableOpacity>

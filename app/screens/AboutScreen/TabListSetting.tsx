@@ -12,7 +12,9 @@ import {
 import { ThemedButton } from '@/components/ThemedButton'
 import ThemedIcon from '@/components/ThemedIcon'
 import { ThemedText } from '@/components/ThemedText'
+import { Colors } from '@/constants/Colors'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { useThemeColor } from '@/hooks/useThemeColor'
 import { useStore } from '@/store'
 
 import { EditingModal } from './EditingModal'
@@ -22,6 +24,7 @@ import { SortingModal } from './SortingModal'
 export default function TabListSetting() {
   const { $tabsList, set$tabsList, get$tabsList, $favorList, set$favorList } = useStore()
   const colorScheme = useColorScheme()
+  const primaryColor = useThemeColor({}, 'primary')
   const borderColor = colorScheme === 'dark' ? '#38383a' : '#e2e2e2'
 
   const [activeTab, setActiveTab] = React.useState<'channel' | 'favorite'>('channel')
@@ -73,8 +76,8 @@ export default function TabListSetting() {
                 fontSize: activeTab === 'channel' ? 18 : 15,
                 fontWeight: activeTab === 'channel' ? 'bold' : 'normal',
               }}
-              lightColor={activeTab === 'channel' ? '#0969da' : undefined}
-              darkColor={activeTab === 'channel' ? '#58a6ff' : undefined}
+              lightColor={activeTab === 'channel' ? Colors.light.primary : undefined}
+              darkColor={activeTab === 'channel' ? Colors.dark.primary : undefined}
             >
               频道列表
             </ThemedText>
@@ -85,8 +88,8 @@ export default function TabListSetting() {
                 fontSize: activeTab === 'favorite' ? 18 : 15,
                 fontWeight: activeTab === 'favorite' ? 'bold' : 'normal',
               }}
-              lightColor={activeTab === 'favorite' ? '#0969da' : undefined}
-              darkColor={activeTab === 'favorite' ? '#58a6ff' : undefined}
+              lightColor={activeTab === 'favorite' ? Colors.light.primary : undefined}
+              darkColor={activeTab === 'favorite' ? Colors.dark.primary : undefined}
             >
               我的收藏
             </ThemedText>
@@ -125,11 +128,12 @@ export default function TabListSetting() {
                       }}
                     >
                       <ThemedText
-                        style={[styles.text, { color: '#0969da', lineHeight: 22 }]}
+                        style={[styles.text, { color: primaryColor, lineHeight: 22 }]}
                         numberOfLines={2}
                         ellipsizeMode='tail'
                       >
-                        {index + 1}. <ThemedIcon name='create-outline' size={18} color='#0969da' />{' '}
+                        {index + 1}.{' '}
+                        <ThemedIcon name='create-outline' size={18} color={primaryColor} />{' '}
                         {item.title}
                       </ThemedText>
                     </TouchableOpacity>
