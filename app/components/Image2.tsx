@@ -1,5 +1,5 @@
 import { Image, ImageProps, ImageSource } from 'expo-image'
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { StyleSheet } from 'react-native'
 
 interface FallbackImageProps extends Omit<ImageProps, 'source' | 'onError'> {
@@ -23,21 +23,18 @@ const FallbackImage: React.FC<FallbackImageProps> = ({
   // Use state to trigger re-render on error
   const [isFallback, setIsFallback] = useState(false)
 
-  const handleError = useCallback(
-    (event: any) => {
-      if (!isFallback) {
-        setIsFallback(true)
-        onError?.(event)
-      }
-    },
-    [isFallback, onError],
-  )
+  const handleError = (event: any) => {
+    if (!isFallback) {
+      setIsFallback(true)
+      onError?.(event)
+    }
+  }
 
-  const handleLoadSuccess = useCallback(() => {
+  const handleLoadSuccess = () => {
     if (!isFallback) {
       onLoadSuccess?.()
     }
-  }, [isFallback, onLoadSuccess])
+  }
 
   const displaySource = isFallback ? fallbackSource : source
 

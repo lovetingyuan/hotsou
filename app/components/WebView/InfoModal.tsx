@@ -34,9 +34,7 @@ export default function InfoModal(props: {
     setEditableTitle(props.title || '无标题')
   }, [props.title])
 
-  const isFavorite = React.useMemo(() => {
-    return $favorList.some((item) => item.url === props.url)
-  }, [$favorList, props.url])
+  const isFavorite = $favorList.some((item) => item.url === props.url)
 
   const toggleFavorite = () => {
     if (isFavorite) {

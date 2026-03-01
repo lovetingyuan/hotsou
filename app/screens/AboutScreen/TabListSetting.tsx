@@ -51,9 +51,7 @@ export default function TabListSetting() {
     set$tabsList(list)
   }
 
-  const sortingIndex = React.useMemo(() => {
-    return $tabsList.findIndex((v) => v.name === sortingItemName) + 1
-  }, [sortingItemName, $tabsList])
+  const sortingIndex = $tabsList.findIndex((v) => v.name === sortingItemName) + 1
 
   return (
     <View>

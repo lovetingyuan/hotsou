@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native'
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
   ActivityIndicator,
   BackHandler,
@@ -51,24 +51,22 @@ export default function WebView(props: {
   const [infoModalVisible, setInfoModalVisible] = React.useState(false)
   const [infoModalData, setInfoModalData] = React.useState({ title: '', url: '' })
 
-  useFocusEffect(
-    useCallback(() => {
-      const onAndroidBackPress = () => {
-        if (currentNavigationStateRef.current.canGoBack && webViewRef.current) {
-          webViewRef.current.goBack()
-          return true
-        }
-        return false
+  useFocusEffect(() => {
+    const onAndroidBackPress = () => {
+      if (currentNavigationStateRef.current.canGoBack && webViewRef.current) {
+        webViewRef.current.goBack()
+        return true
       }
-      if (Platform.OS === 'android') {
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress)
+      return false
+    }
+    if (Platform.OS === 'android') {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress)
 
-        return () => {
-          backHandler.remove()
-        }
+      return () => {
+        backHandler.remove()
       }
-    }, []),
-  )
+    }
+  })
 
   useEffect(() => {
     return () => {
