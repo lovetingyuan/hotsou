@@ -107,7 +107,7 @@ function AboutScreen() {
         <Section title='关于应用'>
           <Version />
           <ExternalLink href='https://github.com/lovetingyuan/hotsou'>
-            <ThemedView
+            <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
@@ -117,7 +117,7 @@ function AboutScreen() {
             >
               <ThemedText>开源主页</ThemedText>
               <ThemedIcon name='logo-github' size={20} color='#888' />
-            </ThemedView>
+            </View>
           </ExternalLink>
         </Section>
       </ScrollView>

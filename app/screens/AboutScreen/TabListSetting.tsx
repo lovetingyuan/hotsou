@@ -12,7 +12,7 @@ import {
 import { ThemedButton } from '@/components/ThemedButton'
 import ThemedIcon from '@/components/ThemedIcon'
 import { ThemedText } from '@/components/ThemedText'
-import { ThemedView } from '@/components/ThemedView'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 
 import { EditingModal } from './EditingModal'
@@ -21,6 +21,8 @@ import { SortingModal } from './SortingModal'
 
 export default function TabListSetting() {
   const { $tabsList, set$tabsList, get$tabsList, $favorList, set$favorList } = useStore()
+  const colorScheme = useColorScheme()
+  const borderColor = colorScheme === 'dark' ? '#38383a' : '#e2e2e2'
 
   const [activeTab, setActiveTab] = React.useState<'channel' | 'favorite'>('channel')
   const [editingName, setEditingName] = React.useState('')
@@ -54,14 +56,14 @@ export default function TabListSetting() {
   }, [sortingItemName, $tabsList])
 
   return (
-    <ThemedView>
+    <View>
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           borderBottomWidth: 1,
-          borderBottomColor: '#e2e2e2',
+          borderBottomColor: borderColor,
           paddingBottom: 10,
           minHeight: 45,
         }}
@@ -113,7 +115,7 @@ export default function TabListSetting() {
         {activeTab === 'channel' ? (
           $tabsList.map((item, index) => {
             return (
-              <View key={item.name} style={styles.item}>
+              <View key={item.name} style={[styles.item, { borderBottomColor: borderColor }]}>
                 <View style={{ flexShrink: 1 }}>
                   {!item.builtIn ? (
                     <TouchableOpacity
@@ -188,7 +190,7 @@ export default function TabListSetting() {
             const dateStr = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
 
             return (
-              <View key={item.url} style={styles.item}>
+              <View key={item.url} style={[styles.item, { borderBottomColor: borderColor }]}>
                 <View style={{ flexShrink: 1 }}>
                   <TouchableOpacity
                     onPress={() => Linking.openURL(item.url)}
@@ -262,7 +264,7 @@ export default function TabListSetting() {
           }
         }}
       />
-    </ThemedView>
+    </View>
   )
 }
 
@@ -272,10 +274,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e2e2',
     paddingVertical: 5,
     paddingHorizontal: 5,
-    borderTopColor: '#e2e2e2',
     height: 50,
   },
   text: {

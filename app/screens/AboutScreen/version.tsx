@@ -5,7 +5,6 @@ import { Alert, Linking, Text, ToastAndroid, TouchableOpacity, View } from 'reac
 
 import { ExternalLink } from '@/components/ExternalLink'
 import { ThemedText } from '@/components/ThemedText'
-import { ThemedView } from '@/components/ThemedView'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
 // @ts-ignore
@@ -84,7 +83,7 @@ export default function Version() {
   }
 
   return (
-    <ThemedView
+    <View
       style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -113,6 +112,6 @@ export default function Version() {
         <ThemedText style={{ color: '#888' }}>{currentVersion}</ThemedText>
         {versionView()}
       </View>
-    </ThemedView>
+    </View>
   )
 }
