@@ -32,6 +32,84 @@
 - 使用 `chanfana` 处理 OpenAPI 规范(如果适用)。
 - API 设计需要符合 Restful api 的最佳实践。
 
+#### API 端点开发规范 (参考示例)
+
+在 `src/endpoints/` 目录下创建文件，每个文件包含一个继承自 `OpenAPIRoute` 的类。
+
+**1. 定义 Schema (`src/types.ts`)**
+
+```typescript
+import { DateTime, Str } from 'chanfana'
+import { z } from 'zod'
+
+export const TaskSchema = z.object({
+  name: Str({ example: 'lorem' }),
+  slug: Str(),
+  description: Str({ required: false }),
+  completed: z.boolean().default(false),
+  due_date: DateTime(),
+})
+```
+
+**2. 实现端点 (`src/endpoints/taskCreate.ts`)**
+
+```typescript
+import { Bool, OpenAPIRoute } from 'chanfana'
+import { z } from 'zod'
+import { type AppContext, TaskSchema } from '../types'
+
+export class TaskCreate extends OpenAPIRoute {
+  schema = {
+    tags: ['Tasks'],
+    summary: 'Create a new Task',
+    request: {
+      body: {
+        content: {
+          'application/json': {
+            schema: TaskSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      '200': {
+        description: 'Returns the created task',
+        content: {
+          'application/json': {
+            schema: z.object({
+              series: z.object({
+                success: Bool(),
+                result: z.object({
+                  task: TaskSchema,
+                }),
+              }),
+            }),
+          },
+        },
+      },
+    },
+  }
+
+  async handle(c: AppContext) {
+    const data = await this.getValidatedData<typeof this.schema>()
+    const taskToCreate = data.body
+    // 业务逻辑实现...
+    return {
+      success: true,
+      task: { ...taskToCreate },
+    }
+  }
+}
+```
+
+**3. 注册路由 (`src/index.ts`)**
+
+```typescript
+import { TaskCreate } from './endpoints/taskCreate'
+// ...
+openapi.post('/api/tasks', TaskCreate)
+```
+
 项目目录结构：
 
 - `src/index.ts`: 入口文件。初始化 Hono 应用并注册 OpenAPI 路由。

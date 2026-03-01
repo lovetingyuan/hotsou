@@ -1,10 +1,6 @@
 import { fromHono } from 'chanfana'
 import { Hono } from 'hono'
 import { AppVersion } from './endpoints/appVersion'
-import { TaskCreate } from './endpoints/taskCreate'
-import { TaskDelete } from './endpoints/taskDelete'
-import { TaskFetch } from './endpoints/taskFetch'
-import { TaskList } from './endpoints/taskList'
 import { AuthOtp } from './endpoints/authOtp'
 import { AuthVerify } from './endpoints/authVerify'
 import { AuthCheckRegistered } from './endpoints/authCheckRegistered'
@@ -37,12 +33,6 @@ app.use('/openapi', async (c, next) => {
 const openapi = fromHono(app, {
   docs_url: '/openapi',
 })
-
-// Register OpenAPI endpoints
-openapi.get('/api/tasks', TaskList)
-openapi.post('/api/tasks', TaskCreate)
-openapi.get('/api/tasks/:taskSlug', TaskFetch)
-openapi.delete('/api/tasks/:taskSlug', TaskDelete)
 
 console.log('Registering Auth endpoints...')
 openapi.post('/api/auth/otp', AuthOtp)
