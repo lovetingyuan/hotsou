@@ -72,10 +72,11 @@ export default function TabListSetting() {
           <TouchableOpacity onPress={() => setActiveTab('channel')}>
             <ThemedText
               style={{
-                fontSize: 18,
+                fontSize: activeTab === 'channel' ? 18 : 15,
                 fontWeight: activeTab === 'channel' ? 'bold' : 'normal',
-                color: activeTab === 'channel' ? '#0969da' : undefined,
               }}
+              lightColor={activeTab === 'channel' ? '#0969da' : undefined}
+              darkColor={activeTab === 'channel' ? '#58a6ff' : undefined}
             >
               频道列表
             </ThemedText>
@@ -83,10 +84,11 @@ export default function TabListSetting() {
           <TouchableOpacity onPress={() => setActiveTab('favorite')}>
             <ThemedText
               style={{
-                fontSize: 18,
+                fontSize: activeTab === 'favorite' ? 18 : 15,
                 fontWeight: activeTab === 'favorite' ? 'bold' : 'normal',
-                color: activeTab === 'favorite' ? '#0969da' : undefined,
               }}
+              lightColor={activeTab === 'favorite' ? '#0969da' : undefined}
+              darkColor={activeTab === 'favorite' ? '#58a6ff' : undefined}
             >
               我的收藏
             </ThemedText>
