@@ -48,6 +48,7 @@ function LoginModal({
   const [loading, setLoading] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [error, setError] = useState('')
+  const [hasAcceptedAlert, setHasAcceptedAlert] = useState(mode !== 'reauth')
 
   const emailInputRef = useRef<TextInput>(null)
   const otpInputRef = useRef<TextInput>(null)
@@ -64,14 +65,22 @@ function LoginModal({
       setLoading(false)
       // reauth 模式下询问用户是否发送验证码
       if (mode === 'reauth' && initialEmail) {
+        setHasAcceptedAlert(false)
         Alert.alert('登录已过期', `是否向 ${initialEmail} 发送验证码重新登录？`, [
           { text: '取消', style: 'cancel', onPress: onClose },
           {
             text: '确定',
-            onPress: () => handleSendOtpInternal(initialEmail),
+            onPress: () => {
+              setHasAcceptedAlert(true)
+              handleSendOtpInternal(initialEmail)
+            },
           },
         ])
+      } else {
+        setHasAcceptedAlert(true)
       }
+    } else {
+      setHasAcceptedAlert(false)
     }
   }, [visible, mode, initialEmail])
 
@@ -164,7 +173,7 @@ function LoginModal({
     onClose()
   }
 
-  if (!visible) {
+  if (!visible || !hasAcceptedAlert) {
     return null
   }
 
