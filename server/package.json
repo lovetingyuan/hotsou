@@ -6,6 +6,7 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "cf-typegen": "wrangler types",
+    "lint": "oxlint .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

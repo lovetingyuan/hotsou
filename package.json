@@ -23,8 +23,11 @@
     "type-check": "npm run type-check --workspaces"
   },
   "devDependencies": {
+    "eslint-plugin-expo": "^1.0.0",
     "eslint-plugin-react-compiler": "^19.1.0-rc.2",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "oxfmt": "^0.24.0",
+    "oxlint": "^1.51.0",
     "typescript": "~5.9.2"
   }
 }
