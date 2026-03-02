@@ -1,0 +1,21 @@
+{
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "builtin": true,
+    "es2022": true,
+    "node": true
+  },
+  "categories": {
+    "correctness": "warn"
+  },
+  "rules": {
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-console": "warn"
+  }
+}
