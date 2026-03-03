@@ -4,4 +4,4 @@
 
 下载: [Releases](https://github.com/lovetingyuan/hotsou/releases)
 
-<img src="./assets/screenshot.jpg" alt="screenshot" width="320">
+https://hotsou.tingyuan.in

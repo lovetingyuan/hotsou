@@ -96,11 +96,10 @@ export class UserSync extends OpenAPIRoute {
 
     try {
       const result = await stub.syncData(syncOps)
-      // @ts-ignore
       return c.json({
         success: true,
         result,
-      })
+      } as any)
     } catch (e: any) {
       return c.json(
         {

@@ -22,7 +22,9 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["UserStorage"],
+      "new_classes": [
+        "UserStorage"
+      ],
     },
   ],
   "observability": {
@@ -50,7 +52,10 @@
    * Static Assets
    * https://developers.cloudflare.com/workers/static-assets/binding/
    */
-  // "assets": {  "directory": "./public/",  "binding": "ASSETS" }
+  "assets": {
+    "directory": "./assets/",
+    "binding": "ASSETS"
+  }
   /**
    * Service Bindings (communicate between multiple Workers)
    * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings

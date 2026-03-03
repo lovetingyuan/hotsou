@@ -1,5 +1,6 @@
 import { fromHono } from 'chanfana'
 import { Hono } from 'hono'
+import * as cheerio from 'cheerio'
 import { AppVersion } from './endpoints/appVersion'
 import { AuthOtp } from './endpoints/authOtp'
 import { AuthVerify } from './endpoints/authVerify'
@@ -7,6 +8,7 @@ import { AuthCheckRegistered } from './endpoints/authCheckRegistered'
 import { AuthStatus } from './endpoints/authStatus'
 import { AuthLogout } from './endpoints/authLogout'
 import { UserSync } from './endpoints/userSync'
+import { getHomeHtml } from './pages/home'
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
@@ -50,8 +52,26 @@ console.log('Registering App endpoints...')
 openapi.get('/api/app/version', AppVersion)
 console.log('App endpoints registered.')
 
-// You may also register routes for non OpenAPI directly on Hono
-// app.get('/test', (c) => c.text('Hono!'))
+// Serve the App Homepage
+app.get('/', async (c) => {
+  let version = ''
+  try {
+    const html = await fetch('https://github.com/lovetingyuan/hotsou/releases/').then((r) =>
+      r.text()
+    )
+    const $ = cheerio.load(html)
+    const $item = $('.Box-body').first()
+    version = $item.find('a').first().text().trim()
+  } catch (err) {
+    console.error('Error fetching version for homepage:', err)
+  }
+
+  const downloadUrl = version
+    ? `https://ghfast.top/https://github.com/lovetingyuan/hotsou/releases/download/${version}/hotsou-${version.replace('v', '')}.apk`
+    : '#'
+
+  return c.html(getHomeHtml(downloadUrl))
+})
 
 // Export the Hono app
 export default app
