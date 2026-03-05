@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Application from 'expo-application'
-import Constants from 'expo-constants'
+// import Constants from 'expo-constants'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
@@ -42,52 +42,34 @@ function App(props: React.PropsWithChildren) {
       SplashScreen.hideAsync()
     }
     if (initialed && Date.now() - get$checkAppUpdateTime() > 5 * 24 * 60 * 60 * 1000) {
-      checkAppUpdate().then((r) => {
-        const currentVersion = Application.nativeApplicationVersion
-        set$checkAppUpdateTime(Date.now())
-        if (r && r.version !== currentVersion) {
-          Alert.alert('有新版本🎉', `\n${currentVersion} 更新到 ${r.version} \n\n${r.changelog}`, [
-            {
-              text: '取消',
-            },
-            {
-              text: '下载',
-              onPress: () => {
-                ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
-                Linking.openURL(r.downloadUrl)
-              },
-            },
-          ])
-        }
-      })
+      checkAppUpdate()
+        .then(r => {
+          const currentVersion = Application.nativeApplicationVersion
+          set$checkAppUpdateTime(Date.now())
+          if (r && r.version !== currentVersion) {
+            Alert.alert(
+              '有新版本🎉',
+              `\n${currentVersion} 更新到 ${r.version} \n\n${r.changelog}`,
+              [
+                {
+                  text: '取消',
+                },
+                {
+                  text: '下载',
+                  onPress: () => {
+                    ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
+                    Linking.openURL(r.downloadUrl)
+                  },
+                },
+              ],
+            )
+          }
+        })
+        .catch(e => {
+          console.log('[Check Update] Error:', e)
+        })
     }
   }, [loaded, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime])
-  useEffect(() => {
-    fetch('https://cdn.jsdelivr.net/gh/lovetingyuan/hotsou@main/app.json')
-      .then((r) => r.json())
-      .then((appConfig) => {
-        const config = __DEV__ ? Constants.expoConfig!.extra!.$config : appConfig.expo.extra.$config
-        if (config && config.show) {
-          Alert.alert(
-            '公告',
-            config.statement,
-            [
-              {
-                text: '确定',
-              },
-              config.url
-                ? {
-                    text: '详情',
-                    onPress: () => {
-                      Linking.openURL(config.url)
-                    },
-                  }
-                : null,
-            ].filter((v) => v !== null),
-          )
-        }
-      })
-  }, [])
 
   useEffect(() => {
     AsyncStorage.getItem('__First_Usage_Time').then((r: string | null) => {
@@ -95,10 +77,10 @@ function App(props: React.PropsWithChildren) {
         return
       }
       Alert.alert(
-        '欢迎使用 Hotsou',
+        '欢迎使用 HotSou',
         [
-          '本应用简单聚合国内主流媒体的热搜信息，感谢使用',
-          '仅做展示和浏览用，不会对信息做任何变动也不对任何信息真实性或后果负责，请勿轻易相信或传播😀。',
+          '本应用简单聚合国内主流媒体的热搜信息，感谢使用！',
+          '信息均来自第三方平台，本应用仅供浏览，请勿轻易相信或传播😀。',
         ].join('\n'),
         [
           {
