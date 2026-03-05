@@ -9,7 +9,7 @@
     "reset-project": "node ./scripts/reset-project.js",
     "android": "node ./scripts/prepare-android.js && expo start --android --go",
     "build:android": "zx scripts/build.mjs",
-    "update:android": "eas update --branch production --platform android",
+    "update:android": "eas update --branch production --platform android --environment production",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "oxlint --fix .",
