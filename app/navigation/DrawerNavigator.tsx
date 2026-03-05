@@ -22,6 +22,8 @@ import BaiduScreen from '@/screens/BaiduScreen'
 import BilibiliScreen from '@/screens/BilibiliScreen'
 import DouyinScreen from '@/screens/DouyinScreen'
 import FenghuangScreen from '@/screens/FenghuangScreen'
+import IthomeScreen from '@/screens/IthomeScreen'
+import Kr36Screen from '@/screens/Kr36Screen'
 import TengxunScreen from '@/screens/TengxunScreen'
 import ToutiaoScreen from '@/screens/ToutiaoScreen'
 import WangyiScreen from '@/screens/WangyiScreen'
@@ -45,6 +47,8 @@ export type DrawerParamList = {
   tengxun: undefined
   fenghuang: undefined
   bilibili: undefined
+  kr36: undefined
+  ithome: undefined
   // Dynamic tabs will work at runtime but may not be typed here
   About: undefined
 }
@@ -246,7 +250,11 @@ function DrawerNavigator() {
                                 ? FenghuangScreen
                                 : page.name === TabsName.bilibili
                                   ? BilibiliScreen
-                                  : CustomPage
+                                  : page.name === TabsName.kr36
+                                    ? Kr36Screen
+                                    : page.name === TabsName.ithome
+                                      ? IthomeScreen
+                                      : CustomPage
               }
               options={{
                 drawerLabel: (props) => getDrawerLabel(props, page as any),

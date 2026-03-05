@@ -66,7 +66,7 @@ app.get('/', async (c) => {
   } else {
     try {
       const html = await fetch('https://github.com/lovetingyuan/hotsou/releases/').then((r) =>
-        r.text()
+        r.text(),
       )
       const $ = cheerio.load(html)
       const $item = $('.Box-body').first()

@@ -1,9 +1,6 @@
 {
   "$schema": "../node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "import",
-    "react"
-  ],
+  "plugins": ["import", "react"],
   "categories": {
     "correctness": "off"
   },
@@ -18,10 +15,7 @@
     "import/no-named-as-default": "warn",
     "import/no-named-as-default-member": "warn",
     "import/no-duplicates": "warn",
-    "eqeqeq": [
-      "warn",
-      "smart"
-    ],
+    "eqeqeq": ["warn", "smart"],
     "no-dupe-class-members": "error",
     "no-dupe-keys": "error",
     "no-duplicate-case": "error",
@@ -52,10 +46,7 @@
       }
     ],
     "no-with": "warn",
-    "unicode-bom": [
-      "warn",
-      "never"
-    ],
+    "unicode-bom": ["warn", "never"],
     "use-isnan": "error",
     "valid-typeof": "error",
     "import/first": "warn",
@@ -78,22 +69,13 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "react/no-this-in-sfc": "warn",
-    "expo/use-dom-exports": [
-      "error"
-    ],
-    "expo/no-env-var-destructuring": [
-      "error"
-    ],
-    "expo/no-dynamic-env-var": [
-      "error"
-    ],
+    "expo/use-dom-exports": ["error"],
+    "expo/no-env-var-destructuring": ["error"],
+    "expo/no-dynamic-env-var": ["error"],
     "react-compiler/react-compiler": "error",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "curly": [
-      "error",
-      "all"
-    ]
+    "curly": ["error", "all"]
   },
   "globals": {
     "exports": "readonly",
@@ -114,10 +96,7 @@
     "setImmediate": "readonly",
     "shared-node-browser": "writable"
   },
-  "ignorePatterns": [
-    "android/app/build",
-    "dist/*"
-  ],
+  "ignorePatterns": ["android/app/build", "dist/*"],
   "jsPlugins": [
     "eslint-plugin-expo",
     "eslint-plugin-react-compiler",
@@ -125,19 +104,13 @@
   ],
   "overrides": [
     {
-      "files": [
-        "**/metro.config.js"
-      ],
+      "files": ["**/metro.config.js"],
       "env": {
         "node": true
       }
     },
     {
-      "files": [
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.d.ts"
-      ],
+      "files": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
       "rules": {
         "@typescript-eslint/array-type": [
           "warn",
@@ -175,9 +148,7 @@
           }
         ]
       },
-      "plugins": [
-        "typescript"
-      ]
+      "plugins": ["typescript"]
     }
   ]
 }

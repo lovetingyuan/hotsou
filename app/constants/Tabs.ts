@@ -12,6 +12,8 @@ export enum TabsName {
   fenghuang = 'fenghuang',
   // juejin = 'juejin',
   bilibili = 'bilibili',
+  kr36 = 'kr36',
+  ithome = 'ithome',
 }
 
 export const TabsList = [
@@ -110,6 +112,22 @@ export const TabsList = [
     show: true,
     builtIn: true,
     icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/fenghuang.png',
+  },
+  {
+    name: TabsName.kr36,
+    title: '36氪热榜',
+    url: 'https://m.36kr.com/hot-list-m',
+    show: true,
+    builtIn: true,
+    icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/36kr.png',
+  },
+  {
+    name: TabsName.ithome,
+    title: 'IT之家热榜',
+    url: 'https://m.ithome.com/rankm/',
+    show: true,
+    builtIn: true,
+    icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/ithome.png',
   },
 ]
 
