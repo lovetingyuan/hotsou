@@ -46,7 +46,7 @@ function __$injectBeforeLoad() {
 
   `
   window.document.head?.append(noDragCss)
-  window.__waitBody = (callback) => {
+  window.__waitBody = callback => {
     if (window.document.body) {
       callback()
     } else {
@@ -67,7 +67,7 @@ function __$injectBeforeLoad() {
   window.addEventListener('click', sendClick, true)
   window.addEventListener('touchstart', sendClick, true)
 
-  window.__keepScrollPosition = (selector, distanceAdjust = 0) => {
+  window.__keepScrollPosition = (selector, distanceAdjust = 0, timeout = 300) => {
     const saveScrollPosition = () => {
       const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY
       window.localStorage.setItem('__scrollPosition', top + '')
@@ -89,15 +89,16 @@ function __$injectBeforeLoad() {
           } else {
             window.scrollTo(0, parseInt(scrollPosition) + distanceAdjust)
           }
-        }, 300)
+        }, timeout)
       }
     }
+    window.addEventListener('load', restoreScrollPosition)
 
-    if (window.document.readyState === 'complete') {
-      restoreScrollPosition()
-    } else {
-      window.addEventListener('load', restoreScrollPosition)
-    }
+    // if (window.document.readyState === 'complete') {
+    //   restoreScrollPosition()
+    // } else {
+    //   window.addEventListener('load', restoreScrollPosition)
+    // }
 
     window.addEventListener('beforeunload', saveScrollPosition)
   }
@@ -105,7 +106,7 @@ function __$injectBeforeLoad() {
   window.__markReaded = (containerClass, textClass, textsClass) => {
     window.document.addEventListener(
       'click',
-      (evt) => {
+      evt => {
         const itemElement = evt.target.closest(containerClass)
         if (itemElement) {
           const title =
@@ -140,7 +141,7 @@ function __$injectBeforeLoad() {
         }
       } else {
         const items = window.document.querySelectorAll(textsClass)
-        items.forEach((ele) => {
+        items.forEach(ele => {
           if (ele.innerText in clicked) {
             ele.style.opacity = 0.4
           }

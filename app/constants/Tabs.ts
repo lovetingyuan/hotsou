@@ -124,7 +124,7 @@ export const TabsList = [
   {
     name: TabsName.ithome,
     title: 'IT之家热榜',
-    url: 'https://m.ithome.com/rankm/',
+    url: 'https://m.ithome.com/rankm',
     show: true,
     builtIn: true,
     icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/ithome.png',
@@ -132,5 +132,5 @@ export const TabsList = [
 ]
 
 export const getTabUrl = (name: string) => {
-  return TabsList.find((t) => t.name === name)?.url
+  return TabsList.find(t => t.name === name)?.url
 }
