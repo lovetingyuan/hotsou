@@ -1,18 +1,24 @@
 import { fromHono } from 'chanfana'
-import { Hono } from 'hono'
 import * as cheerio from 'cheerio'
+import { Hono } from 'hono'
 import { AppVersion } from './endpoints/appVersion'
-import { AuthOtp } from './endpoints/authOtp'
-import { AuthVerify } from './endpoints/authVerify'
 import { AuthCheckRegistered } from './endpoints/authCheckRegistered'
-import { AuthStatus } from './endpoints/authStatus'
 import { AuthLogout } from './endpoints/authLogout'
+import { AuthOtp } from './endpoints/authOtp'
+import { AuthStatus } from './endpoints/authStatus'
+import { AuthVerify } from './endpoints/authVerify'
+import { ShortLinkCreate } from './endpoints/shortLinkCreate'
 import { UserSync } from './endpoints/userSync'
 import { getHomeHtml } from './pages/home'
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
 console.log('Hono app initialized')
+
+app.use('*', async (c, next) => {
+  console.log('[server] incoming request', c.req.method, c.req.url)
+  await next()
+})
 
 // Middleware to protect /openapi
 app.use('/openapi', async (c, next) => {
@@ -47,6 +53,10 @@ console.log('Auth endpoints registered.')
 console.log('Registering User endpoints...')
 openapi.post('/api/users/:userEmail/sync', UserSync)
 console.log('User endpoints registered.')
+
+console.log('Registering Link endpoints...')
+openapi.post('/api/links/shorten', ShortLinkCreate)
+console.log('Link endpoints registered.')
 
 console.log('Registering App endpoints...')
 openapi.get('/api/app/version', AppVersion)

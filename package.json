@@ -11,6 +11,7 @@
     "android": "npm run android -w hotsou",
     "update:android": "npm run update:android -w hotsou",
     "typegen": "npm run cf-typegen -w hotsou-server",
+    "test:short-link": "node scripts/test-short-link.mjs",
     "app:ios": "npm run ios -w hotsou",
     "app:web": "npm run web -w hotsou",
     "app:doctor": "npm run doctor -w hotsou",

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
+    "dev": "node ./scripts/dev-with-port-check.mjs",
     "cf-typegen": "wrangler types",
     "lint": "oxlint --fix .",
     "type-check": "tsc --noEmit"

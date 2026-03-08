@@ -80,7 +80,7 @@ export class UserSync extends OpenAPIRoute {
     const token = authorization.replace(/^Bearer\s+/i, '')
 
     const id = c.env.USER_STORAGE.idFromName(userEmail)
-    const stub = c.env.USER_STORAGE.get(id)
+    const stub: any = c.env.USER_STORAGE.get(id)
 
     const verifyResult = await stub.verifyToken(token)
 
@@ -96,10 +96,10 @@ export class UserSync extends OpenAPIRoute {
 
     try {
       const result = await stub.syncData(syncOps)
-      return c.json({
+      return {
         success: true,
         result,
-      } as any)
+      }
     } catch (e: any) {
       return c.json(
         {

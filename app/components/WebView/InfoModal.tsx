@@ -4,7 +4,6 @@ import {
   Linking,
   Modal,
   ScrollView,
-  Share,
   StyleSheet,
   ToastAndroid,
   TouchableOpacity,
@@ -13,6 +12,7 @@ import {
 
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
+import { sharePage } from '@/utils/share'
 
 // import { FloatingButton } from '../FloatingButton'
 import { ThemedButton } from '../ThemedButton'
@@ -111,12 +111,8 @@ export default function InfoModal(props: {
               <ThemedButton
                 title='分享'
                 type='primary'
-                onPress={() => {
-                  Share.share({
-                    title: editableTitle,
-                    message: editableTitle + '\n' + props.url,
-                    url: props.url,
-                  })
+                onPress={async () => {
+                  await sharePage(editableTitle, props.url)
                   props.closeModal()
                 }}
               />

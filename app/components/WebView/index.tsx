@@ -6,7 +6,6 @@ import {
   Image,
   Linking,
   Platform,
-  Share,
   Text,
   ToastAndroid,
   View,
@@ -15,6 +14,7 @@ import { WebView as RNWebView } from 'react-native-webview'
 
 import { useStore } from '@/store'
 import { getPageIcon } from '@/utils'
+import { sharePage } from '@/utils/share'
 
 import { ThemedButton } from '../ThemedButton'
 import { ThemedView } from '../ThemedView'
@@ -119,12 +119,7 @@ export default function WebView(props: {
     const [name] = shareInfo
     if (props.name === name) {
       const { url, title } = currentNavigationStateRef.current
-
-      Share.share({
-        title,
-        message: title + '\n' + url,
-        url,
-      })
+      sharePage(title, url)
     }
   }, [props.name, shareInfo])
 
@@ -283,9 +278,7 @@ export default function WebView(props: {
           const data = JSON.parse(evt.nativeEvent.data)
           switch (data.type) {
             case 'share':
-              Share.share({
-                message: `${data.payload.title}\n${data.payload.url}`,
-              })
+              sharePage(data.payload.title, data.payload.url)
               break
             case 'download-video':
               ToastAndroid.show('请在浏览器中下载（点击视频右下方三个小点）', ToastAndroid.SHORT)

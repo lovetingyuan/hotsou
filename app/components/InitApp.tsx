@@ -43,7 +43,7 @@ function App(props: React.PropsWithChildren) {
     }
     if (initialed && Date.now() - get$checkAppUpdateTime() > 5 * 24 * 60 * 60 * 1000) {
       checkAppUpdate()
-        .then(r => {
+        .then((r) => {
           const currentVersion = Application.nativeApplicationVersion
           set$checkAppUpdateTime(Date.now())
           if (r && r.version !== currentVersion) {
@@ -65,7 +65,7 @@ function App(props: React.PropsWithChildren) {
             )
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.log('[Check Update] Error:', e)
         })
     }

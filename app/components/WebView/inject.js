@@ -46,7 +46,7 @@ function __$injectBeforeLoad() {
 
   `
   window.document.head?.append(noDragCss)
-  window.__waitBody = callback => {
+  window.__waitBody = (callback) => {
     if (window.document.body) {
       callback()
     } else {
@@ -106,7 +106,7 @@ function __$injectBeforeLoad() {
   window.__markReaded = (containerClass, textClass, textsClass) => {
     window.document.addEventListener(
       'click',
-      evt => {
+      (evt) => {
         const itemElement = evt.target.closest(containerClass)
         if (itemElement) {
           const title =
@@ -141,7 +141,7 @@ function __$injectBeforeLoad() {
         }
       } else {
         const items = window.document.querySelectorAll(textsClass)
-        items.forEach(ele => {
+        items.forEach((ele) => {
           if (ele.innerText in clicked) {
             ele.style.opacity = 0.4
           }

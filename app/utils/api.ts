@@ -5,6 +5,10 @@ import { BASE_URL } from '@/api/baseUrl'
 
 export async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${BASE_URL}${endpoint}`
+  console.log('[api] request start', {
+    method: options?.method ?? 'GET',
+    url,
+  })
 
   try {
     const response = await fetch(url, {
@@ -13,6 +17,13 @@ export async function request<T>(endpoint: string, options?: RequestInit): Promi
         ...options?.headers,
       },
       ...options,
+    })
+
+    console.log('[api] response received', {
+      method: options?.method ?? 'GET',
+      url,
+      status: response.status,
+      ok: response.ok,
     })
 
     if (!response.ok) {
@@ -27,38 +38,14 @@ export async function request<T>(endpoint: string, options?: RequestInit): Promi
     return response.json() as Promise<T>
   } catch (error: any) {
     const message = error.message || '网络请求失败'
-    // If we already showed a toast (re-thrown error), we might not want to show it again.
-    // However, if it's a network error (fetch failed), we do want to show it.
-    // The previous block throws "message".
-    // Let's rely on the fact that if it's a network error, it won't be caught by response.ok check.
-    // But if I throw in the if(!response.ok) block, it goes to caller, NOT to this catch block?
-    // Wait, try-catch only catches errors from the await fetch or the block.
-    // If I throw inside the try, it IS caught by the catch block below?
-    // YES.
-    // So I need to be careful not to double toast.
-    // I can check if error has been "handled" or just rely on the caller handling it?
-    // No, if I throw inside try, catch catches it.
-    // So if !response.ok, I show toast, then throw. The catch block catches it, shows toast AGAIN, then throws.
-    // BAD.
 
-    // Fix: Move the response check outside or handle cleanly.
-    // Or, in catch block, check if toast was already shown? Hard.
-
-    // Better structure:
-    // fetch...
-    // if !ok -> throw custom error with flag?
-
-    // Or just let catch handle everything?
-    // if !ok -> throw Error(data.error)
-    // catch (e) -> Toast(e.message); throw e;
-
-    // BUT, I need async parsing of error body if !ok.
+    console.log('[api] request failed', {
+      method: options?.method ?? 'GET',
+      url,
+      message,
+    })
 
     if (Platform.OS === 'android') {
-      // Check if this is a "known" error that we already displayed?
-      // Actually, simplified approach:
-      // Don't toast in the !ok block. Just throw.
-      // Handle ALL toasts in the catch block.
       ToastAndroid.show(message, ToastAndroid.SHORT)
     }
     throw error
