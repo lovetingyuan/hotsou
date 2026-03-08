@@ -2,6 +2,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import React, { useEffect } from 'react'
 import {
   ActivityIndicator,
+  AppState,
   BackHandler,
   Image,
   Linking,
@@ -20,6 +21,16 @@ import { ThemedButton } from '../ThemedButton'
 import { ThemedView } from '../ThemedView'
 import InfoModal from './InfoModal'
 import { beforeLoadedInject } from './inject'
+
+const clearScrollPositionScript = `
+  localStorage.removeItem("__scrollPosition");
+  localStorage.removeItem("scroll-position");
+  true;
+`
+
+// Chrome on Android now sends a reduced UA by default, so this matches a modern Android phone.
+const DEFAULT_ANDROID_USER_AGENT =
+  'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36'
 
 export default function WebView(props: {
   name: string
@@ -70,7 +81,19 @@ export default function WebView(props: {
 
   useEffect(() => {
     return () => {
-      webViewRef.current?.injectJavaScript('localStorage.removeItem("scroll-position");true;')
+      webViewRef.current?.injectJavaScript(clearScrollPositionScript)
+    }
+  }, [])
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState !== 'active') {
+        webViewRef.current?.injectJavaScript(clearScrollPositionScript)
+      }
+    })
+
+    return () => {
+      subscription.remove()
     }
   }, [])
 
@@ -91,7 +114,7 @@ export default function WebView(props: {
 
   useEffect(() => {
     if (reloadTab[0] === props.name) {
-      webViewRef.current?.injectJavaScript('localStorage.removeItem("__scrollPosition");true;')
+      webViewRef.current?.injectJavaScript(clearScrollPositionScript)
       webViewRef.current?.reload()
       if (reloadTab[1]) {
         setWebviewKey((k) => k + 1)
@@ -178,7 +201,7 @@ export default function WebView(props: {
         originWhitelist={['*']}
         webviewDebuggingEnabled={__DEV__}
         thirdPartyCookiesEnabled={false}
-        userAgent={props.ua}
+        userAgent={props.ua ?? DEFAULT_ANDROID_USER_AGENT}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
         onRenderProcessGone={() => {
           // ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
@@ -305,3 +328,4 @@ export default function WebView(props: {
     </>
   )
 }
+

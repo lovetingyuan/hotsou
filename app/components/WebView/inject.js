@@ -46,7 +46,7 @@ function __$injectBeforeLoad() {
 
   `
   window.document.head?.append(noDragCss)
-  window.__waitBody = (callback) => {
+  window.__waitBody = callback => {
     if (window.document.body) {
       callback()
     } else {
@@ -67,46 +67,187 @@ function __$injectBeforeLoad() {
   window.addEventListener('click', sendClick, true)
   window.addEventListener('touchstart', sendClick, true)
 
-  window.__keepScrollPosition = (selector, distanceAdjust = 0, timeout = 300) => {
+  window.__keepScrollPosition = (selector, distanceAdjust = 0, waitContainer) => {
+    const scrollStorageKey = '__scrollPosition'
+    const maxRestoreAttempts = 40
+    const restoreInterval = 50
+    const stableThreshold = 3
+
+    window.__scrollPositionCleanup?.()
+
+    const clearSavedScrollPosition = () => {
+      window.localStorage.setItem(scrollStorageKey, '')
+      window.localStorage.removeItem(scrollStorageKey)
+    }
+
+    const getTargetElement = () => {
+      if (!selector) {
+        return null
+      }
+      try {
+        return window.document.querySelector(selector)
+      } catch (error) {
+        console.warn('[__keepScrollPosition] Invalid selector:', selector, error)
+        return null
+      }
+    }
+
+    const getScrollableTarget = () => {
+      const element = getTargetElement()
+      if (selector && !element) {
+        return null
+      }
+      return element ?? window.document.scrollingElement ?? window.document.documentElement
+    }
+
+    const getCurrentScrollTop = target => {
+      if (!selector) {
+        return window.scrollY
+      }
+      return target?.scrollTop ?? 0
+    }
+
     const saveScrollPosition = () => {
-      const top = selector ? window.document.querySelector(selector).scrollTop : window.scrollY
-      window.localStorage.setItem('__scrollPosition', top + '')
+      const target = getScrollableTarget()
+      if (!target && selector) {
+        return
+      }
+      const top = getCurrentScrollTop(target)
+      window.localStorage.setItem(scrollStorageKey, top + '')
     }
 
     const restoreScrollPosition = () => {
-      const scrollPosition = window.localStorage.getItem('__scrollPosition')
-      if (scrollPosition && parseInt(scrollPosition)) {
-        window.localStorage.setItem('__scrollPosition', '')
-        window.localStorage.removeItem('__scrollPosition')
-        window.setTimeout(() => {
-          window.localStorage.setItem('__scrollPosition', '')
-          window.localStorage.removeItem('__scrollPosition')
-          if (selector) {
-            const dom = window.document.querySelector(selector)
-            if (dom) {
-              dom.scrollTop = parseInt(scrollPosition) + distanceAdjust
-            }
-          } else {
-            window.scrollTo(0, parseInt(scrollPosition) + distanceAdjust)
+      const rawScrollPosition = window.localStorage.getItem(scrollStorageKey)
+      if (rawScrollPosition === null || rawScrollPosition === '') {
+        return
+      }
+
+      const savedScrollPosition = Number.parseInt(rawScrollPosition, 10)
+      if (Number.isNaN(savedScrollPosition)) {
+        clearSavedScrollPosition()
+        return
+      }
+
+      const targetScrollTop = Math.max(0, savedScrollPosition + distanceAdjust)
+      let attempts = 0
+      let previousMetric = ''
+      let stableCount = 0
+      let intervalId = 0
+      let observer = null
+      let observerTimer = 0
+
+      const cleanupRestore = (shouldClearStorage = false) => {
+        if (intervalId) {
+          window.clearInterval(intervalId)
+          intervalId = 0
+        }
+        if (observerTimer) {
+          window.clearTimeout(observerTimer)
+          observerTimer = 0
+        }
+        if (observer) {
+          observer.disconnect()
+          observer = null
+        }
+        if (shouldClearStorage) {
+          clearSavedScrollPosition()
+        }
+      }
+
+      const applyScroll = (target, top) => {
+        if (selector) {
+          target.scrollTop = top
+          return target.scrollTop
+        }
+        window.scrollTo(0, top)
+        return window.scrollY
+      }
+
+      // Retry until the async list height stops changing, then do one final best-effort restore.
+      const attemptRestore = () => {
+        attempts += 1
+        const target = getScrollableTarget()
+        if (!target) {
+          if (attempts >= maxRestoreAttempts) {
+            cleanupRestore(false)
           }
-        }, timeout)
+          return
+        }
+
+        const maxScrollTop = selector
+          ? Math.max(0, target.scrollHeight - target.clientHeight)
+          : Math.max(0, target.scrollHeight - window.innerHeight)
+        const currentMetric = maxScrollTop + ':' + target.scrollHeight
+        stableCount = currentMetric === previousMetric ? stableCount + 1 : 0
+        previousMetric = currentMetric
+
+        const nextTop =
+          stableCount >= stableThreshold ? Math.min(targetScrollTop, maxScrollTop) : targetScrollTop
+        const currentScrollTop = applyScroll(target, nextTop)
+        const reachedTarget = Math.abs(currentScrollTop - nextTop) <= 2
+        const domStable = stableCount >= stableThreshold
+
+        if (
+          reachedTarget &&
+          (nextTop === targetScrollTop || domStable || maxScrollTop >= targetScrollTop)
+        ) {
+          cleanupRestore(true)
+          return
+        }
+
+        if (attempts >= maxRestoreAttempts) {
+          applyScroll(target, Math.min(targetScrollTop, maxScrollTop))
+          cleanupRestore(true)
+        }
+      }
+
+      attemptRestore()
+      intervalId = window.setInterval(attemptRestore, restoreInterval)
+      if (window.MutationObserver && window.document.documentElement) {
+        observer = new window.MutationObserver(() => {
+          if (observerTimer) {
+            return
+          }
+          observerTimer = window.setTimeout(() => {
+            observerTimer = 0
+            attemptRestore()
+          }, 80)
+        })
+        observer.observe(window.document.documentElement, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+        })
       }
     }
-    window.addEventListener('load', restoreScrollPosition)
 
-    // if (window.document.readyState === 'complete') {
-    //   restoreScrollPosition()
-    // } else {
-    //   window.addEventListener('load', restoreScrollPosition)
-    // }
+    const onLoad = () => {
+      restoreScrollPosition()
+    }
+    if (waitContainer) {
+      const timer = setInterval(() => {
+        const container = document.querySelector(waitContainer)
+        if (container && container.childElementCount > 10) {
+          clearInterval(timer)
+          restoreScrollPosition()
+        }
+      }, 20)
+    } else if (window.document.readyState === 'complete') {
+      restoreScrollPosition()
+    } else {
+      window.addEventListener('load', onLoad)
+    }
 
-    window.addEventListener('beforeunload', saveScrollPosition)
+    window.addEventListener('pagehide', saveScrollPosition)
+    window.__scrollPositionCleanup = () => {
+      window.removeEventListener('load', onLoad)
+      window.removeEventListener('pagehide', saveScrollPosition)
+    }
   }
-
-  window.__markReaded = (containerClass, textClass, textsClass) => {
+  window.__markRead = (containerClass, textClass, textsClass) => {
     window.document.addEventListener(
       'click',
-      (evt) => {
+      evt => {
         const itemElement = evt.target.closest(containerClass)
         if (itemElement) {
           const title =
@@ -141,13 +282,13 @@ function __$injectBeforeLoad() {
         }
       } else {
         const items = window.document.querySelectorAll(textsClass)
-        items.forEach((ele) => {
+        items.forEach(ele => {
           if (ele.innerText in clicked) {
             ele.style.opacity = 0.4
           }
         })
       }
-    }, 100)
+    }, 50)
     window.addEventListener('load', () => {
       setTimeout(() => {
         clearInterval(timer)
@@ -172,120 +313,6 @@ function __$injectBeforeLoad() {
       window.__injectCss()
     })
   }
-
-  window.__handleShare = function () {
-    const url =
-      window.location.hostname === 'm.douyin.com'
-        ? window.location.href.split('#')[0]
-        : window.location.href
-
-    window.ReactNativeWebView.postMessage(
-      JSON.stringify({
-        type: 'share',
-        payload: {
-          title: window.document.title,
-          url,
-        },
-      }),
-    )
-  }
-
-  // window.document.addEventListener(
-  //   'click',
-  //   e => {
-  //     if (window.location.hostname === 't.me') {
-  //       if (e.target.tagName === 'I' && e.target.classList.contains('link_preview_image')) {
-  //         e.preventDefault()
-  //         e.stopPropagation()
-  //         const bg = window.getComputedStyle(e.target).backgroundImage
-  //         if (bg.startsWith('url(')) {
-  //           window.open(bg.slice(5, -2))
-  //         }
-  //       }
-  //     }
-  //   },
-  //   true
-  // )
 }
 
 export const beforeLoadedInject = `(${__$injectBeforeLoad})();true;`
-
-// function __$inject2() {
-//   // if (window.__injected2) {
-//   //   return
-//   // }
-//   // window.__injected2 = true
-//   // window.__waitBody?.(() => {
-//   //   if (window.__injectCss) {
-//   //     window.__injectCss()
-//   //   }
-//   // })
-//   // const cookies = window.document.cookie.split(';')
-//   // for (const element of cookies) {
-//   //   const cookie = element
-//   //   const eqPos = cookie.indexOf('=')
-//   //   const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie
-//   //   window.document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
-//   // }
-
-//   // if (window.location.href.startsWith('https://t.me/')) {
-//   //   const year = new Date().getFullYear()
-//   //   localStorage.removeItem(location.href + '_' + (year - 1))
-//   //   const style = document.createElement('style')
-//   //   const css = `
-//   //   content: '👀';
-//   //   position: absolute;
-//   //   right: 20px;
-//   //   top: 40px;
-//   //   font-size: 80px;
-//   //   rotate: -40deg;
-//   //   z-index: 9;
-//   //   opacity: 0.6;
-//   //   user-select: none;
-//   //   animation: scaleUp 2s ease-in-out;
-//   //   display: inline-block;
-//   //   `
-//   //   document.head.append(style)
-//   //   const key = location.href + '_' + year
-//   //   const cache = JSON.parse(localStorage.getItem(key) || '{}')
-//   //   style.textContent = `
-//   //       @keyframes scaleUp {
-//   //           0% {
-//   //               transform: scale(0.2) translateX(-200px);
-//   //               opacity: 0.3;
-//   //           }
-//   //           100% {
-//   //               transform: scale(1) translateX(0px);
-//   //               opacity: 0.6;
-//   //           }
-//   //       }
-//   //   ${Object.keys(cache).map(k => `[data-post="${k}"]::after`)} {${css}}`
-//   //   const style2 = document.createElement('style')
-//   //   document.head.append(style2)
-
-//   //   window.addEventListener('pointerdown', e => {
-//   //     const item = e.target.closest('.js-widget_message_wrap')
-//   //     if (item) {
-//   //       const id = item.querySelector('.js-widget_message[data-post]')?.dataset.post
-//   //       if (id) {
-//   //         const cache = JSON.parse(localStorage.getItem(key) || '{}')
-//   //         cache[id] = true
-//   //         localStorage.setItem(key, JSON.stringify(cache))
-//   //         setTimeout(() => {
-//   //           const _css = style2.textContent
-//   //           if (!_css.includes(id)) {
-//   //             style2.textContent = _css + `[data-post="${id}"]::after{${css}}`
-//   //           }
-//   //         }, 2000)
-//   //       }
-//   //     }
-//   //   })
-//   // }
-
-//   ;(function userScript() {
-//     // eslint-disable-next-line no-unused-expressions, no-undef
-//     USER_SCRIPT
-//   })()
-// }
-
-// export const injectJS = `(${__$inject2})();true;`

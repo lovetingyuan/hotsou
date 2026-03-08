@@ -10,7 +10,7 @@ function __$inject() {
     }
   }, 200)
   // @ts-ignore
-  window.__markReaded?.('.HotList-item', '.HotList-itemTitle', '.HotList-item .HotList-itemTitle')
+  window.__markRead?.('.HotList-item', '.HotList-itemTitle', '.HotList-item .HotList-itemTitle')
 }
 
 export default function ZhihuScreen() {

@@ -5,7 +5,7 @@ function __$inject() {
   if (location.hostname === 'top.baidu.com') {
     history.scrollRestoration = 'auto'
     // @ts-ignore
-    window.__markReaded?.('.c-text-item', '.item-word', '.c-text-item .item-word')
+    window.__markRead?.('.c-text-item', '.item-word', '.c-text-item .item-word')
   }
 }
 

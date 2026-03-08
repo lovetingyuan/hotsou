@@ -3,7 +3,7 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   // @ts-ignore
-  window.__markReaded?.(
+  window.__markRead?.(
     'div[class^="index_content"]',
     'div[class^="index_left_"] > div:first-child',
     'div[class^="index_left_"] > div:first-child',

@@ -20,48 +20,21 @@ function __$inject() {
     }, 100)
   }
   if (location.pathname === '/feoffline/hotspot_and_local/html/hot_list/index.html') {
-    document.addEventListener(
-      'click',
-      (evt) => {
-        // @ts-ignore
-        if (evt.target.closest('.tt-show-monitor')) {
-          // @ts-ignore
-          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
-        }
-      },
-      true,
-    )
-    const id = localStorage.getItem('scroll-position')
-    if (id) {
-      const timer = setInterval(() => {
-        const nodes = document.querySelectorAll('.tt-show-monitor')
-        if (nodes.length > 20) {
-          clearInterval(timer)
-          window.scrollTo({
-            top: Number(id),
-          })
-        }
-      }, 200)
-      localStorage.removeItem('scroll-position')
-    }
+    // @ts-ignore
+    window.__keepScrollPosition()
   }
   if (location.pathname === '/search') {
     const reload = () => {
       const results = document.getElementById('results')
-      if (results && results.textContent.includes('抱歉，未找到相关结果')) {
+      if (results && results.textContent.includes('未找到相关结果')) {
+        clearInterval(timer)
         location.reload()
       }
     }
-    if (document.readyState === 'complete') {
-      reload()
-    } else {
-      window.addEventListener('load', () => {
-        reload()
-      })
-    }
+    const timer = setInterval(reload, 100)
     setTimeout(() => {
-      reload()
-    }, 800)
+      clearInterval(timer)
+    }, 5000)
   }
 }
 

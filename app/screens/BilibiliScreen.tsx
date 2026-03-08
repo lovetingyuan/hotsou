@@ -4,8 +4,8 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 function __$inject() {
   if (location.pathname === '/blackboard/activity-trending-topic.html') {
     // @ts-ignore
-    window.__markReaded?.('bili-open-app[schema]', '.trending-title', '.trending-title')
-    document.addEventListener('click', (e) => {
+    window.__markRead?.('bili-open-app[schema]', '.trending-title', '.trending-title')
+    document.addEventListener('click', e => {
       // @ts-ignore
       const item = e.target.closest('bili-open-app[schema]')
       if (item) {
@@ -24,35 +24,12 @@ function __$inject() {
         }
       }
     })
-
-    document.addEventListener(
-      'click',
-      (evt) => {
-        // @ts-ignore
-        if (evt.target.closest('bili-open-app[schema]')) {
-          // @ts-ignore
-          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
-        }
-      },
-      true,
-    )
-    const id = localStorage.getItem('scroll-position')
-    if (id) {
-      const timer = setInterval(() => {
-        const nodes = document.querySelectorAll('bili-open-app')
-        if (nodes.length > 20) {
-          clearInterval(timer)
-          window.scrollTo({
-            top: Number(id),
-          })
-        }
-      }, 200)
-      localStorage.removeItem('scroll-position')
-    }
+    // @ts-ignore
+    window.__keepScrollPosition('', 0, '.trending-container')
   } else if (location.pathname === '/search/') {
     document.addEventListener(
       'click',
-      (e) => {
+      e => {
         // @ts-ignore
         const item = e.target.closest('.wx-tag.v-card-single[data-aid]')
         if (item) {

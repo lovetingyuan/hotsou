@@ -4,13 +4,14 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 function __$inject() {
   if (location.pathname === '/landings/hotlist') {
     // @ts-ignore
-    window.__markReaded?.(
+    window.__markRead?.(
       'x-view[data-topic]',
       'x-text.hot-item-title-text',
       'x-text.hot-item-title-text',
     )
+    // history.scrollRestoration = 'auto'
     // @ts-ignore
-    window.__keepScrollPosition('#hot-list-0[enable-scroll', 80)
+    window.__keepScrollPosition('#hot-list-0[enable-scroll]', 80, '.hot-list')
   }
 }
 const jsCode = `(${__$inject})()`

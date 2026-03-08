@@ -62,6 +62,7 @@
     "zx": "^8.6.0"
   },
   "expo": {
+    "name": "HotSou",
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [

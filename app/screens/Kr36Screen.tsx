@@ -3,11 +3,11 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname === '/hot-list-m') {
-    history.scrollRestoration = 'auto'
+    // history.scrollRestoration = 'auto'
     // @ts-ignore
-    window.__markReaded('.list-item', '.title', '.list-item .title')
+    window.__markRead('.list-item', '.title', '.list-item .title')
     // @ts-ignore
-    window.__keepScrollPosition('', 0, 2000)
+    window.__keepScrollPosition('', -40, '.list-content')
   }
 }
 

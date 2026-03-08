@@ -4,36 +4,13 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 function __$inject() {
   if (location.pathname === '/ranking') {
     // @ts-ignore
-    window.__markReaded?.(
+    window.__markRead?.(
       '[dt-eid="em_item_article"]',
       '[class^="ranking-item_text"]',
       '[dt-eid="em_item_article"] [class^="ranking-item_text"]',
     )
-
-    document.addEventListener(
-      'click',
-      (evt) => {
-        // @ts-ignore
-        if (evt.target.closest('[dt-eid="em_item_article"]')) {
-          // @ts-ignore
-          localStorage.setItem('scroll-position', document.documentElement.scrollTop)
-        }
-      },
-      true,
-    )
-    const id = localStorage.getItem('scroll-position')
-    if (id) {
-      const timer = setInterval(() => {
-        const nodes = document.querySelectorAll('[dt-eid="em_item_article"]')
-        if (nodes.length > 20) {
-          clearInterval(timer)
-          window.scrollTo({
-            top: Number(id),
-          })
-        }
-      }, 200)
-      localStorage.removeItem('scroll-position')
-    }
+    // @ts-ignore
+    window.__keepScrollPosition('', 0, 'div[class^="ranking-list_"]')
   }
 }
 

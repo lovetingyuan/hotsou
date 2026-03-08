@@ -3,15 +3,13 @@ import { getTabUrl, TabsName } from '@/constants/Tabs'
 
 function __$inject() {
   if (location.pathname === '/rankm/') {
-    history.scrollRestoration = 'auto'
+    // history.scrollRestoration = 'auto'
     // @ts-ignore
-    window.__markReaded(
+    window.__markRead(
       '.placeholder.one-img-plc',
       '.plc-title',
       '.placeholder.one-img-plc .plc-title',
     )
-    // @ts-ignore
-    window.__keepScrollPosition('', 0, 1000)
   }
 }
 

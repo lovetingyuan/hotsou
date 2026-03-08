@@ -34,7 +34,7 @@ function RootNavigator() {
         name='About'
         component={AboutScreen}
         options={{
-          title: '关于Hotsou',
+          title: '关于',
           headerRight: () => (
             <TouchableOpacity onPress={onShare} style={{ padding: 8 }}>
               <ThemedIcon name='share-outline' size={24} />
