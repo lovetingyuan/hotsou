@@ -29,6 +29,7 @@ export default function InfoModal(props: {
   const colorScheme = useColorScheme()
   const { $favorList, set$favorList } = useStore()
   const [editableTitle, setEditableTitle] = React.useState(props.title || '无标题')
+  const [isSharing, setIsSharing] = React.useState(false)
 
   React.useEffect(() => {
     setEditableTitle(props.title || '无标题')
@@ -111,9 +112,15 @@ export default function InfoModal(props: {
               <ThemedButton
                 title='分享'
                 type='primary'
+                isLoading={isSharing}
                 onPress={async () => {
-                  await sharePage(editableTitle, props.url)
-                  props.closeModal()
+                  try {
+                    setIsSharing(true)
+                    await sharePage(editableTitle, props.url)
+                    props.closeModal()
+                  } finally {
+                    setIsSharing(false)
+                  }
                 }}
               />
               <ThemedButton

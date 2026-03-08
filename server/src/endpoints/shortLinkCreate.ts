@@ -2,11 +2,22 @@ import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
 import { AppContext } from '../types'
 
-const IS_GD_ENDPOINT = 'https://is.gd/create.php?format=simple&url='
+const CLC_IS_API_URL = 'https://clc.is/api/links'
+const CLC_IS_DEFAULT_DOMAIN = 'clc.is'
+
+const ClcIsLinkResponseSchema = z.object({
+  slug: z.string().min(1),
+  url: z.string().url(),
+  is_generated: z.boolean(),
+})
+
+const ClcIsErrorResponseSchema = z.object({
+  error: z.string(),
+})
 
 const ShortLinkCreateRequestSchema = {
   tags: ['Links'],
-  summary: 'Create a short link for sharing via third-party shortener',
+  summary: 'Create a short link for sharing via a third-party shortener',
   request: {
     body: {
       content: {
@@ -50,17 +61,46 @@ export class ShortLinkCreate extends OpenAPIRoute {
   schema = ShortLinkCreateRequestSchema
 
   async handle(c: AppContext) {
-    console.log(999, 444)
-
     const data = await this.getValidatedData<typeof ShortLinkCreateRequestSchema>()
     const { url } = data.body
-    const response = await fetch(`${IS_GD_ENDPOINT}${encodeURIComponent(url)}`)
-    console.log(999, 33, url)
 
-    const shortUrl = (await response.text()).trim()
-    console.log(999, 3344, shortUrl)
+    try {
+      const response = await fetch(CLC_IS_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          domain: CLC_IS_DEFAULT_DOMAIN,
+          target_url: url,
+        }),
+      })
+      const responseText = await response.text()
+      const responseJson = JSON.parse(responseText)
 
-    if (!response.ok || !shortUrl.startsWith('https://')) {
+      if (!response.ok) {
+        const errorData = ClcIsErrorResponseSchema.safeParse(responseJson)
+        throw new Error(errorData.success ? errorData.data.error : 'Shortener returned an error.')
+      }
+
+      const parsedData = z.array(ClcIsLinkResponseSchema).safeParse(responseJson)
+      const shortUrl = parsedData.success
+        ? parsedData.data[0]?.url
+        : ClcIsLinkResponseSchema.parse(responseJson).url
+
+      if (!shortUrl) {
+        throw new Error('Shortener returned an empty URL.')
+      }
+
+      return {
+        success: true,
+        result: {
+          shortUrl,
+        },
+      }
+    } catch (error) {
+      console.error('Failed to create short link via clc.is', error)
+
       return c.json(
         {
           success: false,
@@ -68,13 +108,6 @@ export class ShortLinkCreate extends OpenAPIRoute {
         },
         502,
       )
-    }
-
-    return {
-      success: true,
-      result: {
-        shortUrl,
-      },
     }
   }
 }

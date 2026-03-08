@@ -47,6 +47,10 @@ async function getShareUrl(url: string) {
 
 export async function sharePage(title: string, url: string) {
   console.log('[share] enter sharePage', { title, urlLength: url.length })
+
+  if (Platform.OS === 'android') {
+    ToastAndroid.show('正在分享...', ToastAndroid.SHORT)
+  }
   const shareUrl = await getShareUrl(url)
 
   if (Platform.OS === 'android' && shareUrl !== url) {
