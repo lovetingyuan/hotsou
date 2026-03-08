@@ -1,27 +1,85 @@
 import { useEffect, useRef } from 'react'
 
-import { getStoreMethods, getStoreState, subscribeStore, SyncDataKeys, useStore } from '@/store'
+import { normalizeTabsList } from '@/constants/Tabs'
+import {
+  getStoreMethods,
+  getStoreState,
+  subscribeStore,
+  SyncDataKeys,
+  type AppContextValueType,
+  useStore,
+} from '@/store'
 import { userApi } from '@/utils/api'
 import { getAuthData } from '@/utils/secureStore'
 
+type SyncKey = (typeof SyncDataKeys)[number]
+type SyncPayload = Pick<AppContextValueType, SyncKey>
+type PartialSyncPayload = Partial<SyncPayload>
+
 export function DataSync() {
   const { isLogin } = useStore()
-  const previousDataRef = useRef<{
-    [key: string]: any
-  }>({})
+  const previousDataRef = useRef<PartialSyncPayload>({})
   const syncingRef = useRef(false)
   const isFirstLoginSync = useRef(true)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
+  const normalizeSyncValue = <K extends SyncKey>(key: K, value: SyncPayload[K]): SyncPayload[K] => {
+    if (key === '$tabsList') {
+      return normalizeTabsList(value as AppContextValueType['$tabsList']) as SyncPayload[K]
+    }
+
+    return value
+  }
+
+  const assignSyncValue = <K extends SyncKey>(
+    target: PartialSyncPayload,
+    key: K,
+    value: SyncPayload[K],
+  ) => {
+    if (key === '$tabsList') {
+      target.$tabsList = value as AppContextValueType['$tabsList']
+      return
+    }
+
+    if (key === '$enableTextSelect') {
+      target.$enableTextSelect = value as AppContextValueType['$enableTextSelect']
+      return
+    }
+
+    target.$favorList = value as AppContextValueType['$favorList']
+  }
+
+  const setSyncedValue = <K extends SyncKey>(key: K, value: SyncPayload[K]) => {
+    const methods = getStoreMethods()
+
+    if (key === '$tabsList') {
+      methods.set$tabsList(value as AppContextValueType['$tabsList'])
+      return
+    }
+
+    if (key === '$enableTextSelect') {
+      methods.set$enableTextSelect(value as AppContextValueType['$enableTextSelect'])
+      return
+    }
+
+    methods.set$favorList(value as AppContextValueType['$favorList'])
+  }
+
+  const syncLocalTabsListIfNeeded = (tabsList: AppContextValueType['$tabsList']) => {
+    const currentTabsList = getStoreState().$tabsList
+    if (JSON.stringify(currentTabsList) !== JSON.stringify(tabsList)) {
+      getStoreMethods().set$tabsList(tabsList)
+    }
+  }
+
   useEffect(() => {
-    // Reset flags on login status change
     if (isLogin) {
       isFirstLoginSync.current = true
-    } else {
-      // Clean up if logged out
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
+      return
+    }
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
     }
   }, [isLogin])
 
@@ -42,47 +100,51 @@ export function DataSync() {
 
       syncingRef.current = true
       try {
-        // 1. Get remote data
         const syncRes = await userApi.sync(email, token, {
           get: SyncDataKeys as unknown as string[],
         })
 
         if (syncRes.success) {
-          const remoteData = syncRes.result
+          const remoteData = syncRes.result as PartialSyncPayload
           const hasRemoteData = Object.keys(remoteData).length > 0
 
           if (hasRemoteData) {
-            // Server Wins: Update local store with remote data
-            const methods = getStoreMethods()
-            // Update reference to avoid triggering update sync
-            previousDataRef.current = { ...remoteData }
+            const normalizedRemoteData: PartialSyncPayload = {}
 
-            // Iterate over allowed keys to safely update store
-            SyncDataKeys.forEach((key: any) => {
-              if (remoteData[key] !== undefined) {
-                // Determine the setter name (e.g., set$tabsList)
-                // Since methods are dynamic, we cast or use specific knowledge
-                const methodKey = `set${key}` as keyof typeof methods
-                if (methods[methodKey]) {
-                  methods[methodKey](remoteData[key])
-                }
+            SyncDataKeys.forEach((key) => {
+              const remoteValue = remoteData[key]
+              if (remoteValue === undefined) {
+                return
               }
+
+              const normalizedValue = normalizeSyncValue(key, remoteValue)
+              assignSyncValue(normalizedRemoteData, key, normalizedValue)
+              setSyncedValue(key, normalizedValue)
             })
-            // showToast('数据已从服务器恢复')
+
+            previousDataRef.current = normalizedRemoteData
           } else {
-            // Client Wins: Upload local data to server
-            // Construct payload from current store state
-            const state = getStoreState() as any
-            const payload: Record<string, any> = {}
-            SyncDataKeys.forEach((key: any) => {
-              payload[key] = state[key]
+            const state = getStoreState()
+            const payload: PartialSyncPayload = {}
+
+            SyncDataKeys.forEach((key) => {
+              assignSyncValue(payload, key, normalizeSyncValue(key, state[key]))
             })
+
+            if (
+              !payload.$tabsList ||
+              !payload.$favorList ||
+              payload.$enableTextSelect === undefined
+            ) {
+              return
+            }
+
+            syncLocalTabsListIfNeeded(payload.$tabsList)
 
             await userApi.sync(email, token, {
               set: payload,
             })
             previousDataRef.current = { ...payload }
-            // showToast('本地数据已同步到服务器')
           }
         }
       } catch (error) {
@@ -98,28 +160,28 @@ export function DataSync() {
         return
       }
 
-      const changes: Record<string, any> = {}
+      const changes: PartialSyncPayload = {}
       let hasChanges = false
-      const state = getStoreState() as any
+      const state = getStoreState()
 
-      SyncDataKeys.forEach((key: any) => {
-        const currentVal = state[key]
+      SyncDataKeys.forEach((key) => {
+        const currentVal = normalizeSyncValue(key, state[key])
         const prevVal = previousDataRef.current[key]
 
-        // Simple JSON stringify comparison
         if (JSON.stringify(currentVal) !== JSON.stringify(prevVal)) {
-          changes[key] = currentVal
+          assignSyncValue(changes, key, currentVal)
           hasChanges = true
         }
       })
 
-      if (!hasChanges) {
+      if (!hasChanges || syncingRef.current) {
         return
       }
 
-      if (syncingRef.current) {
-        return
+      if (changes.$tabsList) {
+        syncLocalTabsListIfNeeded(changes.$tabsList)
       }
+
       syncingRef.current = true
 
       const { email, token } = await getAuthData()
@@ -132,9 +194,7 @@ export function DataSync() {
         await userApi.sync(email, token, {
           set: changes,
         })
-        // Update previous ref to reflect what's now on server
         previousDataRef.current = { ...previousDataRef.current, ...changes }
-        // showToast('同步成功') // Too noisy for auto-sync
       } catch (error) {
         console.error('Update sync failed', error)
       } finally {
@@ -142,20 +202,17 @@ export function DataSync() {
       }
     }
 
-    // 1. Run Initial Sync
     performInitialSync()
 
-    // 2. Subscribe to changes
-    const unsubscribe = subscribeStore((newState) => {
+    const unsubscribe = subscribeStore(() => {
       if (isFirstLoginSync.current) {
         return
       }
 
-      // Check if any SyncDataKeys changed
+      const state = getStoreState()
       let hasChanges = false
-      SyncDataKeys.forEach((key: any) => {
-        // @ts-ignore
-        const currentVal = newState[key]
+      SyncDataKeys.forEach((key) => {
+        const currentVal = normalizeSyncValue(key, state[key])
         const prevVal = previousDataRef.current[key]
 
         if (JSON.stringify(currentVal) !== JSON.stringify(prevVal)) {

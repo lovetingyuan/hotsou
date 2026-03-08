@@ -130,7 +130,60 @@ export const TabsList = [
     icon: 'https://pub-81d777fc2e8043689e156f1e88c01386.r2.dev/ithome.png',
   },
 ]
+export type TabItem = {
+  name: string
+  title: string
+  url: string
+  show: boolean
+  builtIn?: boolean
+  icon?: string
+}
+
+const cloneTab = (tab: TabItem): TabItem => JSON.parse(JSON.stringify(tab))
+
+export const normalizeTabsList = (tabsList?: TabItem[]): TabItem[] => {
+  const savedList = Array.isArray(tabsList) ? tabsList : []
+  const normalizedList: TabItem[] = []
+  const seenNames = new Set<string>()
+
+  for (const item of savedList) {
+    if (!item?.name || seenNames.has(item.name)) {
+      continue
+    }
+
+    const builtInTab = TabsList.find((tab) => tab.name === item.name)
+    if (builtInTab) {
+      normalizedList.push({
+        ...cloneTab(builtInTab),
+        show: typeof item.show === 'boolean' ? item.show : builtInTab.show,
+      })
+      seenNames.add(item.name)
+      continue
+    }
+
+    if (item.builtIn || !item.url || item.url === 'https://') {
+      continue
+    }
+
+    normalizedList.push({
+      ...item,
+      builtIn: false,
+    })
+    seenNames.add(item.name)
+  }
+
+  for (const builtInTab of TabsList) {
+    if (seenNames.has(builtInTab.name)) {
+      continue
+    }
+
+    normalizedList.push(cloneTab(builtInTab))
+    seenNames.add(builtInTab.name)
+  }
+
+  return normalizedList
+}
 
 export const getTabUrl = (name: string) => {
-  return TabsList.find(t => t.name === name)?.url
+  return TabsList.find((t) => t.name === name)?.url
 }
