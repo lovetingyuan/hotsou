@@ -5,7 +5,7 @@ function __$inject() {
   if (location.pathname === '/blackboard/activity-trending-topic.html') {
     // @ts-ignore
     window.__markRead?.('bili-open-app[schema]', '.trending-title', '.trending-title')
-    document.addEventListener('click', e => {
+    document.addEventListener('click', (e) => {
       // @ts-ignore
       const item = e.target.closest('bili-open-app[schema]')
       if (item) {
@@ -29,7 +29,7 @@ function __$inject() {
   } else if (location.pathname === '/search/') {
     document.addEventListener(
       'click',
-      e => {
+      (e) => {
         // @ts-ignore
         const item = e.target.closest('.wx-tag.v-card-single[data-aid]')
         if (item) {

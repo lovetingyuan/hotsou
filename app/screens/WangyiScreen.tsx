@@ -56,7 +56,7 @@ function __$inject() {
     window.__markRead?.('.s-item-wrapper', '.s-text', '.s-item-wrapper .s-text')
     window.addEventListener(
       'click',
-      e => {
+      (e) => {
         // @ts-ignore
         const container = e.target.closest('.s-item-wrapper')
         if (container) {
@@ -73,14 +73,14 @@ function __$inject() {
     )
     const tabs = document.getElementById('tabContainer')
     if (tabs) {
-      const observer = new MutationObserver(mutations => {
+      const observer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
           if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
             const active = tabs.querySelector('.active')
             if (active) {
               // @ts-ignore
               const tabName = active.innerText
-              const version = tabsConfig.find(v => v.name === tabName)?.version
+              const version = tabsConfig.find((v) => v.name === tabName)?.version
               if (version) {
                 history.replaceState({}, '', location.pathname + '?version=' + version)
               }
