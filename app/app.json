@@ -48,8 +48,7 @@
       ],
       "expo-secure-store",
       "expo-font",
-      "expo-image",
-      // "./withJitpackWorkaround.js"
+      "expo-image"
     ],
     "experiments": {
       "reactCompiler": true
