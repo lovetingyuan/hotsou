@@ -10,6 +10,8 @@ import checkAppUpdate from '@/utils/checkAppUpdate'
 
 // @ts-ignore
 const gitHash = typeof GIT_HASH === 'string' ? GIT_HASH : 'N/A'
+// @ts-ignore
+const buildDate = typeof BUILD_DATE === 'number' ? BUILD_DATE : Date.now()
 
 export default function Version() {
   const primaryColor = useThemeColor({}, 'primary')
@@ -95,25 +97,25 @@ export default function Version() {
         width: '100%',
       }}
     >
-      <ThemedText
-        onPress={() => {
-          if (Updates.createdAt) {
+      <ThemedText>当前版本</ThemedText>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <ThemedText
+          style={{ color: '#888' }}
+          onPress={() => {
+            const date = Updates.createdAt || new Date(buildDate)
             ToastAndroid.show(
-              '更新时间：' +
-                Updates.createdAt.toLocaleDateString() +
+              '发布时间：' +
+                date.toLocaleDateString() +
                 ' ' +
-                Updates.createdAt.toLocaleTimeString() +
+                date.toLocaleTimeString() +
                 ' ' +
                 gitHash,
               ToastAndroid.SHORT,
             )
-          }
-        }}
-      >
-        当前版本
-      </ThemedText>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <ThemedText style={{ color: '#888' }}>{currentVersion}</ThemedText>
+          }}
+        >
+          {currentVersion}
+        </ThemedText>
         {versionView()}
       </View>
     </View>

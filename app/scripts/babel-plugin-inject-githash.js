@@ -8,6 +8,8 @@ module.exports = function ({ types: t }) {
         if (path.node.name === 'GIT_HASH') {
           const gitHash = getGitHash()
           path.replaceWith(t.valueToNode(gitHash))
+        } else if (path.node.name === 'BUILD_DATE') {
+          path.replaceWith(t.valueToNode(Date.now()))
         }
       },
     },

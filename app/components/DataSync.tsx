@@ -2,11 +2,11 @@ import { useEffect, useRef } from 'react'
 
 import { normalizeTabsList } from '@/constants/Tabs'
 import {
+  type AppContextValueType,
   getStoreMethods,
   getStoreState,
   subscribeStore,
   SyncDataKeys,
-  type AppContextValueType,
   useStore,
 } from '@/store'
 import { userApi } from '@/utils/api'
