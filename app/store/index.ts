@@ -19,7 +19,8 @@ const getAppValue = () => {
       created_at: number
     }[],
     $tabsList: normalizeTabsList(TabsList as TabItem[]),
-    $checkAppUpdateTime: 0,
+    $lastPromptedAppVersion: '',
+    $lastPromptedAppVersionTime: 0,
     $enableTextSelect: false,
     douyinHotId: '',
     douyinVideoId: '',

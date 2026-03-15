@@ -10,6 +10,8 @@ import { useAuth } from '@/hooks/useAuth'
 import { fulfillStoreKeys, getStoreState, subscribeStore, useStore } from '@/store'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
+const APP_UPDATE_PROMPT_INTERVAL = 7 * 24 * 60 * 60 * 1000
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
@@ -28,11 +30,18 @@ subscribeStore(({ key, value }) => {
 fulfillStoreKeys()
 
 function App(props: React.PropsWithChildren) {
-  const { initialed, get$checkAppUpdateTime, set$checkAppUpdateTime } = useStore()
+  const {
+    initialed,
+    get$lastPromptedAppVersion,
+    get$lastPromptedAppVersionTime,
+    set$lastPromptedAppVersion,
+    set$lastPromptedAppVersionTime,
+  } = useStore()
   useAuth()
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   })
+
   useEffect(() => {
     fulfillStoreKeys()
   }, [])
@@ -41,35 +50,53 @@ function App(props: React.PropsWithChildren) {
     if (loaded && initialed) {
       SplashScreen.hideAsync()
     }
-    if (initialed && Date.now() - get$checkAppUpdateTime() > 5 * 24 * 60 * 60 * 1000) {
-      checkAppUpdate()
-        .then((r) => {
-          const currentVersion = Application.nativeApplicationVersion
-          set$checkAppUpdateTime(Date.now())
-          if (r && r.version !== currentVersion) {
-            Alert.alert(
-              '有新版本🎉',
-              `\n${currentVersion} 更新到 ${r.version} \n\n${r.changelog}`,
-              [
-                {
-                  text: '取消',
-                },
-                {
-                  text: '下载',
-                  onPress: () => {
-                    ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
-                    Linking.openURL(r.downloadUrl)
-                  },
-                },
-              ],
-            )
-          }
-        })
-        .catch((e) => {
-          console.log('[Check Update] Error:', e)
-        })
+  }, [loaded, initialed])
+
+  useEffect(() => {
+    if (!initialed) {
+      return
     }
-  }, [loaded, initialed, get$checkAppUpdateTime, set$checkAppUpdateTime])
+
+    checkAppUpdate()
+      .then((r) => {
+        const currentVersion = Application.nativeApplicationVersion
+        if (r && r.version !== currentVersion) {
+          const now = Date.now()
+          const lastPromptedVersion = get$lastPromptedAppVersion()
+          const lastPromptedAt = get$lastPromptedAppVersionTime()
+          const promptedSameVersionRecently =
+            lastPromptedVersion === r.version && now - lastPromptedAt < APP_UPDATE_PROMPT_INTERVAL
+
+          if (promptedSameVersionRecently) {
+            return
+          }
+
+          set$lastPromptedAppVersion(r.version)
+          set$lastPromptedAppVersionTime(now)
+          Alert.alert('有新版本🎉', `\n${currentVersion} 更新到 ${r.version} \n\n${r.changelog}`, [
+            {
+              text: '取消',
+            },
+            {
+              text: '下载',
+              onPress: () => {
+                ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
+                Linking.openURL(r.downloadUrl)
+              },
+            },
+          ])
+        }
+      })
+      .catch((e) => {
+        console.log('[Check Update] Error:', e)
+      })
+  }, [
+    initialed,
+    get$lastPromptedAppVersion,
+    get$lastPromptedAppVersionTime,
+    set$lastPromptedAppVersion,
+    set$lastPromptedAppVersionTime,
+  ])
 
   useEffect(() => {
     AsyncStorage.getItem('__First_Usage_Time').then((r: string | null) => {
@@ -94,9 +121,11 @@ function App(props: React.PropsWithChildren) {
       )
     })
   }, [])
+
   if (!initialed || !loaded) {
     return null
   }
+
   return props.children
 }
 
