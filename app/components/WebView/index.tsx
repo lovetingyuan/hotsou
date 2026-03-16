@@ -28,6 +28,76 @@ const clearScrollPositionScript = `
   true;
 `
 
+const clearCurrentSiteStorageScript = `
+  (function () {
+    try {
+      document.cookie.split(';').forEach(function (item) {
+        var cookie = item.trim();
+        if (!cookie) {
+          return;
+        }
+
+        var eqPos = cookie.indexOf('=');
+        var name = eqPos > -1 ? cookie.slice(0, eqPos) : cookie;
+        var hostParts = location.hostname.split('.');
+        var pathParts = location.pathname.split('/').filter(Boolean);
+        var domains = [''];
+        var paths = ['/'];
+
+        for (var i = 0; i < hostParts.length; i += 1) {
+          domains.push('.' + hostParts.slice(i).join('.'));
+        }
+
+        for (var j = 0; j < pathParts.length; j += 1) {
+          paths.push('/' + pathParts.slice(0, j + 1).join('/'));
+        }
+
+        domains.forEach(function (domain) {
+          paths.forEach(function (path) {
+            document.cookie =
+              name +
+              '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=' +
+              path +
+              (domain ? '; domain=' + domain : '');
+          });
+        });
+      });
+    } catch (error) {}
+
+    try {
+      localStorage.clear();
+    } catch (error) {}
+
+    try {
+      sessionStorage.clear();
+    } catch (error) {}
+
+    try {
+      if (window.caches?.keys) {
+        window.caches.keys().then(function (keys) {
+          keys.forEach(function (key) {
+            window.caches.delete(key);
+          });
+        });
+      }
+    } catch (error) {}
+
+    try {
+      if (window.indexedDB?.databases) {
+        window.indexedDB.databases().then(function (databases) {
+          databases.forEach(function (database) {
+            if (database?.name) {
+              window.indexedDB.deleteDatabase(database.name);
+            }
+          });
+        });
+      }
+    } catch (error) {}
+
+    return true;
+  })();
+`
+
 // Chrome on Android now sends a reduced UA by default, so this matches a modern Android phone.
 const DEFAULT_ANDROID_USER_AGENT =
   'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36'
@@ -40,6 +110,8 @@ export default function WebView(props: {
   forbiddenUrls?: (string | RegExp)[]
   ua?: string
   dynamicJs?: string
+  cookie?: string
+  referer?: string
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const {
@@ -54,7 +126,8 @@ export default function WebView(props: {
     setDouyinHotId,
   } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
-  const page = $tabsList.find((t) => t.name === props.name)
+  const [useFreshSession, setUseFreshSession] = React.useState(false)
+  const page = $tabsList.find(t => t.name === props.name)
   const pageIcon = getPageIcon(page)
   // const colorScheme = useColorScheme()
 
@@ -86,7 +159,7 @@ export default function WebView(props: {
   }, [])
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState !== 'active') {
         webViewRef.current?.injectJavaScript(clearScrollPositionScript)
       }
@@ -117,12 +190,12 @@ export default function WebView(props: {
       webViewRef.current?.injectJavaScript(clearScrollPositionScript)
       webViewRef.current?.reload()
       if (reloadTab[1]) {
-        setWebviewKey((k) => k + 1)
+        setWebviewKey(k => k + 1)
       }
     }
   }, [props.name, reloadTab])
   useEffect(() => {
-    setWebviewKey((k) => k + 1)
+    setWebviewKey(k => k + 1)
   }, [reloadAllTab])
 
   useEffect(() => {
@@ -186,6 +259,17 @@ export default function WebView(props: {
       webViewRef.current?.injectJavaScript(props.dynamicJs)
     }
   }, [props.dynamicJs])
+
+  const handleClearCache = React.useCallback(async () => {
+    webViewRef.current?.injectJavaScript(clearCurrentSiteStorageScript)
+    webViewRef.current?.clearFormData?.()
+    webViewRef.current?.clearHistory?.()
+    webViewRef.current?.clearCache(true)
+    setUseFreshSession(true)
+    setWebviewKey(k => k + 1)
+    ToastAndroid.show('当前页面已重置为全新会话', ToastAndroid.SHORT)
+  }, [])
+
   return (
     <>
       <RNWebView
@@ -200,12 +284,14 @@ export default function WebView(props: {
         mixedContentMode={'always'}
         originWhitelist={['*']}
         webviewDebuggingEnabled={__DEV__}
+        cacheEnabled={!useFreshSession}
+        incognito={useFreshSession}
         thirdPartyCookiesEnabled={false}
         userAgent={props.ua ?? DEFAULT_ANDROID_USER_AGENT}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
         onRenderProcessGone={() => {
           // ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
-          setWebviewKey((c) => c + 1)
+          setWebviewKey(c => c + 1)
         }}
         onLoadEnd={() => {
           webViewRef.current?.injectJavaScript(selectScript)
@@ -231,12 +317,12 @@ export default function WebView(props: {
               style={{ width: 80, height: 80, position: 'relative', top: -120 }}
             ></Image>
             <ActivityIndicator
-              size='large'
+              size="large"
               style={{ transform: [{ scale: 1.5 }], position: 'relative', top: -50 }}
             />
           </ThemedView>
         )}
-        onNavigationStateChange={(navState) => {
+        onNavigationStateChange={navState => {
           currentNavigationStateRef.current = {
             canGoBack: navState.canGoBack,
             title: navState.title,
@@ -245,7 +331,7 @@ export default function WebView(props: {
           setFabKey(fabKey + 1)
         }}
         pullToRefreshEnabled
-        onShouldStartLoadWithRequest={(request) => {
+        onShouldStartLoadWithRequest={request => {
           if (!request.url.startsWith('http')) {
             return false
           }
@@ -253,7 +339,7 @@ export default function WebView(props: {
             return false
           }
           if (
-            props.forbiddenUrls?.some((v) => {
+            props.forbiddenUrls?.some(v => {
               if (typeof v === 'string') {
                 return request.url.includes(v)
               }
@@ -267,7 +353,7 @@ export default function WebView(props: {
         onContentProcessDidTerminate={() => {
           webViewRef.current?.reload()
         }}
-        renderError={(errorName) => {
+        renderError={errorName => {
           return (
             <View
               style={{
@@ -286,7 +372,7 @@ export default function WebView(props: {
                 抱歉，网页加载失败 😔 {errorName} {'  '}
               </Text>
               <ThemedButton
-                title='刷新重试'
+                title="刷新重试"
                 onPress={() => {
                   webViewRef.current?.reload()
                 }}
@@ -296,8 +382,14 @@ export default function WebView(props: {
         }}
         source={{
           uri: props.url,
+          ...((props.cookie || props.referer) && {
+            headers: {
+              ...(!useFreshSession && props.cookie ? { Cookie: props.cookie } : {}),
+              ...(props.referer ? { Referer: props.referer } : {}),
+            },
+          }),
         }}
-        onMessage={(evt) => {
+        onMessage={evt => {
           const data = JSON.parse(evt.nativeEvent.data)
           switch (data.type) {
             case 'share':
@@ -324,6 +416,7 @@ export default function WebView(props: {
         title={infoModalData.title}
         url={infoModalData.url}
         closeModal={() => setInfoModalVisible(false)}
+        clearCache={handleClearCache}
       />
     </>
   )

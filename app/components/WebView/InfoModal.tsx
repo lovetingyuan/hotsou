@@ -25,11 +25,13 @@ export default function InfoModal(props: {
   title: string
   url: string
   closeModal: () => void
+  clearCache: () => Promise<void>
 }) {
   const colorScheme = useColorScheme()
   const { $favorList, set$favorList } = useStore()
   const [editableTitle, setEditableTitle] = React.useState(props.title || '无标题')
   const [isSharing, setIsSharing] = React.useState(false)
+  const [isClearingCache, setIsClearingCache] = React.useState(false)
 
   React.useEffect(() => {
     setEditableTitle(props.title || '无标题')
@@ -125,12 +127,26 @@ export default function InfoModal(props: {
               />
               <ThemedButton
                 title='复制链接'
-                type='secondary'
+                type='primary'
                 onPress={() => {
                   Clipboard.setStringAsync(props.url).then(() => {
                     ToastAndroid.show('已复制', ToastAndroid.SHORT)
                   })
                   props.closeModal()
+                }}
+              />
+              <ThemedButton
+                title='清除缓存'
+                type='secondary'
+                isLoading={isClearingCache}
+                onPress={async () => {
+                  try {
+                    setIsClearingCache(true)
+                    await props.clearCache()
+                    props.closeModal()
+                  } finally {
+                    setIsClearingCache(false)
+                  }
                 }}
               />
             </View>
