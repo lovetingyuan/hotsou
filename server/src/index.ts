@@ -1,5 +1,4 @@
 import { fromHono } from 'chanfana'
-import * as cheerio from 'cheerio'
 import { Hono } from 'hono'
 import { AppVersion } from './endpoints/appVersion'
 import { AuthCheckRegistered } from './endpoints/authCheckRegistered'
@@ -9,7 +8,6 @@ import { AuthStatus } from './endpoints/authStatus'
 import { AuthVerify } from './endpoints/authVerify'
 import { ShortLinkCreate } from './endpoints/shortLinkCreate'
 import { UserSync } from './endpoints/userSync'
-import { getHomeHtml } from './pages/home'
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
@@ -63,43 +61,8 @@ openapi.get('/api/app/version', AppVersion)
 console.log('App endpoints registered.')
 
 // Serve the App Homepage
-let cachedVersion = ''
-let cacheTime = 0
-const CACHE_TTL = 30 * 60 * 1000 // 30 minutes
-
 app.get('/', async (c) => {
-  let version = ''
-  const now = Date.now()
-
-  if (cachedVersion && now - cacheTime < CACHE_TTL) {
-    version = cachedVersion
-  } else {
-    try {
-      const html = await fetch('https://github.com/lovetingyuan/hotsou/releases/').then((r) =>
-        r.text(),
-      )
-      const $ = cheerio.load(html)
-      const $item = $('.Box-body').first()
-      version = $item.find('a').first().text().trim()
-
-      if (version) {
-        cachedVersion = version
-        cacheTime = now
-      }
-    } catch (err) {
-      console.error('Error fetching version for homepage:', err)
-      // 如果获取失败且有旧缓存，则使用旧缓存
-      if (cachedVersion) {
-        version = cachedVersion
-      }
-    }
-  }
-
-  const downloadUrl = version
-    ? `https://ghfast.top/https://github.com/lovetingyuan/hotsou/releases/download/${version}/hotsou-${version.replace('v', '')}.apk`
-    : '#'
-
-  return c.html(getHomeHtml(downloadUrl))
+  return c.env.ASSETS.fetch(new URL('/index.html', c.req.url))
 })
 
 // Export the Hono app
