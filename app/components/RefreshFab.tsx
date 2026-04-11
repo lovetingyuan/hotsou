@@ -1,24 +1,20 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import {
   Animated,
-  Modal,
   Pressable,
   StyleSheet,
-  TouchableOpacity,
+  ToastAndroid,
   Vibration,
 } from 'react-native'
 
-import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
 
-import { ThemedText } from './ThemedText'
+const FAB_TIP_KEY = 'fab_long_press_tip_shown'
 
 export default function RefreshFab() {
   const { setReloadTab, setReloadAllTab, $tabsList, activeTab, $fabPosition } = useStore()
-  const colorScheme = useColorScheme()
-  const isDark = colorScheme === 'dark'
-  const [menuVisible, setMenuVisible] = useState(false)
   const scaleAnim = useRef(new Animated.Value(1)).current
   const page = $tabsList.find((t) => t.name === activeTab)
 
@@ -37,48 +33,33 @@ export default function RefreshFab() {
       }),
     ]).start()
     setReloadTab([page.name, false])
+    AsyncStorage.getItem(FAB_TIP_KEY).then((v) => {
+      if (!v) {
+        ToastAndroid.show('长按可刷新全部页面', ToastAndroid.SHORT)
+        AsyncStorage.setItem(FAB_TIP_KEY, '1')
+      }
+    })
   }
 
   const handleLongPress = () => {
     Vibration.vibrate(20)
-    setMenuVisible(true)
-  }
-
-  const handleRefreshAll = () => {
-    setMenuVisible(false)
     setReloadAllTab(Date.now())
   }
 
   if (!page) return null
 
   return (
-    <>
-      <Animated.View style={[styles.fabContainer, $fabPosition === 'left' ? { left: 20 } : { right: 20 }, { transform: [{ scale: scaleAnim }] }]}>
-        <Pressable
-          onPress={handlePress}
-          onLongPress={handleLongPress}
-          delayLongPress={400}
-          style={[styles.fab, { backgroundColor: isDark ? '#333' : '#fff' }]}
-          android_ripple={{ color: isDark ? '#555' : '#ddd', borderless: true }}
-        >
-          <Ionicons name="reload" size={22} color={isDark ? '#fff' : '#333'} />
-        </Pressable>
-      </Animated.View>
-
-      <Modal visible={menuVisible} transparent animationType="fade" onRequestClose={() => setMenuVisible(false)}>
-        <Pressable style={[styles.overlay, $fabPosition === 'left' ? { alignItems: 'flex-start', paddingLeft: 20 } : { alignItems: 'flex-end', paddingRight: 20 }]} onPress={() => setMenuVisible(false)}>
-          <Pressable
-            style={[styles.menu, { backgroundColor: isDark ? '#2a2a2a' : '#fff' }]}
-            onPress={(e) => e.stopPropagation()}
-          >
-            <TouchableOpacity style={styles.menuItem} onPress={handleRefreshAll} activeOpacity={0.6}>
-              <Ionicons name="refresh-outline" size={20} color={isDark ? '#fff' : '#333'} />
-              <ThemedText style={styles.menuText}>刷新全部</ThemedText>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
-    </>
+    <Animated.View style={[styles.fabContainer, $fabPosition === 'left' ? { left: 20 } : { right: 20 }, { transform: [{ scale: scaleAnim }] }]}>
+      <Pressable
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+        delayLongPress={400}
+        style={styles.fab}
+        android_ripple={{ color: '#4a8a00', borderless: true }}
+      >
+        <Ionicons name="reload" size={22} color="#fff" />
+      </Pressable>
+    </Animated.View>
   )
 }
 
@@ -94,35 +75,11 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#66B105',
     elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 90,
-  },
-  menu: {
-    borderRadius: 12,
-    paddingVertical: 4,
-    minWidth: 140,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 10,
-  },
-  menuText: {
-    fontSize: 16,
   },
 })

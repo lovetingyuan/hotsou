@@ -8,8 +8,8 @@ export default function FabPositionSetting() {
 
   return (
     <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
-      <ThemedText>底部刷新按钮位置</ThemedText>
-      <View style={{ flexDirection: 'row', gap: 12 }}>
+      <ThemedText style={{ flex: 1 }}>刷新按钮位置(长按刷新全部)</ThemedText>
+      <View style={{ flexDirection: 'row', gap: 12, flexShrink: 0 }}>
         <ThemedText
           onPress={() => set$fabPosition('left')}
           style={{
