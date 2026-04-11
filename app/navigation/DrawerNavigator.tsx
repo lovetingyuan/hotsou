@@ -6,14 +6,15 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer'
 import { HeaderTitleProps } from '@react-navigation/elements'
-import { useRoute } from '@react-navigation/native'
+import { DrawerActions, useRoute } from '@react-navigation/native'
 import { Image } from 'expo-image'
 import React from 'react'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 
 import CustomPage from '@/components/CustomPage'
 import HeaderRight from '@/components/HeaderRight'
 import Image2 from '@/components/Image2'
+import RefreshFab from '@/components/RefreshFab'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { TabsList, TabsName } from '@/constants/Tabs'
@@ -55,7 +56,6 @@ export type DrawerParamList = {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const colorScheme = useColorScheme()
-  const { setReloadAllTab } = useStore()
   return (
     <ThemedView style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
@@ -80,7 +80,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       </DrawerContentScrollView>
       <ThemedView
         style={{
-          flexDirection: 'row',
           borderTopWidth: 1,
           borderTopColor: colorScheme === 'dark' ? '#333' : '#f0f0f0',
           shadowColor: '#000',
@@ -97,33 +96,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         <TouchableOpacity
           activeOpacity={0.8}
           style={{
-            flexGrow: 1,
             padding: 20,
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-          }}
-          onPress={() => {
-            setReloadAllTab(Date.now())
-            props.navigation.closeDrawer()
-          }}
-        >
-          <Ionicons
-            name='refresh-outline'
-            size={22}
-            color={colorScheme === 'dark' ? '#fff' : '#000'}
-          />
-          <ThemedText style={{ fontSize: 18, textAlign: 'center' }}>刷新全部</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={{
-            flexGrow: 1,
-            padding: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
             gap: 8,
           }}
           onPress={() => {
@@ -147,9 +122,25 @@ function DrawerNavigator() {
   const { setClickTab, reloadAllTab, $tabsList, setActiveTab } = useStore()
   const route = useRoute()
   const colorScheme = useColorScheme()
+  const [drawerOpen, setDrawerOpen] = React.useState(false)
 
   const getHeaderRight = () => {
     return <HeaderRight />
+  }
+
+  const getHeaderLeft = (toggleDrawer: () => void, color?: string) => {
+    return (
+      <TouchableOpacity
+        accessibilityLabel='打开抽屉菜单'
+        accessibilityRole='button'
+        activeOpacity={0.8}
+        hitSlop={12}
+        onPress={toggleDrawer}
+        style={{ marginLeft: 16, paddingVertical: 6, paddingRight: 8 }}
+      >
+        <Ionicons name='menu' size={26} color={color ?? (colorScheme === 'dark' ? 'white' : 'black')} />
+      </TouchableOpacity>
+    )
   }
 
   const getTitle = (props: HeaderTitleProps) => {
@@ -207,19 +198,31 @@ function DrawerNavigator() {
   const Drawer = createDrawerNavigator<DrawerParamList>()
 
   return (
-    <Drawer.Navigator
-      screenOptions={{
-        drawerStyle: {
-          width: '62%',
-        },
-        headerTitle: getTitle,
-        headerRight: getHeaderRight,
-        swipeEdgeWidth: 80,
-        headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
-        swipeMinDistance: 30,
-      }}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-    >
+    <View style={{ flex: 1 }}>
+      <Drawer.Navigator
+        screenOptions={({ navigation }) => ({
+          drawerStyle: {
+            width: '62%',
+          },
+          // Avoid Metro dev-server requests for React Navigation's packaged PNG toggle icon.
+          headerLeft: ({ tintColor }) =>
+            getHeaderLeft(() => navigation.dispatch(DrawerActions.toggleDrawer()), tintColor),
+          headerTitle: getTitle,
+          headerRight: getHeaderRight,
+          swipeEdgeWidth: 80,
+          headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
+          swipeMinDistance: 30,
+        })}
+        screenListeners={{
+          state: (e) => {
+            const state = (e.data as any)?.state
+            if (state) {
+              setDrawerOpen(state.history?.some((h: any) => h.type === 'drawer') ?? false)
+            }
+          },
+        }}
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+      >
       {$tabsList
         .map((page) => {
           if (!page.show) {
@@ -271,6 +274,8 @@ function DrawerNavigator() {
         })
         .filter(Boolean)}
     </Drawer.Navigator>
+      {!drawerOpen && <RefreshFab />}
+    </View>
   )
 }
 

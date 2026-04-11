@@ -10,6 +10,7 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import { useThemeColor } from '@/hooks/useThemeColor'
 
 import AboutHeader from './header'
+import FabPositionSetting from './FabPositionSetting'
 import TabListSetting from './TabListSetting'
 import TextSelectable from './TextSelectable'
 import Version from './version'
@@ -100,6 +101,7 @@ function AboutScreen() {
         <View style={{ height: 20 }} />
         <Section title='常规设置'>
           <TextSelectable />
+          <FabPositionSetting />
         </Section>
 
         <Section>

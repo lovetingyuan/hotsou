@@ -22,6 +22,7 @@ const getAppValue = () => {
     $lastPromptedAppVersion: '',
     $lastPromptedAppVersionTime: 0,
     $enableTextSelect: false,
+    $fabPosition: 'right' as 'left' | 'right',
     douyinHotId: '',
     douyinVideoId: '',
     activeTab: '',
@@ -68,4 +69,4 @@ export const fulfillStoreKeys = () => {
     })
 }
 
-export const SyncDataKeys: StoredKeys[] = ['$tabsList', '$enableTextSelect', '$favorList'] as const
+export const SyncDataKeys: StoredKeys[] = ['$tabsList', '$enableTextSelect', '$favorList', '$fabPosition'] as const
