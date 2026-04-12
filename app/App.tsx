@@ -6,6 +6,7 @@ import { Platform } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { DataSync } from '@/components/DataSync'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import InitApp from '@/components/InitApp'
 import { Colors } from '@/constants/Colors'
 import { useColorScheme } from '@/hooks/useColorScheme'
@@ -30,13 +31,15 @@ function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <InitApp>
-        <StatusBar style='auto' />
-        <DataSync />
-        <NavigationContainer theme={navigationTheme}>
-          <RootNavigator />
-        </NavigationContainer>
-      </InitApp>
+      <ErrorBoundary>
+        <InitApp>
+          <StatusBar style='auto' />
+          <DataSync />
+          <NavigationContainer theme={navigationTheme}>
+            <RootNavigator />
+          </NavigationContainer>
+        </InitApp>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   )
 }

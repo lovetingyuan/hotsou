@@ -46,6 +46,11 @@ export function DataSync() {
       return
     }
 
+    if (key === '$fabPosition') {
+      target.$fabPosition = value as AppContextValueType['$fabPosition']
+      return
+    }
+
     target.$favorList = value as AppContextValueType['$favorList']
   }
 
@@ -59,6 +64,11 @@ export function DataSync() {
 
     if (key === '$enableTextSelect') {
       methods.set$enableTextSelect(value as AppContextValueType['$enableTextSelect'])
+      return
+    }
+
+    if (key === '$fabPosition') {
+      methods.set$fabPosition(value as AppContextValueType['$fabPosition'])
       return
     }
 
