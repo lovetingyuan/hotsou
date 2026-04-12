@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import * as authApi from '@/api/auth'
 import { getStoreMethods } from '@/store'
@@ -47,7 +47,7 @@ export function useAuth(): UseAuthReturn {
   /**
    * 初始化：从 SecureStore 读取认证数据并检查状态
    */
-  const initAuth = async () => {
+  const initAuth = useCallback(async () => {
     try {
       const { email, token } = await getAuthData()
 
@@ -113,7 +113,7 @@ export function useAuth(): UseAuthReturn {
         isLoggedIn: false,
       }))
     }
-  }
+  }, [])
 
   useEffect(() => {
     initAuth()

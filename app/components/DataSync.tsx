@@ -36,43 +36,13 @@ export function DataSync() {
     key: K,
     value: SyncPayload[K],
   ) => {
-    if (key === '$tabsList') {
-      target.$tabsList = value as AppContextValueType['$tabsList']
-      return
-    }
-
-    if (key === '$enableTextSelect') {
-      target.$enableTextSelect = value as AppContextValueType['$enableTextSelect']
-      return
-    }
-
-    if (key === '$fabPosition') {
-      target.$fabPosition = value as AppContextValueType['$fabPosition']
-      return
-    }
-
-    target.$favorList = value as AppContextValueType['$favorList']
+    ;(target as any)[key] = value
   }
 
   const setSyncedValue = <K extends SyncKey>(key: K, value: SyncPayload[K]) => {
     const methods = getStoreMethods()
-
-    if (key === '$tabsList') {
-      methods.set$tabsList(value as AppContextValueType['$tabsList'])
-      return
-    }
-
-    if (key === '$enableTextSelect') {
-      methods.set$enableTextSelect(value as AppContextValueType['$enableTextSelect'])
-      return
-    }
-
-    if (key === '$fabPosition') {
-      methods.set$fabPosition(value as AppContextValueType['$fabPosition'])
-      return
-    }
-
-    methods.set$favorList(value as AppContextValueType['$favorList'])
+    const setKey = `set${key}` as keyof typeof methods
+    ;(methods[setKey] as (v: SyncPayload[K]) => void)(value)
   }
 
   const syncLocalTabsListIfNeeded = (tabsList: AppContextValueType['$tabsList']) => {
@@ -141,11 +111,7 @@ export function DataSync() {
               assignSyncValue(payload, key, normalizeSyncValue(key, state[key]))
             })
 
-            if (
-              !payload.$tabsList ||
-              !payload.$favorList ||
-              payload.$enableTextSelect === undefined
-            ) {
+            if (SyncDataKeys.some((key) => payload[key] === undefined)) {
               return
             }
 
