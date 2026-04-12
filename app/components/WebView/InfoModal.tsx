@@ -37,11 +37,12 @@ export default function InfoModal(props: {
     setEditableTitle(props.title || '无标题')
   }, [props.title])
 
-  const isFavorite = $favorList.some((item) => item.url === props.url)
+  const favorList = Array.isArray($favorList) ? $favorList : []
+  const isFavorite = favorList.some((item) => item.url === props.url)
 
   const toggleFavorite = () => {
     if (isFavorite) {
-      set$favorList($favorList.filter((item) => item.url !== props.url))
+      set$favorList(favorList.filter((item) => item.url !== props.url))
       ToastAndroid.show('已取消收藏', ToastAndroid.SHORT)
     } else {
       set$favorList([
@@ -50,7 +51,7 @@ export default function InfoModal(props: {
           url: props.url,
           created_at: Date.now(),
         },
-        ...$favorList,
+        ...favorList,
       ])
       ToastAndroid.show('收藏成功', ToastAndroid.SHORT)
     }

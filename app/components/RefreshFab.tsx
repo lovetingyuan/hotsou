@@ -1,13 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
 import React, { useRef } from 'react'
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  ToastAndroid,
-  Vibration,
-} from 'react-native'
+import { Animated, Pressable, StyleSheet, ToastAndroid, Vibration } from 'react-native'
 
 import { useStore } from '@/store'
 
@@ -49,7 +43,13 @@ export default function RefreshFab() {
   if (!page) return null
 
   return (
-    <Animated.View style={[styles.fabContainer, $fabPosition === 'left' ? { left: 20 } : { right: 20 }, { transform: [{ scale: scaleAnim }] }]}>
+    <Animated.View
+      style={[
+        styles.fabContainer,
+        $fabPosition === 'left' ? { left: 20 } : { right: 20 },
+        { transform: [{ scale: scaleAnim }] },
+      ]}
+    >
       <Pressable
         onPress={handlePress}
         onLongPress={handleLongPress}
@@ -57,7 +57,7 @@ export default function RefreshFab() {
         style={styles.fab}
         android_ripple={{ color: '#4a8a00', borderless: true }}
       >
-        <Ionicons name="reload" size={22} color="#fff" />
+        <Ionicons name='reload' size={22} color='#fff' />
       </Pressable>
     </Animated.View>
   )

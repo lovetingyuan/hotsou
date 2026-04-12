@@ -1,20 +1,20 @@
 import { useEffect, useRef } from 'react'
 
-import { normalizeTabsList } from '@/constants/Tabs'
+import { getStoreMethods, getStoreState, subscribeStore, useStore } from '@/store'
 import {
-  type AppContextValueType,
-  getStoreMethods,
-  getStoreState,
-  subscribeStore,
+  hasSyncValueChanged,
+  normalizePartialSyncPayload,
+  normalizeSyncValue,
+  type PartialSyncPayload,
   SyncDataKeys,
-  useStore,
-} from '@/store'
+  type SyncDataKey,
+  type SyncDataValueMap,
+} from '@/store/syncData'
 import { userApi } from '@/utils/api'
 import { getAuthData } from '@/utils/secureStore'
 
-type SyncKey = (typeof SyncDataKeys)[number]
-type SyncPayload = Pick<AppContextValueType, SyncKey>
-type PartialSyncPayload = Partial<SyncPayload>
+type SyncKey = SyncDataKey
+type SyncPayload = SyncDataValueMap
 
 export function DataSync() {
   const { isLogin } = useStore()
@@ -22,14 +22,6 @@ export function DataSync() {
   const syncingRef = useRef(false)
   const isFirstLoginSync = useRef(true)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
-
-  const normalizeSyncValue = <K extends SyncKey>(key: K, value: SyncPayload[K]): SyncPayload[K] => {
-    if (key === '$tabsList') {
-      return normalizeTabsList(value as AppContextValueType['$tabsList']) as SyncPayload[K]
-    }
-
-    return value
-  }
 
   const assignSyncValue = <K extends SyncKey>(
     target: PartialSyncPayload,
@@ -45,9 +37,9 @@ export function DataSync() {
     ;(methods[setKey] as (v: SyncPayload[K]) => void)(value)
   }
 
-  const syncLocalTabsListIfNeeded = (tabsList: AppContextValueType['$tabsList']) => {
+  const syncLocalTabsListIfNeeded = (tabsList: SyncPayload['$tabsList']) => {
     const currentTabsList = getStoreState().$tabsList
-    if (JSON.stringify(currentTabsList) !== JSON.stringify(tabsList)) {
+    if (hasSyncValueChanged(currentTabsList, tabsList)) {
       getStoreMethods().set$tabsList(tabsList)
     }
   }
@@ -85,11 +77,12 @@ export function DataSync() {
         })
 
         if (syncRes.success) {
-          const remoteData = syncRes.result as PartialSyncPayload
+          const remoteData = syncRes.result as Partial<Record<SyncKey, unknown>>
           const hasRemoteData = Object.keys(remoteData).length > 0
 
           if (hasRemoteData) {
-            const normalizedRemoteData: PartialSyncPayload = {}
+            const normalizedRemoteData = normalizePartialSyncPayload(remoteData)
+            const repairedRemoteData: PartialSyncPayload = {}
 
             SyncDataKeys.forEach((key) => {
               const remoteValue = remoteData[key]
@@ -97,12 +90,26 @@ export function DataSync() {
                 return
               }
 
-              const normalizedValue = normalizeSyncValue(key, remoteValue)
+              const normalizedValue = normalizedRemoteData[key]
+              if (normalizedValue === undefined) {
+                return
+              }
+
               assignSyncValue(normalizedRemoteData, key, normalizedValue)
               setSyncedValue(key, normalizedValue)
+
+              if (hasSyncValueChanged(remoteValue, normalizedValue)) {
+                assignSyncValue(repairedRemoteData, key, normalizedValue)
+              }
             })
 
             previousDataRef.current = normalizedRemoteData
+
+            if (Object.keys(repairedRemoteData).length > 0) {
+              await userApi.sync(email, token, {
+                set: repairedRemoteData,
+              })
+            }
           } else {
             const state = getStoreState()
             const payload: PartialSyncPayload = {}
@@ -115,12 +122,16 @@ export function DataSync() {
               return
             }
 
-            syncLocalTabsListIfNeeded(payload.$tabsList)
+            const normalizedPayload = normalizePartialSyncPayload(payload)
+
+            if (normalizedPayload.$tabsList) {
+              syncLocalTabsListIfNeeded(normalizedPayload.$tabsList)
+            }
 
             await userApi.sync(email, token, {
-              set: payload,
+              set: normalizedPayload,
             })
-            previousDataRef.current = { ...payload }
+            previousDataRef.current = { ...normalizedPayload }
           }
         }
       } catch (error) {
@@ -144,7 +155,7 @@ export function DataSync() {
         const currentVal = normalizeSyncValue(key, state[key])
         const prevVal = previousDataRef.current[key]
 
-        if (JSON.stringify(currentVal) !== JSON.stringify(prevVal)) {
+        if (hasSyncValueChanged(prevVal, currentVal)) {
           assignSyncValue(changes, key, currentVal)
           hasChanges = true
         }
@@ -167,10 +178,11 @@ export function DataSync() {
       }
 
       try {
+        const normalizedChanges = normalizePartialSyncPayload(changes)
         await userApi.sync(email, token, {
-          set: changes,
+          set: normalizedChanges,
         })
-        previousDataRef.current = { ...previousDataRef.current, ...changes }
+        previousDataRef.current = { ...previousDataRef.current, ...normalizedChanges }
       } catch (error) {
         console.error('Update sync failed', error)
       } finally {
@@ -191,7 +203,7 @@ export function DataSync() {
         const currentVal = normalizeSyncValue(key, state[key])
         const prevVal = previousDataRef.current[key]
 
-        if (JSON.stringify(currentVal) !== JSON.stringify(prevVal)) {
+        if (hasSyncValueChanged(prevVal, currentVal)) {
           hasChanges = true
         }
       })

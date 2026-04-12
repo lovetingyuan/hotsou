@@ -3,6 +3,12 @@ import { createStore } from 'react-atomic-store'
 import { ToastAndroid } from 'react-native'
 
 import { normalizeTabsList, type TabItem, TabsList } from '@/constants/Tabs'
+import {
+  isSyncDataKey,
+  normalizeSyncValue,
+  type FavoriteItem,
+  SyncDataKeys,
+} from '@/store/syncData'
 
 const getAppValue = () => {
   return {
@@ -13,11 +19,7 @@ const getAppValue = () => {
     shareInfo: [''] as [string],
     clickTab: [''] as [string],
     clearSelection: 0,
-    $favorList: [] as {
-      title: string
-      url: string
-      created_at: number
-    }[],
+    $favorList: [] as FavoriteItem[],
     $tabsList: normalizeTabsList(TabsList as TabItem[]),
     $lastPromptedAppVersion: '',
     $lastPromptedAppVersionTime: 0,
@@ -42,22 +44,36 @@ const storedKeys = Object.keys(initValue).filter((k) => k.startsWith('$')) as St
 
 export const fulfillStoreKeys = () => {
   const methods = getStoreMethods()
+  const setStoredValue = <K extends StoredKeys>(key: K, value: AppContextValueType[K]) => {
+    const setKey = `set${key}` as const
+    const setValue = methods[setKey] as (nextValue: AppContextValueType[K]) => void
+    setValue(value)
+  }
+
   return Promise.all(
     storedKeys.map(async (k) => {
       const key = k as StoredKeys
-      const setKey = `set${key}` as const
       const data = await AsyncStorage.getItem(key)
       if (!data) {
         return
       }
 
-      if (key === '$tabsList') {
-        const list = normalizeTabsList(JSON.parse(data) as AppContextValueType['$tabsList'])
-        methods.set$tabsList(list)
-        return
+      let parsedValue: unknown
+      try {
+        parsedValue = JSON.parse(data)
+      } catch (error) {
+        console.warn(`[store] failed to parse persisted value for ${key}`, error)
       }
 
-      methods[setKey](JSON.parse(data))
+      const normalizedValue = isSyncDataKey(key)
+        ? normalizeSyncValue(key, parsedValue)
+        : parsedValue
+      setStoredValue(key, normalizedValue as AppContextValueType[typeof key])
+
+      const normalizedSerialized = JSON.stringify(normalizedValue)
+      if (normalizedSerialized !== data) {
+        await AsyncStorage.setItem(key, normalizedSerialized)
+      }
     }),
   )
     .then(() => {
@@ -69,4 +85,4 @@ export const fulfillStoreKeys = () => {
     })
 }
 
-export const SyncDataKeys: StoredKeys[] = ['$tabsList', '$enableTextSelect', '$favorList', '$fabPosition'] as const
+export { SyncDataKeys } from '@/store/syncData'

@@ -138,7 +138,11 @@ function DrawerNavigator() {
         onPress={toggleDrawer}
         style={{ marginLeft: 16, paddingVertical: 6, paddingRight: 8 }}
       >
-        <Ionicons name='menu' size={26} color={color ?? (colorScheme === 'dark' ? 'white' : 'black')} />
+        <Ionicons
+          name='menu'
+          size={26}
+          color={color ?? (colorScheme === 'dark' ? 'white' : 'black')}
+        />
       </TouchableOpacity>
     )
   }
@@ -223,57 +227,57 @@ function DrawerNavigator() {
         }}
         drawerContent={(props) => <CustomDrawerContent {...props} />}
       >
-      {$tabsList
-        .map((page) => {
-          if (!page.show) {
-            return null
-          }
-          return (
-            <Drawer.Screen
-              key={page.name + '-' + reloadAllTab}
-              name={page.name as keyof DrawerParamList}
-              component={
-                page.name === TabsName.weibo
-                  ? WeiboScreen
-                  : // : page.name === TabsName.weibo2
-                    // ? WeiboScreen2
-                    page.name === TabsName.baidu
-                    ? BaiduScreen
-                    : page.name === TabsName.toutiao
-                      ? ToutiaoScreen
-                      : page.name === TabsName.douyin
-                        ? DouyinScreen
-                        : page.name === TabsName.zhihu
-                          ? ZhihuScreen
-                          : page.name === TabsName.wangyi
-                            ? WangyiScreen
-                            : page.name === TabsName.tengxun
-                              ? TengxunScreen
-                              : page.name === TabsName.fenghuang
-                                ? FenghuangScreen
-                                : page.name === TabsName.bilibili
-                                  ? BilibiliScreen
-                                  : page.name === TabsName.kr36
-                                    ? Kr36Screen
-                                    : page.name === TabsName.ithome
-                                      ? IthomeScreen
-                                      : CustomPage
-              }
-              options={{
-                drawerLabel: (props) => getDrawerLabel(props, page as any),
-                title: page.title,
-                drawerIcon: () => getDrawerIcon(page as any),
-              }}
-              listeners={{
-                focus: () => {
-                  setActiveTab(page.name)
-                },
-              }}
-            />
-          )
-        })
-        .filter(Boolean)}
-    </Drawer.Navigator>
+        {$tabsList
+          .map((page) => {
+            if (!page.show) {
+              return null
+            }
+            return (
+              <Drawer.Screen
+                key={page.name + '-' + reloadAllTab}
+                name={page.name as keyof DrawerParamList}
+                component={
+                  page.name === TabsName.weibo
+                    ? WeiboScreen
+                    : // : page.name === TabsName.weibo2
+                      // ? WeiboScreen2
+                      page.name === TabsName.baidu
+                      ? BaiduScreen
+                      : page.name === TabsName.toutiao
+                        ? ToutiaoScreen
+                        : page.name === TabsName.douyin
+                          ? DouyinScreen
+                          : page.name === TabsName.zhihu
+                            ? ZhihuScreen
+                            : page.name === TabsName.wangyi
+                              ? WangyiScreen
+                              : page.name === TabsName.tengxun
+                                ? TengxunScreen
+                                : page.name === TabsName.fenghuang
+                                  ? FenghuangScreen
+                                  : page.name === TabsName.bilibili
+                                    ? BilibiliScreen
+                                    : page.name === TabsName.kr36
+                                      ? Kr36Screen
+                                      : page.name === TabsName.ithome
+                                        ? IthomeScreen
+                                        : CustomPage
+                }
+                options={{
+                  drawerLabel: (props) => getDrawerLabel(props, page as any),
+                  title: page.title,
+                  drawerIcon: () => getDrawerIcon(page as any),
+                }}
+                listeners={{
+                  focus: () => {
+                    setActiveTab(page.name)
+                  },
+                }}
+              />
+            )
+          })
+          .filter(Boolean)}
+      </Drawer.Navigator>
       {!drawerOpen && <RefreshFab />}
     </View>
   )

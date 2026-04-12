@@ -7,7 +7,9 @@ const workspaceNodeModulesPath = path.join(workspaceRoot, 'node_modules')
 
 const config = getDefaultConfig(projectRoot)
 // Keep hoisted workspace packages and their bundled assets visible to Metro.
-config.watchFolders = Array.from(new Set([...(config.watchFolders ?? []), workspaceNodeModulesPath]))
+config.watchFolders = Array.from(
+  new Set([...(config.watchFolders ?? []), workspaceNodeModulesPath]),
+)
 config.resolver.nodeModulesPaths = Array.from(
   new Set([
     ...(config.resolver?.nodeModulesPaths ?? []),
