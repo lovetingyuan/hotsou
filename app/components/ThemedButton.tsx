@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import {
   ActivityIndicator,
+  Animated,
   Pressable,
   PressableProps,
   StyleSheet,
@@ -29,9 +30,29 @@ export function ThemedButton({
   textStyle,
   isLoading,
   disabled,
+  onPress,
   ...rest
 }: ThemedButtonProps) {
   const primaryColor = useThemeColor({}, 'primary')
+  const scaleAnim = useRef(new Animated.Value(1)).current
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.93,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 0,
+    }).start()
+  }
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 4,
+    }).start()
+  }
 
   const getBackgroundColor = (pressed: boolean) => {
     if (disabled) {
@@ -58,21 +79,26 @@ export function ThemedButton({
   }
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: getBackgroundColor(pressed) },
-        style,
-      ]}
-      disabled={disabled || isLoading}
-      {...rest}
-    >
-      {isLoading ? (
-        <ActivityIndicator color={getTextColor()} />
-      ) : (
-        <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>{title}</ThemedText>
-      )}
-    </Pressable>
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.button,
+          { backgroundColor: getBackgroundColor(pressed) },
+          style,
+        ]}
+        disabled={disabled || isLoading}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={onPress}
+        {...rest}
+      >
+        {isLoading ? (
+          <ActivityIndicator color={getTextColor()} />
+        ) : (
+          <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>{title}</ThemedText>
+        )}
+      </Pressable>
+    </Animated.View>
   )
 }
 
