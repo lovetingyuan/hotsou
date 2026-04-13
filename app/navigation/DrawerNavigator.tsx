@@ -38,11 +38,9 @@ export type DrawerParamList = {
   index: undefined
   // Built-in tabs
   weibo: undefined
-  weibo2: undefined
   baidu: undefined
   toutiao: undefined
   douyin: undefined
-  douyin_hotlist: undefined
   zhihu: undefined
   wangyi: undefined
   tengxun: undefined
@@ -52,6 +50,22 @@ export type DrawerParamList = {
   ithome: undefined
   // Dynamic tabs will work at runtime but may not be typed here
   About: undefined
+}
+
+const Drawer = createDrawerNavigator<DrawerParamList>()
+
+const SCREEN_MAP: Partial<Record<string, React.ComponentType<any>>> = {
+  [TabsName.weibo]: WeiboScreen,
+  [TabsName.baidu]: BaiduScreen,
+  [TabsName.toutiao]: ToutiaoScreen,
+  [TabsName.douyin]: DouyinScreen,
+  [TabsName.zhihu]: ZhihuScreen,
+  [TabsName.wangyi]: WangyiScreen,
+  [TabsName.tengxun]: TengxunScreen,
+  [TabsName.fenghuang]: FenghuangScreen,
+  [TabsName.bilibili]: BilibiliScreen,
+  [TabsName.kr36]: Kr36Screen,
+  [TabsName.ithome]: IthomeScreen,
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
@@ -199,8 +213,6 @@ function DrawerNavigator() {
     )
   }
 
-  const Drawer = createDrawerNavigator<DrawerParamList>()
-
   return (
     <View style={{ flex: 1 }}>
       <Drawer.Navigator
@@ -236,33 +248,7 @@ function DrawerNavigator() {
               <Drawer.Screen
                 key={page.name + '-' + reloadAllTab}
                 name={page.name as keyof DrawerParamList}
-                component={
-                  page.name === TabsName.weibo
-                    ? WeiboScreen
-                    : // : page.name === TabsName.weibo2
-                      // ? WeiboScreen2
-                      page.name === TabsName.baidu
-                      ? BaiduScreen
-                      : page.name === TabsName.toutiao
-                        ? ToutiaoScreen
-                        : page.name === TabsName.douyin
-                          ? DouyinScreen
-                          : page.name === TabsName.zhihu
-                            ? ZhihuScreen
-                            : page.name === TabsName.wangyi
-                              ? WangyiScreen
-                              : page.name === TabsName.tengxun
-                                ? TengxunScreen
-                                : page.name === TabsName.fenghuang
-                                  ? FenghuangScreen
-                                  : page.name === TabsName.bilibili
-                                    ? BilibiliScreen
-                                    : page.name === TabsName.kr36
-                                      ? Kr36Screen
-                                      : page.name === TabsName.ithome
-                                        ? IthomeScreen
-                                        : CustomPage
-                }
+                component={SCREEN_MAP[page.name] ?? CustomPage}
                 options={{
                   drawerLabel: (props) => getDrawerLabel(props, page as any),
                   title: page.title,

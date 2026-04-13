@@ -31,7 +31,7 @@ export const UserDataSchema = z.record(z.string(), z.any())
 export type UserDataType = z.infer<typeof UserDataSchema>
 
 export const SyncOperationSchema = z.object({
-  set: z.any().optional(),
+  set: z.record(z.string(), z.any()).optional(),
   delete: z.array(z.string()).optional(),
   get: z.array(z.string()).optional(),
 })

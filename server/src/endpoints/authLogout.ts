@@ -6,12 +6,14 @@ const AuthLogoutRequestSchema = {
   tags: ['Auth'],
   summary: 'Logout and clear token',
   request: {
+    headers: z.object({
+      authorization: z.string(),
+    }),
     body: {
       content: {
         'application/json': {
           schema: z.object({
             email: z.string().email(),
-            token: z.string().uuid(),
           }),
         },
       },
@@ -36,7 +38,8 @@ export class AuthLogout extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthLogoutRequestSchema>()
-    const { email, token } = data.body
+    const { email } = data.body
+    const token = data.headers.authorization.replace(/^Bearer\s+/i, '')
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)

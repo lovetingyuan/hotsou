@@ -43,10 +43,6 @@ function App(props: React.PropsWithChildren) {
   })
 
   useEffect(() => {
-    fulfillStoreKeys()
-  }, [])
-
-  useEffect(() => {
     if (loaded && initialed) {
       SplashScreen.hideAsync()
     }

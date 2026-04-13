@@ -6,12 +6,14 @@ const AuthStatusRequestSchema = {
   tags: ['Auth'],
   summary: 'Check login status and refresh token if needed',
   request: {
+    headers: z.object({
+      authorization: z.string(),
+    }),
     body: {
       content: {
         'application/json': {
           schema: z.object({
             email: z.string().email(),
-            token: z.string().uuid(),
           }),
         },
       },
@@ -38,7 +40,8 @@ export class AuthStatus extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthStatusRequestSchema>()
-    const { email, token } = data.body
+    const { email } = data.body
+    const token = data.headers.authorization.replace(/^Bearer\s+/i, '')
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)

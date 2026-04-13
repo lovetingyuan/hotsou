@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
@@ -135,7 +135,7 @@ export default function WebView(props: {
   const [infoModalVisible, setInfoModalVisible] = React.useState(false)
   const [infoModalData, setInfoModalData] = React.useState({ title: '', url: '' })
 
-  useFocusEffect(() => {
+  useFocusEffect(useCallback(() => {
     const onAndroidBackPress = () => {
       if (currentNavigationStateRef.current.canGoBack && webViewRef.current) {
         webViewRef.current.goBack()
@@ -150,7 +150,7 @@ export default function WebView(props: {
         backHandler.remove()
       }
     }
-  })
+  }, []))
 
   useEffect(() => {
     return () => {
@@ -296,7 +296,7 @@ export default function WebView(props: {
         onLoadEnd={() => {
           webViewRef.current?.injectJavaScript(selectScript)
         }}
-        injectedJavaScript={[props.js, ';true;'].join('\n')}
+        injectedJavaScript={[props.js ?? '', ';true;'].join('\n')}
         injectedJavaScriptBeforeContentLoaded={beforeLoadedInject.replace(
           'CSS_CODE',
           JSON.stringify(props.css ?? ''),
@@ -328,7 +328,7 @@ export default function WebView(props: {
             title: navState.title,
             url: navState.url,
           }
-          setFabKey(fabKey + 1)
+          setFabKey((k) => k + 1)
         }}
         pullToRefreshEnabled
         onShouldStartLoadWithRequest={(request) => {
@@ -355,7 +355,7 @@ export default function WebView(props: {
         }}
         renderError={(errorName) => {
           return (
-            <View
+            <ThemedView
               style={{
                 paddingVertical: 24,
                 paddingHorizontal: 12,
@@ -377,7 +377,7 @@ export default function WebView(props: {
                   webViewRef.current?.reload()
                 }}
               ></ThemedButton>
-            </View>
+            </ThemedView>
           )
         }}
         source={{
@@ -390,7 +390,13 @@ export default function WebView(props: {
           }),
         }}
         onMessage={(evt) => {
-          const data = JSON.parse(evt.nativeEvent.data)
+          let data: { type: string; payload?: any }
+          try {
+            data = JSON.parse(evt.nativeEvent.data)
+          } catch (e) {
+            console.warn('WebView onMessage parse error:', e)
+            return
+          }
           switch (data.type) {
             case 'share':
               sharePage(data.payload.title, data.payload.url)
@@ -400,7 +406,7 @@ export default function WebView(props: {
               Linking.openURL(data.payload.url)
               break
             case 'user_click':
-              setFabKey(fabKey + 1)
+              setFabKey((k) => k + 1)
               break
             case 'reload':
               webViewRef.current?.reload()

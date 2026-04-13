@@ -3,6 +3,8 @@ import { z } from 'zod'
 
 const CACHE_TTL_MS = 30 * 60 * 1000
 const RELEASES_URL = 'https://github.com/lovetingyuan/hotsou/releases/'
+const RELEASES_API_URL = 'https://api.github.com/repos/lovetingyuan/hotsou/releases/latest'
+const CACHE_KEY_URL = 'https://cache.internal/github-release'
 
 export const GitHubReleaseInfoSchema = z.object({
   version: z.string(),
@@ -19,7 +21,7 @@ let cacheTime = 0
 const buildDownloadUrl = (version: string) =>
   `https://ghfast.top/https://github.com/lovetingyuan/hotsou/releases/download/${version}/hotsou-${version.replace('v', '')}.apk`
 
-const parseReleaseInfo = (html: string): GitHubReleaseInfo => {
+export const parseReleaseInfo = (html: string): GitHubReleaseInfo => {
   const $ = cheerio.load(html)
   const $item = $('.Box-body').first()
 
@@ -39,26 +41,60 @@ const parseReleaseInfo = (html: string): GitHubReleaseInfo => {
   })
 }
 
+const fetchFromApi = async (): Promise<GitHubReleaseInfo> => {
+  const response = await fetch(RELEASES_API_URL, {
+    headers: { 'User-Agent': 'hotsou-server' },
+  })
+  if (!response.ok) {
+    throw new Error(`GitHub API returned ${response.status}`)
+  }
+  const json = await response.json<{ tag_name: string; published_at: string; body: string }>()
+  return GitHubReleaseInfoSchema.parse({
+    version: json.tag_name,
+    date: json.published_at,
+    changelog: json.body ?? '',
+    downloadUrl: buildDownloadUrl(json.tag_name),
+  })
+}
+
 export const getLatestGitHubRelease = async (): Promise<GitHubReleaseInfo> => {
   const now = Date.now()
 
+  // 内存二级缓存（同一 isolate 内有效）
   if (cachedReleaseInfo && now - cacheTime < CACHE_TTL_MS) {
     return cachedReleaseInfo
   }
 
-  try {
-    const html = await fetch(RELEASES_URL).then((response) => response.text())
-    const releaseInfo = parseReleaseInfo(html)
-
-    cachedReleaseInfo = releaseInfo
+  // Cloudflare Cache API
+  const cache = caches.default
+  const cacheRequest = new Request(CACHE_KEY_URL)
+  const cachedResponse = await cache.match(cacheRequest)
+  if (cachedResponse) {
+    const data = await cachedResponse.json<GitHubReleaseInfo>()
+    cachedReleaseInfo = data
     cacheTime = now
-
-    return releaseInfo
-  } catch (error) {
-    if (cachedReleaseInfo) {
-      return cachedReleaseInfo
-    }
-
-    throw error
+    return data
   }
+
+  let releaseInfo: GitHubReleaseInfo
+
+  try {
+    // 优先使用 GitHub Releases API
+    releaseInfo = await fetchFromApi()
+  } catch {
+    // API 失败，fallback 到 HTML 解析
+    const html = await fetch(RELEASES_URL).then((r) => r.text())
+    releaseInfo = parseReleaseInfo(html)
+  }
+
+  // 写入 Cloudflare Cache（30分钟）
+  const responseToCache = new Response(JSON.stringify(releaseInfo), {
+    headers: { 'Cache-Control': 'max-age=1800', 'Content-Type': 'application/json' },
+  })
+  await cache.put(cacheRequest, responseToCache)
+
+  cachedReleaseInfo = releaseInfo
+  cacheTime = now
+
+  return releaseInfo
 }

@@ -58,10 +58,10 @@ export const UserSyncSchema = {
 }
 
 export class UserSync extends OpenAPIRoute {
-  schema = UserSyncSchema as any
+  schema = UserSyncSchema
 
   async handle(c: AppContext) {
-    const data = await this.getValidatedData<any>()
+    const data = await this.getValidatedData<typeof UserSyncSchema>()
 
     if (!data || !data.headers || !data.headers.authorization) {
       return c.json(
@@ -80,7 +80,7 @@ export class UserSync extends OpenAPIRoute {
     const token = authorization.replace(/^Bearer\s+/i, '')
 
     const id = c.env.USER_STORAGE.idFromName(userEmail)
-    const stub: any = c.env.USER_STORAGE.get(id)
+    const stub = c.env.USER_STORAGE.get(id)
 
     const verifyResult = await stub.verifyToken(token)
 

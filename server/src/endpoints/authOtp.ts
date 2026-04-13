@@ -81,10 +81,7 @@ export class AuthOtp extends OpenAPIRoute {
     // 生成6位数字验证码
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
 
-    // 保存验证码
-    await stub.saveOtp(otp)
-
-    // 发送邮件
+    // 先发邮件，成功后再保存验证码
     const emailResult = await sendOtpEmail(c.env.RESEND_API_KEY, email, otp)
 
     if (!emailResult.success) {
@@ -97,6 +94,9 @@ export class AuthOtp extends OpenAPIRoute {
         500,
       )
     }
+
+    // 邮件发送成功后保存验证码
+    await stub.saveOtp(otp)
 
     console.log(`[AUTH] OTP sent to ${email}`)
 

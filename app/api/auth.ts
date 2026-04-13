@@ -135,20 +135,12 @@ export async function checkAuthStatus(email: string, token: string): Promise<Sta
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ email, token }),
+      body: JSON.stringify({ email }),
     })
 
     const data = await response.json()
-
-    // checkAuthStatus 失败通常意味着 token 失效或服务错误
-    // 如果是服务错误，可以 Toast
-    if (!response.ok) {
-      const msg = data.error || '鉴权失败'
-      // 鉴权失败不一定弹窗，用户可能需要静默退出
-      // 但这里主要是检查 valid。如果 !ok，可能是 500?
-      // 保持现状，只在网络异常时弹窗
-    }
 
     return {
       success: data.success,
@@ -157,9 +149,6 @@ export async function checkAuthStatus(email: string, token: string): Promise<Sta
     }
   } catch (error) {
     console.error('[Auth API] checkAuthStatus error:', error)
-    // 状态检查通常是静默的，但如果是网络错误导致无法检查，提示一下也许有必要？
-    // 为了不打扰用户，这里可以不弹窗，或者只在特定情况弹。
-    // 既然要求是"任何接口请求失败"，我加上 Toast
     showToast('无法连接服务器检查状态')
     return {
       success: false,
@@ -177,8 +166,9 @@ export async function logout(email: string, token: string): Promise<boolean> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ email, token }),
+      body: JSON.stringify({ email }),
     })
 
     const data = await response.json()

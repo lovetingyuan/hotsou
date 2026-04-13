@@ -29,7 +29,7 @@ export interface UseAuthReturn extends AuthState {
   handleSendOtp: (email: string) => Promise<authApi.OtpResponse>
   handleVerifyOtp: (email: string, otp: string) => Promise<authApi.VerifyResponse>
   // 退出登录
-  handleLogout: () => void
+  handleLogout: () => Promise<void>
   // 刷新状态
   refreshAuthState: () => Promise<void>
 }

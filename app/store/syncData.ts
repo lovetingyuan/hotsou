@@ -81,6 +81,10 @@ export function normalizeSyncValue<K extends SyncDataKey>(
       const parsed = FabPositionSchema.safeParse(value)
       return (parsed.success ? parsed.data : 'right') as SyncDataValueMap[K]
     }
+    default: {
+      const _exhaustive: never = key
+      throw new Error(`Unknown sync key: ${_exhaustive}`)
+    }
   }
 }
 
