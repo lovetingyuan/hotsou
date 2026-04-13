@@ -98,14 +98,14 @@ export default function TabListSetting() {
 
         {activeTab === 'channel' ? (
           <ThemedButton
-            title='添加'
+            title='添加频道'
             onPress={() => {
               setIsAdding(true)
             }}
           />
         ) : (
           <ThemedButton
-            title='添加'
+            title='添加收藏'
             onPress={() => {
               setEditingFavorite(undefined)
               setIsFavoriteModalVisible(true)
@@ -129,7 +129,7 @@ export default function TabListSetting() {
                     >
                       <ThemedText
                         style={[styles.text, { color: primaryColor, lineHeight: 22 }]}
-                        numberOfLines={2}
+                        numberOfLines={1}
                         ellipsizeMode='tail'
                       >
                         {index + 1}.{' '}
@@ -138,7 +138,7 @@ export default function TabListSetting() {
                       </ThemedText>
                     </TouchableOpacity>
                   ) : (
-                    <ThemedText style={styles.text}>
+                    <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
                       {index + 1}. {item.title}
                     </ThemedText>
                   )}
@@ -191,21 +191,28 @@ export default function TabListSetting() {
         ) : (
           $favorList.map((item, index) => {
             const date = new Date(item.created_at)
-            const dateStr = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+            const isThisYear = date.getFullYear() === new Date().getFullYear()
+            const dateStr = isThisYear
+              ? `${date.getMonth() + 1}月${date.getDate()}日`
+              : `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
 
             return (
               <View key={item.url} style={[styles.item, { borderBottomColor: borderColor }]}>
-                <View style={{ flexShrink: 1 }}>
-                  <TouchableOpacity
-                    onPress={() => Linking.openURL(item.url)}
-                    style={{ flexDirection: 'row', alignItems: 'center' }}
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(item.url)}
+                  style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 8 }}
+                >
+                  <ThemedText
+                    style={[styles.text, { flex: 1 }]}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'
                   >
-                    <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
-                      {index + 1}. {item.title}
-                    </ThemedText>
-                    <ThemedText style={styles.favorTime}>{dateStr}</ThemedText>
-                  </TouchableOpacity>
-                </View>
+                    {index + 1}. {item.title}
+                  </ThemedText>
+                  <ThemedText style={styles.favorTime} numberOfLines={1}>
+                    {dateStr}
+                  </ThemedText>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
                     Alert.alert('确认删除', '确定要删除这项收藏吗？', [

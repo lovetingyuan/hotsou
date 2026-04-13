@@ -6,8 +6,8 @@ import {
   normalizePartialSyncPayload,
   normalizeSyncValue,
   type PartialSyncPayload,
-  SyncDataKeys,
   type SyncDataKey,
+  SyncDataKeys,
   type SyncDataValueMap,
 } from '@/store/syncData'
 import { userApi } from '@/utils/api'
