@@ -79,6 +79,18 @@ export function useAuth(): UseAuthReturn {
       // 有邮箱和 token，检查登录状态
       const statusResult = await authApi.checkAuthStatus(email, token)
 
+      if (!statusResult.success && !statusResult.valid) {
+        // 网络错误等非服务端明确返回的情况，乐观地认为 token 有效，不弹重新验证
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          isLoggedIn: true,
+          email: email,
+          token: token,
+        }))
+        return
+      }
+
       if (statusResult.valid) {
         // 登录有效
         let currentToken = token

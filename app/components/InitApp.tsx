@@ -6,8 +6,8 @@ import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
 import { Alert, Linking, ToastAndroid } from 'react-native'
 
-import { useAuth } from '@/hooks/useAuth'
-import { fulfillStoreKeys, getStoreState, subscribeStore, useStore } from '@/store'
+import { fulfillStoreKeys, getStoreMethods, getStoreState, subscribeStore, useStore } from '@/store'
+import { getAuthData } from '@/utils/secureStore'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
 const APP_UPDATE_PROMPT_INTERVAL = 7 * 24 * 60 * 60 * 1000
@@ -37,7 +37,14 @@ function App(props: React.PropsWithChildren) {
     set$lastPromptedAppVersion,
     set$lastPromptedAppVersionTime,
   } = useStore()
-  useAuth()
+
+  // 简单读取 SecureStore 设置 isLogin，不调用 checkAuthStatus 避免与 AboutHeader 的 useAuth 产生竞态
+  useEffect(() => {
+    getAuthData().then(({ email, token }) => {
+      getStoreMethods().setIsLogin(!!email && !!token)
+    })
+  }, [])
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   })
