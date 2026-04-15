@@ -9,6 +9,7 @@
     "reset-project": "node ./scripts/reset-project.js",
     "android": "node ./scripts/prepare-android.js && expo start --android --dev-client",
     "build:android": "zx scripts/build.mjs",
+    "build:preview": "eas build --platform android --profile preview",
     "update:android": "eas update --branch production --platform android --environment production",
     "ios": "expo start --ios --dev-client",
     "web": "expo start --web",

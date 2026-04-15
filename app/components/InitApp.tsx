@@ -3,11 +3,13 @@ import * as Application from 'expo-application'
 // import Constants from 'expo-constants'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Alert, Linking, ToastAndroid } from 'react-native'
 
+import * as authApi from '@/api/auth'
+import { LoginModal } from '@/components/LoginModal'
 import { fulfillStoreKeys, getStoreMethods, getStoreState, subscribeStore, useStore } from '@/store'
-import { getAuthData } from '@/utils/secureStore'
+import { clearToken, getAuthData, setAuthData, updateToken } from '@/utils/secureStore'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
 const APP_UPDATE_PROMPT_INTERVAL = 7 * 24 * 60 * 60 * 1000
@@ -38,10 +40,42 @@ function App(props: React.PropsWithChildren) {
     set$lastPromptedAppVersionTime,
   } = useStore()
 
-  // 简单读取 SecureStore 设置 isLogin，不调用 checkAuthStatus 避免与 AboutHeader 的 useAuth 产生竞态
+  const [reAuthEmail, setReAuthEmail] = useState<string | null>(null)
+  const [showReAuthModal, setShowReAuthModal] = useState(false)
+
+  // 启动时验证登录状态，如果 token 过期则弹出重新验证弹窗
   useEffect(() => {
-    getAuthData().then(({ email, token }) => {
-      getStoreMethods().setIsLogin(!!email && !!token)
+    getAuthData().then(async ({ email, token }) => {
+      if (!email) {
+        getStoreMethods().setIsLogin(false)
+        return
+      }
+      if (!token) {
+        // 有邮箱但没有 token，需要重新验证
+        getStoreMethods().setIsLogin(false)
+        setReAuthEmail(email)
+        setShowReAuthModal(true)
+        return
+      }
+      // 有邮箱和 token，调用接口验证
+      const result = await authApi.checkAuthStatus(email, token)
+      if (!result.success && !result.valid) {
+        // 网络错误等，乐观地认为 token 有效
+        getStoreMethods().setIsLogin(true)
+        return
+      }
+      if (result.valid) {
+        if (result.newToken) {
+          await updateToken(result.newToken)
+        }
+        getStoreMethods().setIsLogin(true)
+      } else {
+        // token 过期，清除 token 并弹出重新验证弹窗
+        await clearToken()
+        getStoreMethods().setIsLogin(false)
+        setReAuthEmail(email)
+        setShowReAuthModal(true)
+      }
     })
   }, [])
 
@@ -125,11 +159,42 @@ function App(props: React.PropsWithChildren) {
     })
   }, [])
 
+  const handleReAuthSendOtp = useCallback(async (email: string) => {
+    return authApi.sendOtp(email)
+  }, [])
+
+  const handleReAuthVerifyOtp = useCallback(async (email: string, otp: string) => {
+    const result = await authApi.verifyOtp(email, otp)
+    if (result.success && result.token) {
+      await setAuthData(email, result.token)
+      getStoreMethods().setIsLogin(true)
+    } else {
+      await clearToken()
+    }
+    return result
+  }, [])
+
+  const closeReAuthModal = useCallback(() => {
+    setShowReAuthModal(false)
+  }, [])
+
   if (!initialed || !loaded) {
     return null
   }
 
-  return props.children
+  return (
+    <>
+      {props.children}
+      <LoginModal
+        visible={showReAuthModal}
+        onClose={closeReAuthModal}
+        mode='reauth'
+        initialEmail={reAuthEmail}
+        onSendOtp={handleReAuthSendOtp}
+        onVerifyOtp={handleReAuthVerifyOtp}
+      />
+    </>
+  )
 }
 
 export default App

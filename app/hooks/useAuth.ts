@@ -7,7 +7,6 @@ import {
   clearToken,
   getAuthData,
   setAuthData,
-  updateToken,
 } from '@/utils/secureStore'
 
 export interface AuthState {
@@ -45,14 +44,13 @@ export function useAuth(): UseAuthReturn {
   })
 
   /**
-   * 初始化：从 SecureStore 读取认证数据并检查状态
+   * 初始化：从 SecureStore 读取认证数据（不调用 checkAuthStatus，由 InitApp 负责启动时验证）
    */
   const initAuth = useCallback(async () => {
     try {
       const { email, token } = await getAuthData()
 
       if (!email) {
-        // 没有邮箱信息，未登录状态
         setState((prev) => ({
           ...prev,
           isLoading: false,
@@ -64,59 +62,25 @@ export function useAuth(): UseAuthReturn {
       }
 
       if (!token) {
-        // 有邮箱但没有 token，需要重新验证
+        // 有邮箱但没有 token，需要重新验证（InitApp 已经会弹窗，这里只同步状态）
         setState((prev) => ({
           ...prev,
           isLoading: false,
           isLoggedIn: false,
           email: email,
           token: null,
-          showReAuthModal: true,
         }))
         return
       }
 
-      // 有邮箱和 token，检查登录状态
-      const statusResult = await authApi.checkAuthStatus(email, token)
-
-      if (!statusResult.success && !statusResult.valid) {
-        // 网络错误等非服务端明确返回的情况，乐观地认为 token 有效，不弹重新验证
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          isLoggedIn: true,
-          email: email,
-          token: token,
-        }))
-        return
-      }
-
-      if (statusResult.valid) {
-        // 登录有效
-        let currentToken = token
-        if (statusResult.newToken) {
-          // 需要刷新 token
-          await updateToken(statusResult.newToken)
-          currentToken = statusResult.newToken
-        }
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          isLoggedIn: true,
-          email: email,
-          token: currentToken,
-        }))
-      } else {
-        // 登录无效（token 过期），弹出重新验证弹窗
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          isLoggedIn: false,
-          email: email,
-          token: null,
-          showReAuthModal: true,
-        }))
-      }
+      // 有邮箱和 token，信任 InitApp 的验证结果
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        isLoggedIn: true,
+        email: email,
+        token: token,
+      }))
     } catch (error) {
       console.error('[useAuth] initAuth error:', error)
       setState((prev) => ({

@@ -17,6 +17,7 @@
     "app:doctor": "npm run doctor -w hotsou",
     "app:check-unused": "npm run check-unused -w hotsou",
     "app:build:android": "npm run build:android -w hotsou",
+    "app:build:preview": "npm run build:preview -w hotsou",
     "server:dev": "npm run dev -w hotsou-server",
     "server:deploy": "npm run deploy -w hotsou-server",
     "lint": "npm run lint --workspaces --if-present",
