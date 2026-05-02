@@ -59,17 +59,14 @@ export default function TabListSetting() {
   return (
     <View>
       <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottomWidth: 1,
-          borderBottomColor: borderColor,
-          paddingBottom: 10,
-          minHeight: 45,
-        }}
+        style={[
+          styles.tabHeader,
+          {
+            borderBottomColor: borderColor,
+          },
+        ]}
       >
-        <View style={{ flexDirection: 'row', gap: 20 }}>
+        <View style={styles.tabGroup}>
           <TouchableOpacity onPress={() => setActiveTab('channel')}>
             <ThemedText
               style={{
@@ -119,16 +116,21 @@ export default function TabListSetting() {
           $tabsList.map((item, index) => {
             return (
               <View key={item.name} style={[styles.item, { borderBottomColor: borderColor }]}>
-                <View style={{ flexShrink: 1 }}>
+                <View style={styles.itemTitleBlock}>
                   {!item.builtIn ? (
                     <TouchableOpacity
                       activeOpacity={0.5}
                       onPress={() => {
                         setEditingName(item.name)
                       }}
+                      style={styles.itemTitleTouchable}
                     >
                       <ThemedText
-                        style={[styles.text, { color: primaryColor, lineHeight: 22 }]}
+                        style={[
+                          styles.text,
+                          styles.itemTitleText,
+                          { color: primaryColor, lineHeight: 22 },
+                        ]}
                         numberOfLines={1}
                         ellipsizeMode='tail'
                       >
@@ -138,13 +140,17 @@ export default function TabListSetting() {
                       </ThemedText>
                     </TouchableOpacity>
                   ) : (
-                    <ThemedText style={styles.text} numberOfLines={1} ellipsizeMode='tail'>
+                    <ThemedText
+                      style={[styles.text, styles.itemTitleText]}
+                      numberOfLines={1}
+                      ellipsizeMode='tail'
+                    >
                       {index + 1}. {item.title}
                     </ThemedText>
                   )}
                 </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={styles.itemActions}>
                   <TouchableOpacity onPress={() => setSortingItemName(item.name)} hitSlop={10}>
                     <ThemedIcon name='swap-vertical-outline' size={24} style={styles.arrow} />
                   </TouchableOpacity>
@@ -200,7 +206,7 @@ export default function TabListSetting() {
               <View key={item.url} style={[styles.item, { borderBottomColor: borderColor }]}>
                 <TouchableOpacity
                   onPress={() => Linking.openURL(item.url)}
-                  style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 8 }}
+                  style={styles.favoriteLink}
                 >
                   <ThemedText
                     style={[styles.text, { flex: 1 }]}
@@ -226,6 +232,7 @@ export default function TabListSetting() {
                     ])
                   }}
                   hitSlop={10}
+                  style={styles.favoriteAction}
                 >
                   <ThemedIcon name='trash-outline' size={20} color='#ff4d4f' />
                 </TouchableOpacity>
@@ -281,13 +288,53 @@ export default function TabListSetting() {
 
 const styles = StyleSheet.create({
   item: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
+    flexDirection: 'row',
     paddingVertical: 5,
     paddingHorizontal: 5,
     height: 50,
+  },
+  favoriteAction: {
+    flexShrink: 0,
+  },
+  favoriteLink: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginRight: 8,
+    minWidth: 0,
+  },
+  itemActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexShrink: 0,
+    gap: 10,
+  },
+  itemTitleBlock: {
+    flex: 1,
+    marginRight: 10,
+    minWidth: 0,
+  },
+  itemTitleText: {
+    width: '100%',
+  },
+  itemTitleTouchable: {
+    width: '100%',
+  },
+  tabGroup: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 20,
+    marginRight: 12,
+    minWidth: 0,
+  },
+  tabHeader: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    minHeight: 45,
+    paddingBottom: 10,
   },
   text: {
     textAlign: 'left',
