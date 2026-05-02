@@ -15,7 +15,7 @@ import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useStore } from '@/store'
-import { isHttpUrl } from '@/utils'
+import { isHttpsUrl } from '@/utils'
 
 export interface EditingModalProps {
   name: string
@@ -73,8 +73,8 @@ export function EditingModal(props: EditingModalProps) {
       ToastAndroid.show('网址不能为空', ToastAndroid.SHORT)
       return
     }
-    if (!isHttpUrl(url.trim())) {
-      ToastAndroid.show('网址不合法', ToastAndroid.SHORT)
+    if (!isHttpsUrl(url.trim())) {
+      ToastAndroid.show('网址必须使用 HTTPS', ToastAndroid.SHORT)
       return
     }
     set$tabsList((list) => {

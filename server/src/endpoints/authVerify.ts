@@ -11,7 +11,7 @@ const AuthVerifyRequestSchema = {
         'application/json': {
           schema: z.object({
             email: z.string().email(),
-            otp: z.string().length(6),
+            otp: z.string().regex(/^\d{6}$/),
           }),
         },
       },

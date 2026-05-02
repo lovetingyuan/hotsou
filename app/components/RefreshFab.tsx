@@ -11,7 +11,7 @@ export default function RefreshFab() {
   const { setReloadTab, setReloadAllTab, $tabsList, activeTab, $fabPosition } = useStore()
   const scaleAnim = useRef(new Animated.Value(1)).current
   const rotateAnim = useRef(new Animated.Value(0)).current
-  const page = $tabsList.find(t => t.name === activeTab)
+  const page = $tabsList.find((t) => t.name === activeTab)
 
   const handlePress = () => {
     if (!page) {
@@ -35,7 +35,7 @@ export default function RefreshFab() {
       useNativeDriver: true,
     }).start(() => rotateAnim.setValue(0))
     setReloadTab([page.name, false])
-    AsyncStorage.getItem(FAB_TIP_KEY).then(v => {
+    AsyncStorage.getItem(FAB_TIP_KEY).then((v) => {
       if (!v) {
         ToastAndroid.show('长按可刷新全部页面', ToastAndroid.SHORT)
         AsyncStorage.setItem(FAB_TIP_KEY, '1')
@@ -77,7 +77,7 @@ export default function RefreshFab() {
         style={styles.fab}
         android_ripple={{ color: '#4a8a00', borderless: true }}
       >
-        <Ionicons name="reload" size={22} color="#fff" />
+        <Ionicons name='reload' size={22} color='#fff' />
       </Pressable>
     </Animated.View>
   )

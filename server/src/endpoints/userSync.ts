@@ -1,21 +1,21 @@
 import { Bool, OpenAPIRoute } from 'chanfana'
 import { z } from 'zod'
-import { AppContext, SyncOperationSchema } from '../types'
+import { BearerAuthorizationHeaderSchema, parseBearerToken } from '../authSecurity'
+import { AppContext, type SyncOperation, SyncOperationSchema } from '../types'
 
 export const UserSyncSchema = {
   tags: ['Users'],
   summary: 'Sync user data (get, set, delete)',
   request: {
-    params: z.object({
-      userEmail: z.string().email(),
-    }),
     headers: z.object({
-      authorization: z.string().optional(),
+      authorization: BearerAuthorizationHeaderSchema,
     }),
     body: {
       content: {
         'application/json': {
-          schema: SyncOperationSchema,
+          schema: SyncOperationSchema.extend({
+            email: z.string().email(),
+          }),
         },
       },
     },
@@ -67,19 +67,44 @@ export class UserSync extends OpenAPIRoute {
       return c.json(
         {
           success: false,
-          error: '未授权：缺少 Authorization 头',
+          error: '登录已失效，请重新登录',
         },
         401,
       )
     }
 
-    const { userEmail } = data.params
     const { authorization } = data.headers
-    const syncOps = data.body
+    const { email, set, delete: deleteKeys, get } = data.body
 
-    const token = authorization.replace(/^Bearer\s+/i, '')
+    if (!email) {
+      return c.json(
+        {
+          success: false,
+          error: '邮箱不能为空',
+        },
+        400,
+      )
+    }
 
-    const id = c.env.USER_STORAGE.idFromName(userEmail)
+    const syncOps: SyncOperation = {
+      set,
+      delete: deleteKeys,
+      get,
+    }
+
+    const token = parseBearerToken(authorization)
+
+    if (!token) {
+      return c.json(
+        {
+          success: false,
+          error: '登录已失效，请重新登录',
+        },
+        401,
+      )
+    }
+
+    const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)
 
     const verifyResult = await stub.verifyToken(token)
@@ -88,18 +113,15 @@ export class UserSync extends OpenAPIRoute {
       return c.json(
         {
           success: false,
-          error: '未授权：Token 无效或已过期',
+          error: '登录已失效，请重新登录',
         },
         401,
       )
     }
 
     try {
-      const result = await stub.syncData(syncOps)
-      return {
-        success: true,
-        result,
-      }
+      const result: unknown = await stub.syncData(syncOps)
+      return c.json({ success: true, result }, 200)
     } catch (e: any) {
       return c.json(
         {

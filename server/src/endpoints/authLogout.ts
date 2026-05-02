@@ -1,5 +1,6 @@
 import { Bool, OpenAPIRoute } from 'chanfana'
 import { z } from 'zod'
+import { BearerAuthorizationHeaderSchema, parseBearerToken } from '../authSecurity'
 import { AppContext } from '../types'
 
 const AuthLogoutRequestSchema = {
@@ -7,7 +8,7 @@ const AuthLogoutRequestSchema = {
   summary: 'Logout and clear token',
   request: {
     headers: z.object({
-      authorization: z.string(),
+      authorization: BearerAuthorizationHeaderSchema,
     }),
     body: {
       content: {
@@ -39,7 +40,13 @@ export class AuthLogout extends OpenAPIRoute {
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthLogoutRequestSchema>()
     const { email } = data.body
-    const token = data.headers.authorization.replace(/^Bearer\s+/i, '')
+    const token = parseBearerToken(data.headers.authorization)
+
+    if (!token) {
+      return {
+        success: true,
+      }
+    }
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)

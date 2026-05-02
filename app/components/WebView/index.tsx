@@ -110,7 +110,6 @@ export default function WebView(props: {
   forbiddenUrls?: (string | RegExp)[]
   ua?: string
   dynamicJs?: string
-  cookie?: string
   referer?: string
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
@@ -126,7 +125,6 @@ export default function WebView(props: {
     setDouyinHotId,
   } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
-  const [useFreshSession, setUseFreshSession] = React.useState(false)
   const page = $tabsList.find((t) => t.name === props.name)
   const pageIcon = getPageIcon(page)
   // const colorScheme = useColorScheme()
@@ -135,22 +133,24 @@ export default function WebView(props: {
   const [infoModalVisible, setInfoModalVisible] = React.useState(false)
   const [infoModalData, setInfoModalData] = React.useState({ title: '', url: '' })
 
-  useFocusEffect(useCallback(() => {
-    const onAndroidBackPress = () => {
-      if (currentNavigationStateRef.current.canGoBack && webViewRef.current) {
-        webViewRef.current.goBack()
-        return true
+  useFocusEffect(
+    useCallback(() => {
+      const onAndroidBackPress = () => {
+        if (currentNavigationStateRef.current.canGoBack && webViewRef.current) {
+          webViewRef.current.goBack()
+          return true
+        }
+        return false
       }
-      return false
-    }
-    if (Platform.OS === 'android') {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress)
+      if (Platform.OS === 'android') {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress)
 
-      return () => {
-        backHandler.remove()
+        return () => {
+          backHandler.remove()
+        }
       }
-    }
-  }, []))
+    }, []),
+  )
 
   useEffect(() => {
     return () => {
@@ -265,7 +265,6 @@ export default function WebView(props: {
     webViewRef.current?.clearFormData?.()
     webViewRef.current?.clearHistory?.()
     webViewRef.current?.clearCache(true)
-    setUseFreshSession(true)
     setWebviewKey((k) => k + 1)
     ToastAndroid.show('当前页面已重置为全新会话', ToastAndroid.SHORT)
   }, [])
@@ -281,11 +280,11 @@ export default function WebView(props: {
         allowsFullscreenVideo
         injectedJavaScriptForMainFrameOnly
         allowsInlineMediaPlayback
-        mixedContentMode={'always'}
-        originWhitelist={['*']}
+        mixedContentMode={'never'}
+        originWhitelist={['https://*']}
         webviewDebuggingEnabled={__DEV__}
-        cacheEnabled={!useFreshSession}
-        incognito={useFreshSession}
+        cacheEnabled={false}
+        incognito={true}
         thirdPartyCookiesEnabled={false}
         userAgent={props.ua ?? DEFAULT_ANDROID_USER_AGENT}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
@@ -332,7 +331,7 @@ export default function WebView(props: {
         }}
         pullToRefreshEnabled
         onShouldStartLoadWithRequest={(request) => {
-          if (!request.url.startsWith('http')) {
+          if (!request.url.startsWith('https://')) {
             return false
           }
           if (request.url.split('?')[0].endsWith('.apk')) {
@@ -382,10 +381,9 @@ export default function WebView(props: {
         }}
         source={{
           uri: props.url,
-          ...((props.cookie || props.referer) && {
+          ...(props.referer && {
             headers: {
-              ...(!useFreshSession && props.cookie ? { Cookie: props.cookie } : {}),
-              ...(props.referer ? { Referer: props.referer } : {}),
+              Referer: props.referer,
             },
           }),
         }}

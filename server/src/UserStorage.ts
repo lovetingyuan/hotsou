@@ -1,5 +1,6 @@
 import { DurableObject } from 'cloudflare:workers'
-import { UserDataType } from './types'
+import { applyFixedWindowRateLimit } from './authSecurity'
+import type { SyncOperation } from './types'
 
 const OTP_EXPIRY_MS = 60 * 1000 // 1分钟
 const OTP_COOLDOWN_MS = 60 * 1000 // 60秒冷却
@@ -17,12 +18,17 @@ export interface CanSendOtpResult {
   waitSeconds: number
 }
 
+export interface RateLimitResult {
+  allowed: boolean
+  waitSeconds: number
+}
+
 export class UserStorage extends DurableObject {
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
   }
 
-  async syncData(ops: { set?: Record<string, any>; delete?: string[]; get?: string[] }) {
+  async syncData(ops: SyncOperation) {
     // 1. Delete
     if (ops.delete && ops.delete.length > 0) {
       // Validate keys
@@ -44,7 +50,7 @@ export class UserStorage extends DurableObject {
     }
 
     // 3. Get
-    const result: Record<string, any> = {}
+    const result: Record<string, unknown> = {}
     if (ops.get && ops.get.length > 0) {
       // Validate keys
       const invalidKeys = ops.get.filter((k) => !k.startsWith('$'))
@@ -79,6 +85,25 @@ export class UserStorage extends DurableObject {
 
     const waitSeconds = Math.ceil((OTP_COOLDOWN_MS - elapsed) / 1000)
     return { canSend: false, waitSeconds }
+  }
+
+  async consumeRateLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
+    const countKey = `rate_limit_${key}_count`
+    const startedAtKey = `rate_limit_${key}_started_at`
+    const now = Date.now()
+    const count = (await this.ctx.storage.get<number>(countKey)) ?? 0
+    const windowStartedAt = await this.ctx.storage.get<number>(startedAtKey)
+    const result = applyFixedWindowRateLimit({ count, limit, now, windowMs, windowStartedAt })
+
+    await this.ctx.storage.put({
+      [countKey]: result.count,
+      [startedAtKey]: result.windowStartedAt,
+    })
+
+    return {
+      allowed: result.allowed,
+      waitSeconds: result.waitSeconds,
+    }
   }
 
   /**
@@ -158,6 +183,7 @@ export class UserStorage extends DurableObject {
 
     // 检查 token 是否过期（1周）
     if (!createdAt) {
+      await this.clearToken()
       return { valid: false, expired: true, needRefresh: false }
     }
 
@@ -165,6 +191,7 @@ export class UserStorage extends DurableObject {
     const tokenAge = now - createdAt
 
     if (tokenAge > TOKEN_EXPIRY_MS) {
+      await this.clearToken()
       return { valid: false, expired: true, needRefresh: false }
     }
 

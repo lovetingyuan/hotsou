@@ -109,6 +109,15 @@ export function normalizePartialSyncPayload(
   return normalizedPayload
 }
 
+export function getDefaultSyncPayload(): SyncDataValueMap {
+  return {
+    $tabsList: normalizeTabsList([]),
+    $enableTextSelect: false,
+    $favorList: [],
+    $fabPosition: 'right',
+  }
+}
+
 export function hasSyncValueChanged(before: unknown, after: unknown) {
   return JSON.stringify(before) !== JSON.stringify(after)
 }

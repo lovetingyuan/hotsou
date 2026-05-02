@@ -7,13 +7,15 @@ import { AuthOtp } from './endpoints/authOtp'
 import { AuthStatus } from './endpoints/authStatus'
 import { AuthVerify } from './endpoints/authVerify'
 import { ShortLinkCreate } from './endpoints/shortLinkCreate'
+import type { AppEnv } from './types'
 import { UserSync } from './endpoints/userSync'
 
 // Start a Hono app
-const app = new Hono<{ Bindings: Env }>()
+const app = new Hono<{ Bindings: AppEnv }>()
 
 app.use('*', async (c, next) => {
-  console.log('[server] incoming request', c.req.method, c.req.url)
+  const url = new URL(c.req.url)
+  console.log('[server] incoming request', c.req.method, url.origin + url.pathname)
   await next()
 })
 
@@ -45,7 +47,7 @@ openapi.post('/api/auth/check-registered', AuthCheckRegistered)
 openapi.post('/api/auth/status', AuthStatus)
 openapi.post('/api/auth/logout', AuthLogout)
 
-openapi.post('/api/users/:userEmail/sync', UserSync)
+openapi.post('/api/users/sync', UserSync)
 
 openapi.post('/api/links/shorten', ShortLinkCreate)
 

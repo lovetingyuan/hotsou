@@ -9,6 +9,7 @@ import { Alert, Linking, ToastAndroid } from 'react-native'
 import * as authApi from '@/api/auth'
 import { LoginModal } from '@/components/LoginModal'
 import { fulfillStoreKeys, getStoreMethods, getStoreState, subscribeStore, useStore } from '@/store'
+import { subscribeAuthExpired } from '@/utils/authSession'
 import { clearToken, getAuthData, setAuthData, updateToken } from '@/utils/secureStore'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
@@ -43,6 +44,13 @@ function App(props: React.PropsWithChildren) {
   const [reAuthEmail, setReAuthEmail] = useState<string | null>(null)
   const [showReAuthModal, setShowReAuthModal] = useState(false)
 
+  useEffect(() => {
+    return subscribeAuthExpired((email) => {
+      setReAuthEmail(email)
+      setShowReAuthModal(true)
+    })
+  }, [])
+
   // 启动时验证登录状态，如果 token 过期则弹出重新验证弹窗
   useEffect(() => {
     getAuthData().then(async ({ email, token }) => {
@@ -60,8 +68,7 @@ function App(props: React.PropsWithChildren) {
       // 有邮箱和 token，调用接口验证
       const result = await authApi.checkAuthStatus(email, token)
       if (!result.success && !result.valid) {
-        // 网络错误等，乐观地认为 token 有效
-        getStoreMethods().setIsLogin(true)
+        getStoreMethods().setIsLogin(false)
         return
       }
       if (result.valid) {
@@ -168,6 +175,7 @@ function App(props: React.PropsWithChildren) {
     if (result.success && result.token) {
       await setAuthData(email, result.token)
       getStoreMethods().setIsLogin(true)
+      setShowReAuthModal(false)
     } else {
       await clearToken()
     }

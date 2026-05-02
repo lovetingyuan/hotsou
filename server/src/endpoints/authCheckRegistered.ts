@@ -1,4 +1,4 @@
-import { OpenAPIRoute, Bool } from 'chanfana'
+import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
 import { AppContext } from '../types'
 
@@ -23,7 +23,7 @@ const AuthCheckRegisteredSchema = {
         'application/json': {
           schema: z.object({
             success: Bool(),
-            registered: z.boolean(),
+            message: Str(),
           }),
         },
       },
@@ -36,16 +36,11 @@ export class AuthCheckRegistered extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthCheckRegisteredSchema>()
-    const { email } = data.body
-
-    const id = c.env.USER_STORAGE.idFromName(email)
-    const stub = c.env.USER_STORAGE.get(id)
-
-    const isRegistered = await stub.isRegistered()
+    void data.body.email
 
     return {
       success: true,
-      registered: isRegistered,
+      message: '如果邮箱可用，可继续请求验证码',
     }
   }
 }

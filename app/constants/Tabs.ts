@@ -141,6 +141,14 @@ export type TabItem = {
 
 const cloneTab = (tab: TabItem): TabItem => JSON.parse(JSON.stringify(tab))
 
+const isHttpsUrl = (url: string) => {
+  try {
+    return new URL(url).protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 export const normalizeTabsList = (tabsList?: TabItem[]): TabItem[] => {
   const savedList = Array.isArray(tabsList) ? tabsList : []
   const normalizedList: TabItem[] = []
@@ -161,7 +169,7 @@ export const normalizeTabsList = (tabsList?: TabItem[]): TabItem[] => {
       continue
     }
 
-    if (item.builtIn || !item.url || item.url === 'https://') {
+    if (item.builtIn || !isHttpsUrl(item.url) || item.url === 'https://') {
       continue
     }
 

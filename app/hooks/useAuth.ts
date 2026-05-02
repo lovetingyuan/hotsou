@@ -1,13 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import * as authApi from '@/api/auth'
-import { getStoreMethods } from '@/store'
-import {
-  clearAuthData,
-  clearToken,
-  getAuthData,
-  setAuthData,
-} from '@/utils/secureStore'
+import { getStoreMethods, getStoreState, useStore } from '@/store'
+import { clearLocalSyncData } from '@/utils/clearSyncData'
+import { clearAuthData, clearToken, getAuthData, setAuthData } from '@/utils/secureStore'
 
 export interface AuthState {
   isLoading: boolean
@@ -27,6 +23,7 @@ export interface UseAuthReturn extends AuthState {
   // 登录流程
   handleSendOtp: (email: string) => Promise<authApi.OtpResponse>
   handleVerifyOtp: (email: string, otp: string) => Promise<authApi.VerifyResponse>
+  checkRegistered: (email: string) => Promise<authApi.CheckRegisteredResponse>
   // 退出登录
   handleLogout: () => Promise<void>
   // 刷新状态
@@ -34,6 +31,7 @@ export interface UseAuthReturn extends AuthState {
 }
 
 export function useAuth(): UseAuthReturn {
+  const { isLogin } = useStore()
   const [state, setState] = useState<AuthState>({
     isLoading: true,
     isLoggedIn: false,
@@ -73,11 +71,11 @@ export function useAuth(): UseAuthReturn {
         return
       }
 
-      // 有邮箱和 token，信任 InitApp 的验证结果
+      // 有邮箱和 token，登录态以后续全局校验结果为准
       setState((prev) => ({
         ...prev,
         isLoading: false,
-        isLoggedIn: true,
+        isLoggedIn: getStoreState().isLogin,
         email: email,
         token: token,
       }))
@@ -96,8 +94,12 @@ export function useAuth(): UseAuthReturn {
   }, [initAuth])
 
   useEffect(() => {
-    getStoreMethods().setIsLogin(state.isLoggedIn)
-  }, [state.isLoggedIn])
+    setState((prev) => ({
+      ...prev,
+      isLoggedIn: isLogin,
+      token: isLogin ? prev.token : null,
+    }))
+  }, [isLogin])
 
   /**
    * 打开登录弹窗
@@ -136,6 +138,7 @@ export function useAuth(): UseAuthReturn {
     if (result.success && result.token) {
       // 验证成功，保存认证数据
       await setAuthData(email, result.token)
+      getStoreMethods().setIsLogin(true)
       setState((prev) => ({
         ...prev,
         isLoggedIn: true,
@@ -152,19 +155,24 @@ export function useAuth(): UseAuthReturn {
     return result
   }
 
+  const checkRegistered = async (email: string): Promise<authApi.CheckRegisteredResponse> => {
+    return authApi.checkRegistered(email)
+  }
+
   /**
    * 退出登录
    */
   const handleLogout = async () => {
     const { email, token } = await getAuthData()
 
-    if (email && token) {
-      // 调用退出登录接口
-      await authApi.logout(email, token)
-    }
-
-    // 清除本地认证数据
+    // 先清除本地状态，避免网络卡住时延迟退出或跨账号复用同步数据。
     await clearAuthData()
+    await clearLocalSyncData()
+    getStoreMethods().setIsLogin(false)
+
+    if (email && token) {
+      void authApi.logout(email, token)
+    }
 
     setState((prev) => ({
       ...prev,
@@ -189,6 +197,7 @@ export function useAuth(): UseAuthReturn {
     closeReAuthModal,
     handleSendOtp,
     handleVerifyOtp,
+    checkRegistered,
     handleLogout,
     refreshAuthState,
   }

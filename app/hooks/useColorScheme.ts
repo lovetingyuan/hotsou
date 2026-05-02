@@ -3,16 +3,16 @@ import { Appearance, ColorSchemeName, useColorScheme as useRNColorScheme } from 
 
 export function useColorScheme(): ColorSchemeName {
   const rnScheme = useRNColorScheme()
-  const [listenerScheme, setListenerScheme] = useState<ColorSchemeName>(
-    Appearance.getColorScheme(),
+  const [listenerScheme, setListenerScheme] = useState<ColorSchemeName | null>(
+    Appearance.getColorScheme() ?? null,
   )
 
   useEffect(() => {
     const subscription = Appearance.addChangeListener(({ colorScheme }) => {
-      setListenerScheme(colorScheme)
+      setListenerScheme(colorScheme ?? null)
     })
     return () => subscription.remove()
   }, [])
 
-  return listenerScheme ?? rnScheme
+  return listenerScheme ?? rnScheme ?? 'light'
 }

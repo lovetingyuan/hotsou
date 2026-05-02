@@ -34,6 +34,12 @@ export interface LogoutResponse {
   success: boolean
 }
 
+export interface CheckRegisteredResponse {
+  success: boolean
+  message?: string
+  error?: string
+}
+
 // ==================== API Functions ====================
 
 /**
@@ -117,6 +123,44 @@ export async function verifyOtp(email: string, otp: string): Promise<VerifyRespo
     }
   } catch (error) {
     console.error('[Auth API] verifyOtp error:', error)
+    const msg = '网络错误，请稍后重试'
+    showToast(msg)
+    return {
+      success: false,
+      error: msg,
+    }
+  }
+}
+
+/**
+ * 检查邮箱是否可继续认证。服务端返回通用结果，避免暴露账号是否存在。
+ */
+export async function checkRegistered(email: string): Promise<CheckRegisteredResponse> {
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/check-registered`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+
+    const data = await response.json()
+    if (!response.ok) {
+      const msg = data.error || '检查邮箱失败'
+      showToast(msg)
+      return {
+        success: false,
+        error: msg,
+      }
+    }
+
+    return {
+      success: true,
+      message: data.message,
+    }
+  } catch (error) {
+    console.error('[Auth API] checkRegistered error:', error)
     const msg = '网络错误，请稍后重试'
     showToast(msg)
     return {

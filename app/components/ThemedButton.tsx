@@ -95,7 +95,9 @@ export function ThemedButton({
         {isLoading ? (
           <ActivityIndicator color={getTextColor()} />
         ) : (
-          <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>{title}</ThemedText>
+          <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>
+            {title}
+          </ThemedText>
         )}
       </Pressable>
     </Animated.View>

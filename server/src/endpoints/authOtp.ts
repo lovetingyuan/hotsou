@@ -1,7 +1,12 @@
 import { Bool, Int, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
+import { generateNumericOtp } from '../authSecurity'
 import { sendOtpEmail } from '../services/email'
 import { AppContext } from '../types'
+
+const GLOBAL_OTP_RATE_LIMIT_ID = 'auth_otp_global'
+const OTP_GLOBAL_LIMIT = 120
+const OTP_GLOBAL_WINDOW_MS = 60 * 1000
 
 const AuthOtpRequestSchema = {
   tags: ['Auth'],
@@ -65,6 +70,24 @@ export class AuthOtp extends OpenAPIRoute {
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)
 
+    const globalRateLimitId = c.env.USER_STORAGE.idFromName(GLOBAL_OTP_RATE_LIMIT_ID)
+    const globalRateLimitStub = c.env.USER_STORAGE.get(globalRateLimitId)
+    const globalRateLimit = await globalRateLimitStub.consumeRateLimit(
+      'otp_global',
+      OTP_GLOBAL_LIMIT,
+      OTP_GLOBAL_WINDOW_MS,
+    )
+    if (!globalRateLimit.allowed) {
+      return c.json(
+        {
+          success: false,
+          error: `请求过于频繁，请等待 ${globalRateLimit.waitSeconds} 秒后再试`,
+          waitSeconds: globalRateLimit.waitSeconds,
+        },
+        429,
+      )
+    }
+
     // 检查是否可以发送验证码（60秒冷却）
     const canSendResult = await stub.canSendOtp()
     if (!canSendResult.canSend) {
@@ -79,7 +102,7 @@ export class AuthOtp extends OpenAPIRoute {
     }
 
     // 生成6位数字验证码
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    const otp = generateNumericOtp()
 
     // 先发邮件，成功后再保存验证码
     const emailResult = await sendOtpEmail(c.env.RESEND_API_KEY, email, otp)

@@ -39,6 +39,14 @@ export function isHttpUrl(string: string) {
   )
 }
 
+export function isHttpsUrl(string: string) {
+  if (typeof string !== 'string' || !string.startsWith('https://')) {
+    return false
+  }
+
+  return isHttpUrl(string)
+}
+
 export function normalizeUrl(string: string): string | null {
   if (typeof string !== 'string') {
     return null
@@ -51,7 +59,7 @@ export function normalizeUrl(string: string): string | null {
   if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
     normalized = 'https://' + trimmed
   }
-  if (isHttpUrl(normalized)) {
+  if (isHttpsUrl(normalized)) {
     return normalized
   }
   return null

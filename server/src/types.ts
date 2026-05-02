@@ -2,7 +2,14 @@ import { DateTime, Str } from 'chanfana'
 import type { Context } from 'hono'
 import { z } from 'zod'
 
-export type AppContext = Context<{ Bindings: Env }>
+export interface SecretBindings {
+  OPENAPI_KEY: string
+  RESEND_API_KEY: string
+}
+
+export type AppEnv = Env & SecretBindings
+
+export type AppContext = Context<{ Bindings: AppEnv }>
 
 /**
  * {
@@ -31,10 +38,12 @@ export const UserDataSchema = z.record(z.string(), z.any())
 export type UserDataType = z.infer<typeof UserDataSchema>
 
 export const SyncOperationSchema = z.object({
-  set: z.record(z.string(), z.any()).optional(),
+  set: z.record(z.string(), z.unknown()).optional(),
   delete: z.array(z.string()).optional(),
   get: z.array(z.string()).optional(),
 })
+
+export type SyncOperation = z.infer<typeof SyncOperationSchema>
 
 // ==================== Auth Schemas ====================
 
@@ -48,7 +57,7 @@ export const AuthOtpRequestSchema = z.object({
 
 export const AuthVerifyRequestSchema = z.object({
   email: z.string().email(),
-  otp: z.string().length(6),
+  otp: z.string().regex(/^\d{6}$/),
 })
 
 export const AuthStatusRequestSchema = z.object({

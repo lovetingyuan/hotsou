@@ -1,5 +1,6 @@
 import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
+import { BearerAuthorizationHeaderSchema, parseBearerToken } from '../authSecurity'
 import { AppContext } from '../types'
 
 const AuthStatusRequestSchema = {
@@ -7,7 +8,7 @@ const AuthStatusRequestSchema = {
   summary: 'Check login status and refresh token if needed',
   request: {
     headers: z.object({
-      authorization: z.string(),
+      authorization: BearerAuthorizationHeaderSchema,
     }),
     body: {
       content: {
@@ -41,7 +42,14 @@ export class AuthStatus extends OpenAPIRoute {
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthStatusRequestSchema>()
     const { email } = data.body
-    const token = data.headers.authorization.replace(/^Bearer\s+/i, '')
+    const token = parseBearerToken(data.headers.authorization)
+
+    if (!token) {
+      return {
+        success: true,
+        valid: false,
+      }
+    }
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)
