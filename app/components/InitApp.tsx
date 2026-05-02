@@ -9,9 +9,10 @@ import { Alert, Linking, ToastAndroid } from 'react-native'
 import * as authApi from '@/api/auth'
 import { LoginModal } from '@/components/LoginModal'
 import { fulfillStoreKeys, getStoreMethods, getStoreState, subscribeStore, useStore } from '@/store'
+import { normalizeAuthEmail } from '@/utils/authEmail'
 import { subscribeAuthExpired } from '@/utils/authSession'
-import { clearToken, getAuthData, setAuthData, updateToken } from '@/utils/secureStore'
 import checkAppUpdate from '@/utils/checkAppUpdate'
+import { clearToken, getAuthData, setAuthData, updateToken } from '@/utils/secureStore'
 
 const APP_UPDATE_PROMPT_INTERVAL = 7 * 24 * 60 * 60 * 1000
 
@@ -173,7 +174,7 @@ function App(props: React.PropsWithChildren) {
   const handleReAuthVerifyOtp = useCallback(async (email: string, otp: string) => {
     const result = await authApi.verifyOtp(email, otp)
     if (result.success && result.token) {
-      await setAuthData(email, result.token)
+      await setAuthData(normalizeAuthEmail(email), result.token)
       getStoreMethods().setIsLogin(true)
       setShowReAuthModal(false)
     } else {

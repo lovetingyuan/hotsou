@@ -2,6 +2,8 @@
 
 import { Platform, ToastAndroid } from 'react-native'
 
+import { normalizeAuthEmail } from '@/utils/authEmail'
+
 import { BASE_URL } from './baseUrl'
 
 const showToast = (message: string) => {
@@ -46,13 +48,15 @@ export interface CheckRegisteredResponse {
  * 发送验证码
  */
 export async function sendOtp(email: string): Promise<OtpResponse> {
+  const normalizedEmail = normalizeAuthEmail(email)
+
   try {
     const response = await fetch(`${BASE_URL}/api/auth/otp`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: normalizedEmail }),
     })
 
     const data = await response.json()
@@ -96,13 +100,15 @@ export async function sendOtp(email: string): Promise<OtpResponse> {
  * 验证验证码
  */
 export async function verifyOtp(email: string, otp: string): Promise<VerifyResponse> {
+  const normalizedEmail = normalizeAuthEmail(email)
+
   try {
     const response = await fetch(`${BASE_URL}/api/auth/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ email: normalizedEmail, otp }),
     })
 
     const data = await response.json()
@@ -136,13 +142,15 @@ export async function verifyOtp(email: string, otp: string): Promise<VerifyRespo
  * 检查邮箱是否可继续认证。服务端返回通用结果，避免暴露账号是否存在。
  */
 export async function checkRegistered(email: string): Promise<CheckRegisteredResponse> {
+  const normalizedEmail = normalizeAuthEmail(email)
+
   try {
     const response = await fetch(`${BASE_URL}/api/auth/check-registered`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: normalizedEmail }),
     })
 
     const data = await response.json()

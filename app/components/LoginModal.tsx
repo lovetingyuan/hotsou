@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Alert,
   KeyboardAvoidingView,
@@ -16,6 +16,7 @@ import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useThemeColor } from '@/hooks/useThemeColor'
+import { normalizeAuthEmail } from '@/utils/authEmail'
 
 type ModalStep = 'email' | 'otp'
 
@@ -51,6 +52,41 @@ export function LoginModal({
   const otpInputRef = useRef<TextInput>(null)
   const colorScheme = useColorScheme()
   const primaryColor = useThemeColor({}, 'primary')
+  const onCloseRef = useRef(onClose)
+  const onSendOtpRef = useRef(onSendOtp)
+
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
+
+  useEffect(() => {
+    onSendOtpRef.current = onSendOtp
+  }, [onSendOtp])
+
+  const handleSendOtpInternal = useCallback(async (emailToSend: string) => {
+    const normalizedEmail = normalizeAuthEmail(emailToSend)
+
+    setLoading(true)
+    setError('')
+    setEmail(normalizedEmail)
+
+    const result = await onSendOtpRef.current(normalizedEmail)
+
+    setLoading(false)
+
+    if (result.success) {
+      setStep('otp')
+      setCountdown(60)
+      ToastAndroid.show('验证码已发送', ToastAndroid.SHORT)
+      setTimeout(() => otpInputRef.current?.focus(), 100)
+    } else {
+      if (result.waitSeconds) {
+        setCountdown(result.waitSeconds)
+        setStep('otp')
+      }
+      setError(result.error || '发送验证码失败')
+    }
+  }, [])
 
   // 重置状态
   useEffect(() => {
@@ -64,7 +100,7 @@ export function LoginModal({
       if (mode === 'reauth' && initialEmail) {
         setHasAcceptedAlert(false)
         Alert.alert('登录已过期', `是否向 ${initialEmail} 发送验证码重新登录？`, [
-          { text: '取消', style: 'cancel', onPress: onClose },
+          { text: '取消', style: 'cancel', onPress: () => onCloseRef.current() },
           {
             text: '确定',
             onPress: () => {
@@ -79,7 +115,7 @@ export function LoginModal({
     } else {
       setHasAcceptedAlert(false)
     }
-  }, [visible, mode, initialEmail])
+  }, [visible, mode, initialEmail, handleSendOtpInternal])
 
   // 倒计时
   useEffect(() => {
@@ -104,34 +140,14 @@ export function LoginModal({
     return emailRegex.test(emailToValidate)
   }
 
-  const handleSendOtpInternal = async (emailToSend: string) => {
-    setLoading(true)
-    setError('')
-
-    const result = await onSendOtp(emailToSend)
-
-    setLoading(false)
-
-    if (result.success) {
-      setStep('otp')
-      setCountdown(60)
-      ToastAndroid.show('验证码已发送', ToastAndroid.SHORT)
-      setTimeout(() => otpInputRef.current?.focus(), 100)
-    } else {
-      if (result.waitSeconds) {
-        setCountdown(result.waitSeconds)
-        setStep('otp')
-      }
-      setError(result.error || '发送验证码失败')
-    }
-  }
-
   const handleSendOtp = async () => {
-    if (!validateEmail(email)) {
+    const normalizedEmail = normalizeAuthEmail(email)
+
+    if (!validateEmail(normalizedEmail)) {
       ToastAndroid.show('邮箱格式不正确', ToastAndroid.SHORT)
       return
     }
-    await handleSendOtpInternal(email)
+    await handleSendOtpInternal(normalizedEmail)
   }
 
   const handleResendOtp = async () => {
@@ -150,7 +166,10 @@ export function LoginModal({
     setLoading(true)
     setError('')
 
-    const result = await onVerifyOtp(email, otp)
+    const normalizedEmail = normalizeAuthEmail(email)
+    setEmail(normalizedEmail)
+
+    const result = await onVerifyOtp(normalizedEmail, otp)
 
     setLoading(false)
 

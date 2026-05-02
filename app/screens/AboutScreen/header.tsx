@@ -1,6 +1,6 @@
 import { Image } from 'expo-image'
 import React from 'react'
-import { ActivityIndicator, Alert, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
 
 import { LoginModal } from '@/components/LoginModal'
 import { ThemedButton } from '@/components/ThemedButton'
@@ -35,33 +35,11 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
 
   return (
     <>
-      <ThemedView
-        style={{
-          paddingHorizontal: 20,
-          paddingTop: 30,
-          paddingBottom: 20,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: 20,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 16,
-            }}
-          >
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={{ width: 60, height: 60, borderRadius: 16 }}
-            />
-            <View style={{ justifyContent: 'center' }}>
+      <ThemedView style={styles.container}>
+        <View style={styles.headerRow}>
+          <View style={styles.brandBlock}>
+            <Image source={require('@/assets/images/icon.png')} style={styles.icon} />
+            <View style={styles.brandTextBlock}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <ThemedText type='title' style={{ fontSize: 24, lineHeight: 32 }}>
                   HotSou
@@ -75,8 +53,14 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
           {isLoading ? (
             <ActivityIndicator size='small' />
           ) : isLoggedIn && email ? (
-            <TouchableOpacity onPress={onLogoutPress}>
-              <ThemedText style={{ fontSize: 14, opacity: 0.8 }}>{email}</ThemedText>
+            <TouchableOpacity
+              accessibilityRole='button'
+              onPress={onLogoutPress}
+              style={styles.accountEmailButton}
+            >
+              <ThemedText selectable style={styles.accountEmailText}>
+                {email}
+              </ThemedText>
             </TouchableOpacity>
           ) : (
             <ThemedButton title='登录' onPress={openLoginModal} />
@@ -106,3 +90,48 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  accountEmailButton: {
+    flexShrink: 1,
+    maxWidth: '48%',
+    paddingLeft: 8,
+    paddingVertical: 6,
+  },
+  accountEmailText: {
+    flexShrink: 1,
+    fontSize: 14,
+    lineHeight: 18,
+    opacity: 0.8,
+    textAlign: 'right',
+  },
+  brandBlock: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 16,
+    minWidth: 0,
+  },
+  brandTextBlock: {
+    flexShrink: 1,
+    justifyContent: 'center',
+    minWidth: 0,
+  },
+  container: {
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: 30,
+  },
+  headerRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  icon: {
+    borderRadius: 16,
+    height: 60,
+    width: 60,
+  },
+})

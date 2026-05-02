@@ -1,5 +1,6 @@
 import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
+import { normalizeAuthEmail } from '../authEmail'
 import { AppContext } from '../types'
 
 const AuthVerifyRequestSchema = {
@@ -49,7 +50,8 @@ export class AuthVerify extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthVerifyRequestSchema>()
-    const { email, otp } = data.body
+    const email = normalizeAuthEmail(data.body.email)
+    const { otp } = data.body
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)

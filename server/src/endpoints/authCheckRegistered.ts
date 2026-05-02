@@ -1,5 +1,6 @@
 import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
+import { normalizeAuthEmail } from '../authEmail'
 import { AppContext } from '../types'
 
 const AuthCheckRegisteredSchema = {
@@ -36,7 +37,7 @@ export class AuthCheckRegistered extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthCheckRegisteredSchema>()
-    void data.body.email
+    void normalizeAuthEmail(data.body.email)
 
     return {
       success: true,

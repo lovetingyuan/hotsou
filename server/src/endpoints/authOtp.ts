@@ -1,6 +1,7 @@
 import { Bool, Int, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
 import { generateNumericOtp } from '../authSecurity'
+import { normalizeAuthEmail } from '../authEmail'
 import { sendOtpEmail } from '../services/email'
 import { AppContext } from '../types'
 
@@ -65,7 +66,7 @@ export class AuthOtp extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof AuthOtpRequestSchema>()
-    const { email } = data.body
+    const email = normalizeAuthEmail(data.body.email)
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)

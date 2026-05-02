@@ -1,5 +1,7 @@
 import * as SecureStore from 'expo-secure-store'
 
+import { normalizeAuthEmail } from '@/utils/authEmail'
+
 const AUTH_KEYS = {
   EMAIL: 'auth_email',
   TOKEN: 'auth_token',
@@ -41,9 +43,11 @@ export async function getAuthData(): Promise<{ email: string | null; token: stri
  * 保存认证数据（邮箱和 token）
  */
 export async function setAuthData(email: string, token: string): Promise<void> {
+  const normalizedEmail = normalizeAuthEmail(email)
+
   try {
     await Promise.all([
-      SecureStore.setItemAsync(AUTH_KEYS.EMAIL, email),
+      SecureStore.setItemAsync(AUTH_KEYS.EMAIL, normalizedEmail),
       SecureStore.setItemAsync(AUTH_KEYS.TOKEN, token),
     ])
   } catch (error) {

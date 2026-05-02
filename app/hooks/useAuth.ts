@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import * as authApi from '@/api/auth'
 import { getStoreMethods, getStoreState, useStore } from '@/store'
+import { normalizeAuthEmail } from '@/utils/authEmail'
 import { clearLocalSyncData } from '@/utils/clearSyncData'
 import { clearAuthData, clearToken, getAuthData, setAuthData } from '@/utils/secureStore'
 
@@ -136,13 +137,15 @@ export function useAuth(): UseAuthReturn {
     const result = await authApi.verifyOtp(email, otp)
 
     if (result.success && result.token) {
+      const normalizedEmail = normalizeAuthEmail(email)
+
       // 验证成功，保存认证数据
-      await setAuthData(email, result.token)
+      await setAuthData(normalizedEmail, result.token)
       getStoreMethods().setIsLogin(true)
       setState((prev) => ({
         ...prev,
         isLoggedIn: true,
-        email: email,
+        email: normalizedEmail,
         token: result.token as string,
         showLoginModal: false,
         showReAuthModal: false,
