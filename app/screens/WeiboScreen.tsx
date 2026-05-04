@@ -41,11 +41,11 @@ function __$inject() {
     window.__markRead?.(
       '.list .list_a li',
       // @ts-ignore
-      el => el.querySelector('a span').firstChild,
+      (el) => el.querySelector('a span').firstChild,
       () => {
         const texts = document.querySelectorAll('.list .list_a li a span')
         const result = {}
-        texts.forEach(span => {
+        texts.forEach((span) => {
           const text = span.firstChild?.textContent
           // @ts-ignore
           result[text] = span

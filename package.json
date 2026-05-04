@@ -6,26 +6,19 @@
     "app",
     "server"
   ],
-  "overrides": {
-    "react-native-reanimated": "4.2.1",
-    "react-native-worklets": "0.7.4"
-  },
   "scripts": {
     "app:start": "npm run start -w hotsou",
     "android": "npm run android -w hotsou",
-    "update:android": "npm run update:android -w hotsou",
+    "update": "npm run update:android -w hotsou",
+    "upgrade": "npm run upgrade-expo -w hotsou",
     "typegen": "npm run cf-typegen -w hotsou-server",
-    "test:short-link": "node scripts/test-short-link.mjs",
-    "app:ios": "npm run ios -w hotsou",
-    "app:web": "npm run web -w hotsou",
-    "app:doctor": "npm run doctor -w hotsou",
+    "doctor": "npm run doctor -w hotsou",
     "app:check-unused": "npm run check-unused -w hotsou",
-    "app:build:android": "npm run build:android -w hotsou",
-    "app:build:preview": "npm run build:preview -w hotsou",
+    "build": "npm run build:android -w hotsou",
+    "build:preview": "npm run build:preview -w hotsou",
     "server": "npm run dev -w hotsou-server",
-    "server:deploy": "npm run deploy -w hotsou-server",
-    "lint": "npm run lint --workspaces --if-present",
-    "format": "oxfmt . --write",
+    "deploy": "npm run deploy -w hotsou-server",
+    "lint": "npm run lint --workspaces --if-present && npm run format",
     "type-check": "npm run type-check --workspaces"
   },
   "devDependencies": {
@@ -35,5 +28,9 @@
     "oxfmt": "^0.24.0",
     "oxlint": "^1.51.0",
     "typescript": "~5.9.2"
+  },
+  "overrides": {
+    "react-native-reanimated": "4.2.1",
+    "react-native-worklets": "0.7.4"
   }
 }

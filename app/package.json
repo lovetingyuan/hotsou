@@ -17,7 +17,7 @@
     "check-unused": "knip",
     "type-check": "tsc --noEmit",
     "doctor": "npx -y expo-doctor@latest",
-    "update-expo": "npm i -g eas-cli && npm install expo && npx expo install --fix && npm run doctor"
+    "upgrade-expo": "npm i -g eas-cli && npm install expo && npx expo install --fix && npm run doctor"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

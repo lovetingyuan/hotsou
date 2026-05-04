@@ -41,7 +41,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
             <Image source={require('@/assets/images/icon.png')} style={styles.icon} />
             <View style={styles.brandTextBlock}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <ThemedText type="title" style={{ fontSize: 24, lineHeight: 32 }}>
+                <ThemedText type='title' style={{ fontSize: 24, lineHeight: 32 }}>
                   HotSou
                 </ThemedText>
               </View>
@@ -51,10 +51,10 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
             </View>
           </View>
           {isLoading ? (
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size='small' />
           ) : isLoggedIn && email ? (
             <TouchableOpacity
-              accessibilityRole="button"
+              accessibilityRole='button'
               onPress={onLogoutPress}
               style={styles.accountEmailButton}
             >
@@ -63,7 +63,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
               </ThemedText>
             </TouchableOpacity>
           ) : (
-            <ThemedButton title="登录" onPress={openLoginModal} />
+            <ThemedButton title='登录' onPress={openLoginModal} />
           )}
         </View>
         {children}
@@ -73,7 +73,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
       <LoginModal
         visible={showLoginModal}
         onClose={closeLoginModal}
-        mode="login"
+        mode='login'
         onSendOtp={handleSendOtp}
         onVerifyOtp={handleVerifyOtp}
       />
@@ -82,7 +82,7 @@ export default function AboutHeader({ children }: { children?: React.ReactNode }
       <LoginModal
         visible={showReAuthModal}
         onClose={closeReAuthModal}
-        mode="reauth"
+        mode='reauth'
         initialEmail={email}
         onSendOtp={handleSendOtp}
         onVerifyOtp={handleVerifyOtp}
