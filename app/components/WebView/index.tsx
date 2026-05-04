@@ -9,7 +9,6 @@ import {
   Platform,
   Text,
   ToastAndroid,
-  View,
 } from 'react-native'
 import { WebView as RNWebView } from 'react-native-webview'
 
@@ -125,7 +124,7 @@ export default function WebView(props: {
     setDouyinHotId,
   } = useStore()
   const [webviewKey, setWebviewKey] = React.useState(0)
-  const page = $tabsList.find((t) => t.name === props.name)
+  const page = $tabsList.find(t => t.name === props.name)
   const pageIcon = getPageIcon(page)
   // const colorScheme = useColorScheme()
 
@@ -153,13 +152,14 @@ export default function WebView(props: {
   )
 
   useEffect(() => {
+    const wb = webViewRef.current
     return () => {
-      webViewRef.current?.injectJavaScript(clearScrollPositionScript)
+      wb?.injectJavaScript(clearScrollPositionScript)
     }
   }, [])
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState !== 'active') {
         webViewRef.current?.injectJavaScript(clearScrollPositionScript)
       }
@@ -183,19 +183,19 @@ export default function WebView(props: {
     `
   useEffect(() => {
     webViewRef.current?.injectJavaScript(selectScript)
-  }, [$enableTextSelect])
+  }, [selectScript])
 
   useEffect(() => {
     if (reloadTab[0] === props.name) {
       webViewRef.current?.injectJavaScript(clearScrollPositionScript)
       webViewRef.current?.reload()
       if (reloadTab[1]) {
-        setWebviewKey((k) => k + 1)
+        setWebviewKey(k => k + 1)
       }
     }
   }, [props.name, reloadTab])
   useEffect(() => {
-    setWebviewKey((k) => k + 1)
+    setWebviewKey(k => k + 1)
   }, [reloadAllTab])
 
   useEffect(() => {
@@ -265,7 +265,7 @@ export default function WebView(props: {
     webViewRef.current?.clearFormData?.()
     webViewRef.current?.clearHistory?.()
     webViewRef.current?.clearCache(true)
-    setWebviewKey((k) => k + 1)
+    setWebviewKey(k => k + 1)
     ToastAndroid.show('当前页面已重置为全新会话', ToastAndroid.SHORT)
   }, [])
 
@@ -281,7 +281,9 @@ export default function WebView(props: {
         injectedJavaScriptForMainFrameOnly
         allowsInlineMediaPlayback
         mixedContentMode={'never'}
-        originWhitelist={['https://*']}
+        // Keep every navigation inside RNWebView's callback path so rejected links are not handed to Linking.openURL.
+        originWhitelist={['*']}
+        setSupportMultipleWindows={false}
         webviewDebuggingEnabled={__DEV__}
         cacheEnabled={false}
         incognito={true}
@@ -290,7 +292,7 @@ export default function WebView(props: {
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
         onRenderProcessGone={() => {
           // ToastAndroid.show('请刷新下页面', ToastAndroid.LONG)
-          setWebviewKey((c) => c + 1)
+          setWebviewKey(c => c + 1)
         }}
         onLoadEnd={() => {
           webViewRef.current?.injectJavaScript(selectScript)
@@ -316,33 +318,37 @@ export default function WebView(props: {
               style={{ width: 80, height: 80, position: 'relative', top: -120 }}
             ></Image>
             <ActivityIndicator
-              size='large'
+              size="large"
               style={{ transform: [{ scale: 1.5 }], position: 'relative', top: -50 }}
             />
           </ThemedView>
         )}
-        onNavigationStateChange={(navState) => {
+        onNavigationStateChange={navState => {
           currentNavigationStateRef.current = {
             canGoBack: navState.canGoBack,
             title: navState.title,
             url: navState.url,
           }
-          setFabKey((k) => k + 1)
+          setFabKey(k => k + 1)
         }}
         pullToRefreshEnabled
-        onShouldStartLoadWithRequest={(request) => {
-          if (!request.url.startsWith('https://')) {
+        onShouldStartLoadWithRequest={request => {
+          const url = request.url
+          if (!url) {
             return false
           }
-          if (request.url.split('?')[0].endsWith('.apk')) {
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            return false
+          }
+          if (url.split('?')[0].endsWith('.apk')) {
             return false
           }
           if (
-            props.forbiddenUrls?.some((v) => {
+            props.forbiddenUrls?.some(v => {
               if (typeof v === 'string') {
-                return request.url.includes(v)
+                return url.includes(v)
               }
-              return v.test(request.url)
+              return v.test(url)
             })
           ) {
             return false
@@ -352,7 +358,7 @@ export default function WebView(props: {
         onContentProcessDidTerminate={() => {
           webViewRef.current?.reload()
         }}
-        renderError={(errorName) => {
+        renderError={errorName => {
           return (
             <ThemedView
               style={{
@@ -371,7 +377,7 @@ export default function WebView(props: {
                 抱歉，网页加载失败 😔 {errorName} {'  '}
               </Text>
               <ThemedButton
-                title='刷新重试'
+                title="刷新重试"
                 onPress={() => {
                   webViewRef.current?.reload()
                 }}
@@ -387,7 +393,7 @@ export default function WebView(props: {
             },
           }),
         }}
-        onMessage={(evt) => {
+        onMessage={evt => {
           let data: { type: string; payload?: any }
           try {
             data = JSON.parse(evt.nativeEvent.data)
@@ -404,7 +410,7 @@ export default function WebView(props: {
               Linking.openURL(data.payload.url)
               break
             case 'user_click':
-              setFabKey((k) => k + 1)
+              setFabKey(k => k + 1)
               break
             case 'reload':
               webViewRef.current?.reload()

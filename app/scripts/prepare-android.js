@@ -52,7 +52,7 @@ if (fs.existsSync(envLocalPath)) {
 }
 
 const lines = content.split('\n')
-const newLines = lines.filter((line) => line.trim() !== '' && !line.startsWith('EXPO_PUBLIC_IPV4='))
+const newLines = lines.filter(line => line.trim() !== '' && !line.startsWith('EXPO_PUBLIC_IPV4='))
 newLines.push(`EXPO_PUBLIC_IPV4=${ip}`)
 
 fs.writeFileSync(envLocalPath, newLines.join('\n').trim() + '\n')
@@ -60,6 +60,6 @@ fs.writeFileSync(envLocalPath, newLines.join('\n').trim() + '\n')
 // 2. Run adb devices -l
 try {
   execSync('adb devices -l', { stdio: 'inherit' })
-} catch (error) {
+} catch {
   // Silent fail or minimal warning
 }

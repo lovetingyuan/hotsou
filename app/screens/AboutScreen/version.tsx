@@ -1,7 +1,7 @@
 import * as Application from 'expo-application'
 import * as Updates from 'expo-updates'
 import React from 'react'
-import { Alert, Linking, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Alert, Linking, StyleSheet, ToastAndroid, TouchableOpacity, View } from 'react-native'
 
 import { ExternalLink } from '@/components/ExternalLink'
 import { ThemedText } from '@/components/ThemedText'
@@ -65,42 +65,38 @@ export default function Version() {
       return latestVersion?.version !== currentVersion ? (
         <ExternalLink
           href={latestVersion!.downloadUrl}
+          style={styles.updateAction}
           onPress={() => {
             ToastAndroid.show('请在浏览器中下载并信任安装', ToastAndroid.SHORT)
           }}
         >
-          <ThemedText style={{ fontSize: 16, color: '#469b00', fontWeight: 'bold' }}>
+          <ThemedText style={[styles.statusText, styles.updateText]}>
             🎉 有更新：{latestVersion?.version} 点击下载⬇
           </ThemedText>
         </ExternalLink>
       ) : (
-        <ThemedText style={{ fontSize: 16, color: '#888' }}>暂无更新</ThemedText>
+        <ThemedText style={styles.mutedStatusText}>暂无更新</ThemedText>
       )
     }
     return checking ? (
-      <ThemedText style={{ fontSize: 16, color: '#888', fontStyle: 'italic' }}>
-        ⏳ 正在检查...
-      </ThemedText>
+      <ThemedText style={[styles.mutedStatusText, styles.checkingText]}>⏳ 正在检查...</ThemedText>
     ) : (
-      <TouchableOpacity activeOpacity={0.5} onPress={handleCheckAppUpdate}>
-        <ThemedText style={{ color: primaryColor, fontSize: 16 }}>检查更新</ThemedText>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={handleCheckAppUpdate}
+        style={styles.updateAction}
+      >
+        <ThemedText style={[styles.statusText, { color: primaryColor }]}>检查更新</ThemedText>
       </TouchableOpacity>
     )
   }
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-      }}
-    >
-      <ThemedText>当前版本</ThemedText>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+    <View style={styles.versionRow}>
+      <ThemedText style={styles.versionLabel}>当前版本</ThemedText>
+      <View style={styles.versionValueGroup}>
         <ThemedText
-          style={{ color: '#888' }}
+          style={styles.currentVersionText}
           onPress={() => {
             const date = Updates.createdAt || new Date(buildDate)
             ToastAndroid.show(
@@ -121,3 +117,48 @@ export default function Version() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  checkingText: {
+    fontStyle: 'italic',
+  },
+  currentVersionText: {
+    color: '#888',
+    flexShrink: 0,
+    paddingRight: 2,
+    textAlign: 'right',
+    flex: 1,
+  },
+  mutedStatusText: {
+    color: '#888',
+    fontSize: 16,
+  },
+  statusText: {
+    fontSize: 16,
+  },
+  updateAction: {
+    flexShrink: 0,
+    minWidth: 0,
+  },
+  updateText: {
+    color: '#469b00',
+    fontWeight: 'bold',
+  },
+  versionLabel: {
+    flexShrink: 0,
+    marginRight: 12,
+  },
+  versionRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
+  },
+  versionValueGroup: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'flex-end',
+    minWidth: 0,
+  },
+})

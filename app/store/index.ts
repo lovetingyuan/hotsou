@@ -4,9 +4,9 @@ import { ToastAndroid } from 'react-native'
 
 import { normalizeTabsList, type TabItem, TabsList } from '@/constants/Tabs'
 import {
+  type FavoriteItem,
   isSyncDataKey,
   normalizeSyncValue,
-  type FavoriteItem,
   SyncDataKeys,
 } from '@/store/syncData'
 

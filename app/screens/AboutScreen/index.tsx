@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { LayoutAnimation, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 
@@ -20,7 +19,7 @@ function Section({ children, title }: { children: React.ReactNode; title?: strin
   return (
     <View style={styles.sectionContainer}>
       {title && (
-        <ThemedText style={styles.sectionTitle} type='defaultSemiBold'>
+        <ThemedText style={styles.sectionTitle} type="defaultSemiBold">
           {title}
         </ThemedText>
       )}
@@ -55,7 +54,7 @@ function Disclaimer() {
       <ThemedText
         style={{ fontSize: 16, lineHeight: 24 }}
         numberOfLines={expanded ? undefined : 2}
-        ellipsizeMode='tail'
+        ellipsizeMode="tail"
       >
         聚合一些媒体的热搜热点信息，仅供展示和浏览，请勿轻易相信或传播。{'\n'}
         所有数据均来自三方站点，与APP本身无关。{'\n'}
@@ -88,7 +87,6 @@ function Disclaimer() {
 }
 
 function AboutScreen() {
-  const navigation = useNavigation()
   const colorScheme = useColorScheme()
   const backgroundColor = colorScheme === 'dark' ? '#000' : '#f2f2f6'
 
@@ -99,7 +97,7 @@ function AboutScreen() {
           <Disclaimer />
         </AboutHeader>
         <View style={{ height: 20 }} />
-        <Section title='常规设置'>
+        <Section title="常规设置">
           <TextSelectable />
           <FabPositionSetting />
         </Section>
@@ -108,9 +106,9 @@ function AboutScreen() {
           <TabListSetting />
         </Section>
 
-        <Section title='关于应用'>
+        <Section title="关于应用">
           <Version />
-          <ExternalLink href='https://github.com/lovetingyuan/hotsou'>
+          <ExternalLink href="https://github.com/lovetingyuan/hotsou">
             <View
               style={{
                 flexDirection: 'row',
@@ -120,7 +118,7 @@ function AboutScreen() {
               }}
             >
               <ThemedText>开源主页</ThemedText>
-              <ThemedIcon name='logo-github' size={20} color='#888' />
+              <ThemedIcon name="logo-github" size={20} color="#888" />
             </View>
           </ExternalLink>
         </Section>

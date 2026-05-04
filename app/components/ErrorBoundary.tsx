@@ -8,6 +8,7 @@ interface State {
 
 export default class ErrorBoundary extends React.Component<React.PropsWithChildren, State> {
   state: State = { error: null }
+  static displayName = 'ErrorBoundary'
 
   static getDerivedStateFromError(error: Error) {
     return { error }
