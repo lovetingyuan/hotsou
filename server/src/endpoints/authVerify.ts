@@ -2,6 +2,14 @@ import { Bool, OpenAPIRoute, Str } from 'chanfana'
 import { z } from 'zod'
 import { normalizeAuthEmail } from '../authEmail'
 import { AppContext } from '../types'
+import type { OtpVerificationFailureReason } from '../authSecurity'
+
+const OTP_ERROR_MESSAGES: Record<OtpVerificationFailureReason, string> = {
+  missing: '请先获取验证码',
+  expired: '验证码已过期，请重新发送',
+  locked: '验证码错误次数过多，请重新发送',
+  mismatch: '验证码错误',
+}
 
 const AuthVerifyRequestSchema = {
   tags: ['Auth'],
@@ -56,13 +64,13 @@ export class AuthVerify extends OpenAPIRoute {
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)
 
-    const isValid = await stub.verifyOtp(otp)
+    const result = await stub.verifyOtp(otp)
 
-    if (!isValid) {
+    if (result.valid === false) {
       return c.json(
         {
           success: false,
-          error: '验证码错误或已过期',
+          error: OTP_ERROR_MESSAGES[result.reason],
         },
         400,
       )

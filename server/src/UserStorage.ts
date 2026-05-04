@@ -1,9 +1,13 @@
 import { DurableObject } from 'cloudflare:workers'
-import { applyFixedWindowRateLimit } from './authSecurity'
+import {
+  applyFixedWindowRateLimit,
+  OTP_COOLDOWN_MS,
+  OTP_EXPIRY_MS,
+  type OtpVerificationResult,
+  verifyStoredOtp,
+} from './authSecurity'
 import type { SyncOperation } from './types'
 
-const OTP_EXPIRY_MS = 60 * 1000 // 1分钟
-const OTP_COOLDOWN_MS = 60 * 1000 // 60秒冷却
 const TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000 // 1周
 const TOKEN_REFRESH_THRESHOLD_MS = 24 * 60 * 60 * 1000 // 1天
 
@@ -107,7 +111,7 @@ export class UserStorage extends DurableObject {
   }
 
   /**
-   * 保存验证码（1分钟过期），同时重置失败计数
+   * 保存验证码，同时重置失败计数
    */
   async saveOtp(otp: string): Promise<void> {
     const now = Date.now()
@@ -123,30 +127,44 @@ export class UserStorage extends DurableObject {
   /**
    * 验证 OTP，失败5次后锁定
    */
-  async verifyOtp(otp: string): Promise<boolean> {
+  async verifyOtp(otp: string): Promise<OtpVerificationResult> {
     const storedOtp = await this.ctx.storage.get<string>('auth_otp')
     const expiry = await this.ctx.storage.get<number>('auth_otp_expiry')
     const failCount = (await this.ctx.storage.get<number>('auth_otp_fail_count')) ?? 0
+    const result = verifyStoredOtp({
+      storedOtp,
+      expiry,
+      failCount,
+      otp,
+      now: Date.now(),
+    })
 
-    if (!storedOtp || !expiry) return false
-    if (Date.now() > expiry) {
-      // 验证码已过期，清除
-      await this.ctx.storage.delete(['auth_otp', 'auth_otp_expiry', 'auth_otp_fail_count'])
-      return false
-    }
-    // 失败次数达到上限，清除OTP防止继续尝试
-    if (failCount >= 5) {
-      await this.ctx.storage.delete(['auth_otp', 'auth_otp_expiry', 'auth_otp_fail_count'])
-      return false
-    }
-    if (storedOtp === otp) {
+    if (result.valid === true) {
       // 验证成功，消费验证码
       await this.ctx.storage.delete(['auth_otp', 'auth_otp_expiry', 'auth_otp_fail_count'])
-      return true
+      return result
     }
-    // 验证失败，递增失败计数
-    await this.ctx.storage.put('auth_otp_fail_count', failCount + 1)
-    return false
+
+    const { reason } = result
+
+    if (reason === 'expired') {
+      // 验证码已过期，清除
+      await this.ctx.storage.delete(['auth_otp', 'auth_otp_expiry', 'auth_otp_fail_count'])
+      return result
+    }
+
+    if (reason === 'locked') {
+      // 失败次数达到上限，清除OTP防止继续尝试
+      await this.ctx.storage.delete(['auth_otp', 'auth_otp_expiry', 'auth_otp_fail_count'])
+      return result
+    }
+
+    if (reason === 'mismatch') {
+      // 验证失败，递增失败计数
+      await this.ctx.storage.put('auth_otp_fail_count', failCount + 1)
+    }
+
+    return result
   }
 
   /**

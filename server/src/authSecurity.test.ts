@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict'
 
-import { applyFixedWindowRateLimit, generateNumericOtp, parseBearerToken } from './authSecurity'
+import {
+  applyFixedWindowRateLimit,
+  generateNumericOtp,
+  OTP_COOLDOWN_MS,
+  OTP_EXPIRY_MS,
+  parseBearerToken,
+  verifyStoredOtp,
+} from './authSecurity'
 
 const uuid = '123e4567-e89b-12d3-a456-426614174000'
 
@@ -17,6 +24,41 @@ assert.equal(parseBearerToken(uuid), null)
 assert.equal(parseBearerToken(`Bearer ${uuid} extra`), null)
 assert.equal(parseBearerToken('Bearer not-a-uuid'), null)
 assert.equal(parseBearerToken(undefined), null)
+
+const otpIssuedAt = 1_000
+assert.equal(OTP_EXPIRY_MS > OTP_COOLDOWN_MS, true)
+assert.deepEqual(
+  verifyStoredOtp({
+    storedOtp: '123456',
+    expiry: otpIssuedAt + OTP_EXPIRY_MS,
+    failCount: 0,
+    otp: '123456',
+    now: otpIssuedAt + OTP_COOLDOWN_MS + 1_000,
+  }),
+  { valid: true },
+)
+
+assert.deepEqual(
+  verifyStoredOtp({
+    storedOtp: '123456',
+    expiry: otpIssuedAt + OTP_EXPIRY_MS,
+    failCount: 0,
+    otp: '123456',
+    now: otpIssuedAt + OTP_EXPIRY_MS + 1,
+  }),
+  { valid: false, reason: 'expired' },
+)
+
+assert.deepEqual(
+  verifyStoredOtp({
+    storedOtp: '123456',
+    expiry: otpIssuedAt + OTP_EXPIRY_MS,
+    failCount: 0,
+    otp: '654321',
+    now: otpIssuedAt,
+  }),
+  { valid: false, reason: 'mismatch' },
+)
 
 const first = applyFixedWindowRateLimit({
   count: 0,

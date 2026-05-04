@@ -69,7 +69,7 @@ export async function sendOtpEmail(
       <p style="font-size: 32px; font-weight: bold; color: #007bff; letter-spacing: 4px; margin: 20px 0;">
         ${otp}
       </p>
-      <p style="color: #999; font-size: 14px;">验证码有效期为 1 分钟，请尽快使用。</p>
+      <p style="color: #999; font-size: 14px;">验证码有效期为 5 分钟，请尽快使用。</p>
       <p style="color: #999; font-size: 14px;">如果您没有请求此验证码，请忽略此邮件。</p>
       <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
       <p style="color: #bbb; font-size: 12px;">此邮件由 HotSou 自动发送，请勿回复。</p>
