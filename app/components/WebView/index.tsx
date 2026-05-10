@@ -242,7 +242,7 @@ export default function WebView(props: {
     webViewRef.current?.injectJavaScript('window.getSelection().removeAllRanges();true;')
   }, [props.name, clearSelection])
 
-  const [fabKey, setFabKey] = React.useState(0)
+  const [, setFabKey] = React.useState(0)
   const currentNavigationStateRef = React.useRef<{
     canGoBack: boolean
     title: string
@@ -285,9 +285,10 @@ export default function WebView(props: {
         originWhitelist={['*']}
         setSupportMultipleWindows={false}
         webviewDebuggingEnabled={__DEV__}
-        cacheEnabled={false}
-        incognito={true}
-        thirdPartyCookiesEnabled={false}
+        cacheEnabled={true}
+        incognito={false}
+        thirdPartyCookiesEnabled={true}
+        sharedCookiesEnabled={true}
         userAgent={props.ua ?? DEFAULT_ANDROID_USER_AGENT}
         // userAgent="Mozilla/5.0 (Linux;u;Android 4.2.2;zh-cn;) AppleWebKit/534.46 (KHTML,like Gecko)Version/5.1 Mobile Safari/10600.6.3 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)"
         onRenderProcessGone={() => {
