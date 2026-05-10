@@ -110,6 +110,7 @@ export default function WebView(props: {
   ua?: string
   dynamicJs?: string
   referer?: string
+  rewriteUrl?: (url: string) => string | null | undefined
 }) {
   const webViewRef = React.useRef<RNWebView | null>(null)
   const {
@@ -339,6 +340,15 @@ export default function WebView(props: {
             return false
           }
           if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            return false
+          }
+          const rewrittenUrl = props.rewriteUrl?.(url)
+          if (rewrittenUrl && rewrittenUrl !== url) {
+            setTimeout(() => {
+              webViewRef.current?.injectJavaScript(
+                `window.location.href = ${JSON.stringify(rewrittenUrl)}; true;`,
+              )
+            })
             return false
           }
           if (url.split('?')[0].endsWith('.apk')) {
