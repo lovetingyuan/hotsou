@@ -9,7 +9,7 @@ const SHORT_LINK_TIMEOUT_MS = 8000
 const ShortLinkResponseSchema = z.object({
   success: z.boolean(),
   result: z.object({
-    shortUrl: z.string().url(),
+    shortUrl: z.url(),
   }),
 })
 

@@ -1,54 +1,30 @@
-import { Bool, OpenAPIRoute, Str } from 'chanfana'
+import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { BearerAuthorizationHeaderSchema, parseBearerToken } from '../authSecurity'
-import { AppContext } from '../types'
+import { factory } from '../factory'
+import { validationHook } from '../validation'
 
-const AuthStatusRequestSchema = {
-  tags: ['Auth'],
-  summary: 'Check login status and refresh token if needed',
-  request: {
-    headers: z.object({
-      authorization: BearerAuthorizationHeaderSchema,
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            email: z.string().email(),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    '200': {
-      description: 'Status check result',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            valid: Bool(),
-            newToken: Str({ required: false }),
-          }),
-        },
-      },
-    },
-  },
-}
+const AuthStatusHeaderSchema = z.object({
+  authorization: BearerAuthorizationHeaderSchema,
+})
 
-export class AuthStatus extends OpenAPIRoute {
-  schema = AuthStatusRequestSchema
+const AuthStatusBodySchema = z.object({
+  email: z.email(),
+})
 
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof AuthStatusRequestSchema>()
-    const { email } = data.body
-    const token = parseBearerToken(data.headers.authorization)
+export const AuthStatus = factory.createHandlers(
+  zValidator('header', AuthStatusHeaderSchema, validationHook),
+  zValidator('json', AuthStatusBodySchema, validationHook),
+  async (c) => {
+    const { email } = c.req.valid('json')
+    const { authorization } = c.req.valid('header')
+    const token = parseBearerToken(authorization)
 
     if (!token) {
-      return {
+      return c.json({
         success: true,
         valid: false,
-      }
+      })
     }
 
     const id = c.env.USER_STORAGE.idFromName(email)
@@ -58,25 +34,25 @@ export class AuthStatus extends OpenAPIRoute {
 
     // Token 无效或已过期
     if (!verifyResult.valid) {
-      return {
+      return c.json({
         success: true,
         valid: false,
-      }
+      })
     }
 
     const newToken = await stub.refreshToken(token)
     if (!newToken) {
-      return {
+      return c.json({
         success: true,
         valid: false,
-      }
+      })
     }
 
     console.log(`[AUTH] Token refreshed for ${email}`)
-    return {
+    return c.json({
       success: true,
       valid: true,
-      newToken: newToken,
-    }
-  }
-}
+      newToken,
+    })
+  },
+)

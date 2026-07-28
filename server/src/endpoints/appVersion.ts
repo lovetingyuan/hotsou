@@ -1,37 +1,13 @@
-import { OpenAPIRoute } from 'chanfana'
-import { z } from 'zod'
-import { getLatestGitHubRelease, GitHubReleaseInfoSchema } from '../services/githubRelease'
-import { type AppContext } from '../types'
+import { factory } from '../factory'
+import { getLatestGitHubRelease } from '../services/githubRelease'
 
-export class AppVersion extends OpenAPIRoute {
-  schema = {
-    tags: ['App'],
-    summary: 'Get App Version',
-    responses: {
-      '200': {
-        description: 'Returns the latest app version info',
-        content: {
-          'application/json': {
-            schema: z.object({
-              success: z.boolean(),
-              result: z.object({
-                version: GitHubReleaseInfoSchema,
-              }),
-            }),
-          },
-        },
-      },
+export const AppVersion = factory.createHandlers(async (c) => {
+  const releaseInfo = await getLatestGitHubRelease()
+
+  return c.json({
+    success: true,
+    result: {
+      version: releaseInfo,
     },
-  }
-
-  async handle(_c: AppContext) {
-    const releaseInfo = await getLatestGitHubRelease()
-
-    return {
-      success: true,
-      result: {
-        version: releaseInfo,
-      },
-    }
-  }
-}
+  })
+})

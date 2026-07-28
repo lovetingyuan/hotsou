@@ -1,7 +1,8 @@
-import { Bool, OpenAPIRoute, Str } from 'chanfana'
+import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { normalizeAuthEmail } from '../authEmail'
-import { AppContext } from '../types'
+import { factory } from '../factory'
+import { validationHook } from '../validation'
 import type { OtpVerificationFailureReason } from '../authSecurity'
 
 const OTP_ERROR_MESSAGES: Record<OtpVerificationFailureReason, string> = {
@@ -11,55 +12,16 @@ const OTP_ERROR_MESSAGES: Record<OtpVerificationFailureReason, string> = {
   mismatch: '验证码错误',
 }
 
-const AuthVerifyRequestSchema = {
-  tags: ['Auth'],
-  summary: 'Verify OTP and get token',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            email: z.string().email(),
-            otp: z.string().regex(/^\d{6}$/),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    '200': {
-      description: 'Authentication successful',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            token: Str(),
-            isNewUser: Bool(),
-          }),
-        },
-      },
-    },
-    '400': {
-      description: 'Invalid OTP',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            error: Str(),
-          }),
-        },
-      },
-    },
-  },
-}
+const AuthVerifyBodySchema = z.object({
+  email: z.email(),
+  otp: z.string().regex(/^\d{6}$/),
+})
 
-export class AuthVerify extends OpenAPIRoute {
-  schema = AuthVerifyRequestSchema
-
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof AuthVerifyRequestSchema>()
-    const email = normalizeAuthEmail(data.body.email)
-    const { otp } = data.body
+export const AuthVerify = factory.createHandlers(
+  zValidator('json', AuthVerifyBodySchema, validationHook),
+  async (c) => {
+    const { email: inputEmail, otp } = c.req.valid('json')
+    const email = normalizeAuthEmail(inputEmail)
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)
@@ -84,10 +46,10 @@ export class AuthVerify extends OpenAPIRoute {
 
     console.log(`[AUTH] User ${email} logged in, isNewUser: ${isNewUser}`)
 
-    return {
+    return c.json({
       success: true,
-      token: token,
-      isNewUser: isNewUser,
-    }
-  }
-}
+      token,
+      isNewUser,
+    })
+  },
+)

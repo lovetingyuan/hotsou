@@ -1,90 +1,24 @@
-import { Bool, OpenAPIRoute } from 'chanfana'
+import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { BearerAuthorizationHeaderSchema, parseBearerToken } from '../authSecurity'
-import { AppContext, type SyncOperation, SyncOperationSchema } from '../types'
+import { factory } from '../factory'
+import { type SyncOperation, SyncOperationSchema } from '../types'
+import { validationHook } from '../validation'
 
-export const UserSyncSchema = {
-  tags: ['Users'],
-  summary: 'Sync user data (get, set, delete)',
-  request: {
-    headers: z.object({
-      authorization: BearerAuthorizationHeaderSchema,
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: SyncOperationSchema.extend({
-            email: z.string().email(),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    '200': {
-      description: 'Sync successful',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            result: z.any(),
-          }),
-        },
-      },
-    },
-    '400': {
-      description: 'Bad Request',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            error: z.string(),
-          }),
-        },
-      },
-    },
-    '401': {
-      description: 'Unauthorized',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            error: z.string(),
-          }),
-        },
-      },
-    },
-  },
-}
+const UserSyncHeaderSchema = z.object({
+  authorization: BearerAuthorizationHeaderSchema,
+})
 
-export class UserSync extends OpenAPIRoute {
-  schema = UserSyncSchema
+export const UserSyncBodySchema = SyncOperationSchema.extend({
+  email: z.email(),
+})
 
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof UserSyncSchema>()
-
-    if (!data || !data.headers || !data.headers.authorization) {
-      return c.json(
-        {
-          success: false,
-          error: '登录已失效，请重新登录',
-        },
-        401,
-      )
-    }
-
-    const { authorization } = data.headers
-    const { email, set, delete: deleteKeys, get } = data.body
-
-    if (!email) {
-      return c.json(
-        {
-          success: false,
-          error: '邮箱不能为空',
-        },
-        400,
-      )
-    }
+export const UserSync = factory.createHandlers(
+  zValidator('header', UserSyncHeaderSchema, validationHook),
+  zValidator('json', UserSyncBodySchema, validationHook),
+  async (c) => {
+    const { authorization } = c.req.valid('header')
+    const { email, set, delete: deleteKeys, get } = c.req.valid('json')
 
     const syncOps: SyncOperation = {
       set,
@@ -122,14 +56,15 @@ export class UserSync extends OpenAPIRoute {
     try {
       const result: unknown = await stub.syncData(syncOps)
       return c.json({ success: true, result }, 200)
-    } catch (e: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '同步失败'
       return c.json(
         {
           success: false,
-          error: e.message || '同步失败',
+          error: message,
         },
         400,
       )
     }
-  }
-}
+  },
+)

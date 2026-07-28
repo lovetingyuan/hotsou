@@ -10,7 +10,7 @@ export const GitHubReleaseInfoSchema = z.object({
   version: z.string(),
   date: z.string().optional(),
   changelog: z.string(),
-  downloadUrl: z.string().url(),
+  downloadUrl: z.url(),
 })
 
 export type GitHubReleaseInfo = z.infer<typeof GitHubReleaseInfoSchema>

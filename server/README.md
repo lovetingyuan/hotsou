@@ -1,9 +1,6 @@
-# Cloudflare Workers OpenAPI 3.1
+# Hotsou Server
 
-This is a Cloudflare Worker with OpenAPI 3.1 using [chanfana](https://github.com/cloudflare/chanfana) and [Hono](https://github.com/honojs/hono).
-
-This is an example project made to be used as a quick start into building OpenAPI compliant Workers that generates the
-`openapi.json` schema automatically from code and validates the incoming request to the defined parameters or request body.
+This is the Cloudflare Worker API for Hotsou. It uses [Hono](https://hono.dev/) for routing and Zod for request validation.
 
 ## Get started
 
@@ -16,10 +13,10 @@ This is an example project made to be used as a quick start into building OpenAP
 
 1. Your main router is defined in `src/index.ts`.
 2. Each endpoint has its own file in `src/endpoints/`.
-3. For more information read the [chanfana documentation](https://chanfana.pages.dev/) and [Hono documentation](https://hono.dev/docs).
+3. Shared Zod schemas and binding types are defined in `src/types.ts`.
 
 ## Development
 
 1. Run `wrangler dev` to start a local instance of the API.
-2. Open `http://localhost:8787/` in your browser to see the Swagger interface where you can try the endpoints.
-3. Changes made in the `src/` folder will automatically trigger the server to reload, you only need to refresh the Swagger interface.
+2. The API is available at `http://localhost:8787/api`.
+3. Changes made in the `src/` folder automatically reload the local Worker.

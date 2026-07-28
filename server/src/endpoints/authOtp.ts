@@ -1,72 +1,24 @@
-import { Bool, Int, OpenAPIRoute, Str } from 'chanfana'
+import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { generateNumericOtp } from '../authSecurity'
 import { normalizeAuthEmail } from '../authEmail'
+import { factory } from '../factory'
 import { sendOtpEmail } from '../services/email'
-import { AppContext } from '../types'
+import { validationHook } from '../validation'
 
 const GLOBAL_OTP_RATE_LIMIT_ID = 'auth_otp_global'
 const OTP_GLOBAL_LIMIT = 120
 const OTP_GLOBAL_WINDOW_MS = 60 * 1000
 
-const AuthOtpRequestSchema = {
-  tags: ['Auth'],
-  summary: 'Request OTP for email authentication',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            email: z.string().email(),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    '200': {
-      description: 'OTP sent successfully',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            message: Str(),
-          }),
-        },
-      },
-    },
-    '429': {
-      description: 'Rate limit exceeded',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            error: Str(),
-            waitSeconds: Int(),
-          }),
-        },
-      },
-    },
-    '500': {
-      description: 'Failed to send email',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            error: Str(),
-          }),
-        },
-      },
-    },
-  },
-}
+const AuthOtpBodySchema = z.object({
+  email: z.email(),
+})
 
-export class AuthOtp extends OpenAPIRoute {
-  schema = AuthOtpRequestSchema
-
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof AuthOtpRequestSchema>()
-    const email = normalizeAuthEmail(data.body.email)
+export const AuthOtp = factory.createHandlers(
+  zValidator('json', AuthOtpBodySchema, validationHook),
+  async (c) => {
+    const { email: inputEmail } = c.req.valid('json')
+    const email = normalizeAuthEmail(inputEmail)
 
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)
@@ -124,9 +76,9 @@ export class AuthOtp extends OpenAPIRoute {
 
     console.log(`[AUTH] OTP sent to ${email}`)
 
-    return {
+    return c.json({
       success: true,
       message: '验证码已发送',
-    }
-  }
-}
+    })
+  },
+)

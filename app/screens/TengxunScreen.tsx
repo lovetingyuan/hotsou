@@ -28,6 +28,12 @@ export default function TengxunScreen() {
         [id^='App_WAP_share'] {
           display: none !important;
         }
+        /* 现代 Android WebView / iOS WKWebView：直接隐藏整个悬浮层 */
+        @supports selector(div:has(> img)) {
+          div:has(> img[alt='打开腾讯新闻'][src*='/open-app-layer-']) {
+            display: none !important;
+          }
+        }
       `}
       forbiddenUrls={[
         'h.trace.qq.com',

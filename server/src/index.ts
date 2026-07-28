@@ -1,5 +1,3 @@
-import { fromHono } from 'chanfana'
-import { Hono } from 'hono'
 import { AppVersion } from './endpoints/appVersion'
 import { AuthCheckRegistered } from './endpoints/authCheckRegistered'
 import { AuthLogout } from './endpoints/authLogout'
@@ -7,11 +5,11 @@ import { AuthOtp } from './endpoints/authOtp'
 import { AuthStatus } from './endpoints/authStatus'
 import { AuthVerify } from './endpoints/authVerify'
 import { ShortLinkCreate } from './endpoints/shortLinkCreate'
-import type { AppEnv } from './types'
 import { UserSync } from './endpoints/userSync'
+import { factory } from './factory'
 
 // Start a Hono app
-const app = new Hono<{ Bindings: AppEnv }>()
+const app = factory.createApp()
 
 app.use('*', async (c, next) => {
   const url = new URL(c.req.url)
@@ -19,39 +17,17 @@ app.use('*', async (c, next) => {
   await next()
 })
 
-// Middleware to protect /openapi
-app.use('/openapi', async (c, next) => {
-  const secret = c.req.query('key')
-  // 从环境变量读取校验参数，无兜底值
-  const expectedKey = c.env.OPENAPI_KEY
+app.post('/api/auth/otp', ...AuthOtp)
+app.post('/api/auth/verify', ...AuthVerify)
+app.post('/api/auth/check-registered', ...AuthCheckRegistered)
+app.post('/api/auth/status', ...AuthStatus)
+app.post('/api/auth/logout', ...AuthLogout)
 
-  if (!expectedKey) {
-    console.error('Critical: OPENAPI_KEY environment variable is not set!')
-    return c.json({ error: 'Server Configuration Error: Missing API Key' }, 500)
-  }
+app.post('/api/users/sync', ...UserSync)
 
-  if (secret !== expectedKey) {
-    return c.json({ error: 'Unauthorized: Invalid or missing API docs key' }, 401)
-  }
-  await next()
-})
+app.post('/api/links/shorten', ...ShortLinkCreate)
 
-// Setup OpenAPI registry
-const openapi = fromHono(app, {
-  docs_url: '/openapi',
-})
-
-openapi.post('/api/auth/otp', AuthOtp)
-openapi.post('/api/auth/verify', AuthVerify)
-openapi.post('/api/auth/check-registered', AuthCheckRegistered)
-openapi.post('/api/auth/status', AuthStatus)
-openapi.post('/api/auth/logout', AuthLogout)
-
-openapi.post('/api/users/sync', UserSync)
-
-openapi.post('/api/links/shorten', ShortLinkCreate)
-
-openapi.get('/api/app/version', AppVersion)
+app.get('/api/app/version', ...AppVersion)
 
 // Serve the App Homepage
 app.get('/', async (c) => {

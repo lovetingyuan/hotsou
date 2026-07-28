@@ -1,51 +1,27 @@
-import { Bool, OpenAPIRoute } from 'chanfana'
+import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { BearerAuthorizationHeaderSchema, parseBearerToken } from '../authSecurity'
-import { AppContext } from '../types'
+import { factory } from '../factory'
+import { validationHook } from '../validation'
 
-const AuthLogoutRequestSchema = {
-  tags: ['Auth'],
-  summary: 'Logout and clear token',
-  request: {
-    headers: z.object({
-      authorization: BearerAuthorizationHeaderSchema,
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            email: z.string().email(),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    '200': {
-      description: 'Logout successful',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-          }),
-        },
-      },
-    },
-  },
-}
+const AuthLogoutHeaderSchema = z.object({
+  authorization: BearerAuthorizationHeaderSchema,
+})
 
-export class AuthLogout extends OpenAPIRoute {
-  schema = AuthLogoutRequestSchema
+const AuthLogoutBodySchema = z.object({
+  email: z.email(),
+})
 
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof AuthLogoutRequestSchema>()
-    const { email } = data.body
-    const token = parseBearerToken(data.headers.authorization)
+export const AuthLogout = factory.createHandlers(
+  zValidator('header', AuthLogoutHeaderSchema, validationHook),
+  zValidator('json', AuthLogoutBodySchema, validationHook),
+  async (c) => {
+    const { email } = c.req.valid('json')
+    const { authorization } = c.req.valid('header')
+    const token = parseBearerToken(authorization)
 
     if (!token) {
-      return {
-        success: true,
-      }
+      return c.json({ success: true })
     }
 
     const id = c.env.USER_STORAGE.idFromName(email)
@@ -59,8 +35,6 @@ export class AuthLogout extends OpenAPIRoute {
     }
 
     // 无论 token 是否有效，都返回成功（避免信息泄露）
-    return {
-      success: true,
-    }
-  }
-}
+    return c.json({ success: true })
+  },
+)

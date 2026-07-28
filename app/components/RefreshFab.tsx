@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useRef } from 'react'
-import { Animated, Pressable, StyleSheet, ToastAndroid, Vibration } from 'react-native'
+import { Animated, Pressable, StyleSheet, ToastAndroid, Vibration, View } from 'react-native'
 
 import { useStore } from '@/store'
 
@@ -11,7 +11,7 @@ export default function RefreshFab() {
   const { setReloadTab, setReloadAllTab, $tabsList, activeTab, $fabPosition } = useStore()
   const scaleAnim = useRef(new Animated.Value(1)).current
   const rotateAnim = useRef(new Animated.Value(0)).current
-  const page = $tabsList.find((t) => t.name === activeTab)
+  const page = $tabsList.find(t => t.name === activeTab)
 
   const handlePress = () => {
     if (!page) {
@@ -35,7 +35,7 @@ export default function RefreshFab() {
       useNativeDriver: true,
     }).start(() => rotateAnim.setValue(0))
     setReloadTab([page.name, false])
-    AsyncStorage.getItem(FAB_TIP_KEY).then((v) => {
+    AsyncStorage.getItem(FAB_TIP_KEY).then(v => {
       if (!v) {
         ToastAndroid.show('长按可刷新全部页面', ToastAndroid.SHORT)
         AsyncStorage.setItem(FAB_TIP_KEY, '1')
@@ -53,33 +53,34 @@ export default function RefreshFab() {
   }
 
   return (
-    <Animated.View
-      style={[
-        styles.fabContainer,
-        $fabPosition === 'left' ? { left: 20 } : { right: 20 },
-        {
-          transform: [
-            { scale: scaleAnim },
-            {
-              rotate: rotateAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0deg', '360deg'],
-              }),
-            },
-          ],
-        },
-      ]}
-    >
+    <View style={[styles.fabContainer, $fabPosition === 'left' ? { left: 20 } : { right: 20 }]}>
       <Pressable
+        accessibilityLabel="刷新当前页面"
+        accessibilityHint="长按刷新全部页面"
+        accessibilityRole="button"
         onPress={handlePress}
         onLongPress={handleLongPress}
         delayLongPress={400}
         style={styles.fab}
-        android_ripple={{ color: '#4a8a00', borderless: true }}
+        android_ripple={{ color: '#4a8a00' }}
       >
-        <Ionicons name='reload' size={22} color='#fff' />
+        <Animated.View
+          style={{
+            transform: [
+              { scale: scaleAnim },
+              {
+                rotate: rotateAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', '360deg'],
+                }),
+              },
+            ],
+          }}
+        >
+          <Ionicons name="reload" size={22} color="#fff" />
+        </Animated.View>
       </Pressable>
-    </Animated.View>
+    </View>
   )
 }
 
@@ -88,18 +89,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
     zIndex: 999,
-  },
-  fab: {
     width: 48,
     height: 48,
     borderRadius: 24,
+    boxShadow: '0 3px 8px rgba(0, 0, 0, 0.25)',
+  },
+  fab: {
+    flex: 1,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(102, 177, 5, 0.8)',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(102, 177, 5, 0.86)',
   },
 })

@@ -1,47 +1,22 @@
-import { Bool, OpenAPIRoute, Str } from 'chanfana'
+import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { normalizeAuthEmail } from '../authEmail'
-import { AppContext } from '../types'
+import { factory } from '../factory'
+import { validationHook } from '../validation'
 
-const AuthCheckRegisteredSchema = {
-  tags: ['Auth'],
-  summary: 'Check if email is already registered',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            email: z.string().email(),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    '200': {
-      description: 'Registration status',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            message: Str(),
-          }),
-        },
-      },
-    },
-  },
-}
+const AuthCheckRegisteredBodySchema = z.object({
+  email: z.email(),
+})
 
-export class AuthCheckRegistered extends OpenAPIRoute {
-  schema = AuthCheckRegisteredSchema
+export const AuthCheckRegistered = factory.createHandlers(
+  zValidator('json', AuthCheckRegisteredBodySchema, validationHook),
+  (c) => {
+    const { email } = c.req.valid('json')
+    void normalizeAuthEmail(email)
 
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof AuthCheckRegisteredSchema>()
-    void normalizeAuthEmail(data.body.email)
-
-    return {
+    return c.json({
       success: true,
       message: '如果邮箱可用，可继续请求验证码',
-    }
-  }
-}
+    })
+  },
+)

@@ -1,13 +1,14 @@
-import { Bool, OpenAPIRoute, Str } from 'chanfana'
+import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { AppContext } from '../types'
+import { factory } from '../factory'
+import { validationHook } from '../validation'
 
 const CLC_IS_API_URL = 'https://clc.is/api/links'
 const CLC_IS_DEFAULT_DOMAIN = 'clc.is'
 
 const ClcIsLinkResponseSchema = z.object({
   slug: z.string().min(1),
-  url: z.string().url(),
+  url: z.url(),
   is_generated: z.boolean(),
 })
 
@@ -15,54 +16,14 @@ const ClcIsErrorResponseSchema = z.object({
   error: z.string(),
 })
 
-const ShortLinkCreateRequestSchema = {
-  tags: ['Links'],
-  summary: 'Create a short link for sharing via a third-party shortener',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            url: z.string().url(),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    '200': {
-      description: 'Short link created successfully',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            result: z.object({
-              shortUrl: Str(),
-            }),
-          }),
-        },
-      },
-    },
-    '502': {
-      description: 'Third-party shortener failed',
-      content: {
-        'application/json': {
-          schema: z.object({
-            success: Bool(),
-            error: Str(),
-          }),
-        },
-      },
-    },
-  },
-}
+const ShortLinkCreateBodySchema = z.object({
+  url: z.url(),
+})
 
-export class ShortLinkCreate extends OpenAPIRoute {
-  schema = ShortLinkCreateRequestSchema
-
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData<typeof ShortLinkCreateRequestSchema>()
-    const { url } = data.body
+export const ShortLinkCreate = factory.createHandlers(
+  zValidator('json', ShortLinkCreateBodySchema, validationHook),
+  async (c) => {
+    const { url } = c.req.valid('json')
 
     try {
       const response = await fetch(CLC_IS_API_URL, {
@@ -92,12 +53,12 @@ export class ShortLinkCreate extends OpenAPIRoute {
         throw new Error('Shortener returned an empty URL.')
       }
 
-      return {
+      return c.json({
         success: true,
         result: {
           shortUrl,
         },
-      }
+      })
     } catch (error) {
       console.error('Failed to create short link via clc.is', error)
 
@@ -109,5 +70,5 @@ export class ShortLinkCreate extends OpenAPIRoute {
         502,
       )
     }
-  }
-}
+  },
+)
