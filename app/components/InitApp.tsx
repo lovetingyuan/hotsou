@@ -11,6 +11,7 @@ import { LoginModal } from '@/components/LoginModal'
 import { fulfillStoreKeys, getStoreMethods, getStoreState, subscribeStore, useStore } from '@/store'
 import { normalizeAuthEmail } from '@/utils/authEmail'
 import { subscribeAuthExpired } from '@/utils/authSession'
+import { resolveStartupAuthAction } from '@/utils/authStartup'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 import { clearToken, getAuthData, setAuthData, updateToken } from '@/utils/secureStore'
 
@@ -55,34 +56,28 @@ function App(props: React.PropsWithChildren) {
   // 启动时验证登录状态，如果 token 过期则弹出重新验证弹窗
   useEffect(() => {
     getAuthData().then(async ({ email, token }) => {
-      if (!email) {
-        getStoreMethods().setIsLogin(false)
-        return
-      }
-      if (!token) {
-        // 有邮箱但没有 token，需要重新验证
-        getStoreMethods().setIsLogin(false)
-        setReAuthEmail(email)
-        setShowReAuthModal(true)
-        return
-      }
-      // 有邮箱和 token，调用接口验证
-      const result = await authApi.checkAuthStatus(email, token)
-      if (!result.success && !result.valid) {
-        getStoreMethods().setIsLogin(false)
-        return
-      }
-      if (result.valid) {
-        if (result.newToken) {
-          await updateToken(result.newToken)
-        }
-        getStoreMethods().setIsLogin(true)
-      } else {
-        // token 过期，清除 token 并弹出重新验证弹窗
-        await clearToken()
-        getStoreMethods().setIsLogin(false)
-        setReAuthEmail(email)
-        setShowReAuthModal(true)
+      const action = await resolveStartupAuthAction({
+        email,
+        token,
+        checkAuthStatus: authApi.checkAuthStatus,
+      })
+
+      switch (action.type) {
+        case 'logged-out':
+        case 'unavailable':
+          getStoreMethods().setIsLogin(false)
+          return
+        case 'login':
+          if (action.newToken) {
+            await updateToken(action.newToken)
+          }
+          getStoreMethods().setIsLogin(true)
+          return
+        case 'reauth':
+          await clearToken()
+          getStoreMethods().setIsLogin(false)
+          setReAuthEmail(action.email)
+          setShowReAuthModal(true)
       }
     })
   }, [])

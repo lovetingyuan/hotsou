@@ -6,16 +6,8 @@ import {
   type OtpVerificationResult,
   verifyStoredOtp,
 } from './authSecurity'
+import { createRefreshedTokenState, type TokenVerifyResult, verifyStoredToken } from './authToken'
 import type { SyncOperation } from './types'
-
-const TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000 // 1周
-const TOKEN_REFRESH_THRESHOLD_MS = 24 * 60 * 60 * 1000 // 1天
-
-export interface TokenVerifyResult {
-  valid: boolean
-  expired: boolean
-  needRefresh: boolean
-}
 
 export interface CanSendOtpResult {
   canSend: boolean
@@ -188,35 +180,24 @@ export class UserStorage extends DurableObject {
   }
 
   /**
-   * 验证 token，检查是否有效、是否过期、是否需要刷新
+   * 验证 token 是否有效；超过 90 天未刷新则过期
    */
   async verifyToken(token: string): Promise<TokenVerifyResult> {
     const storedToken = await this.ctx.storage.get<string>('auth_token')
     const createdAt = await this.ctx.storage.get<number>('auth_token_created_at')
 
-    // token 不匹配
-    if (!storedToken || storedToken !== token) {
-      return { valid: false, expired: false, needRefresh: false }
-    }
+    const result = verifyStoredToken({
+      storedToken,
+      createdAt,
+      token,
+      now: Date.now(),
+    })
 
-    // 检查 token 是否过期（1周）
-    if (!createdAt) {
+    if (!result.valid && result.expired) {
       await this.clearToken()
-      return { valid: false, expired: true, needRefresh: false }
     }
 
-    const now = Date.now()
-    const tokenAge = now - createdAt
-
-    if (tokenAge > TOKEN_EXPIRY_MS) {
-      await this.clearToken()
-      return { valid: false, expired: true, needRefresh: false }
-    }
-
-    // 检查是否需要刷新（距离上次刷新超过1天）
-    const needRefresh = tokenAge > TOKEN_REFRESH_THRESHOLD_MS
-
-    return { valid: true, expired: false, needRefresh }
+    return result
   }
 
   /**
@@ -230,14 +211,16 @@ export class UserStorage extends DurableObject {
       return null
     }
 
-    // 生成新 token
-    const newToken = crypto.randomUUID()
-    const now = Date.now()
+    const refreshedToken = createRefreshedTokenState({
+      now: Date.now(),
+    })
 
-    await this.ctx.storage.put('auth_token', newToken)
-    await this.ctx.storage.put('auth_token_created_at', now)
+    await this.ctx.storage.put({
+      auth_token: refreshedToken.token,
+      auth_token_created_at: refreshedToken.createdAt,
+    })
 
-    return newToken
+    return refreshedToken.token
   }
 
   /**

@@ -64,23 +64,19 @@ export class AuthStatus extends OpenAPIRoute {
       }
     }
 
-    // Token 有效，检查是否需要刷新
-    if (verifyResult.needRefresh) {
-      const newToken = await stub.refreshToken(token)
-      if (newToken) {
-        console.log(`[AUTH] Token refreshed for ${email}`)
-        return {
-          success: true,
-          valid: true,
-          newToken: newToken,
-        }
+    const newToken = await stub.refreshToken(token)
+    if (!newToken) {
+      return {
+        success: true,
+        valid: false,
       }
     }
 
-    // Token 有效，不需要刷新
+    console.log(`[AUTH] Token refreshed for ${email}`)
     return {
       success: true,
       valid: true,
+      newToken: newToken,
     }
   }
 }
