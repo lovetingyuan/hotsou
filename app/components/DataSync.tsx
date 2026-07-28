@@ -21,7 +21,7 @@ export function DataSync() {
   const previousDataRef = useRef<PartialSyncPayload>({})
   const syncingRef = useRef(false)
   const isFirstLoginSync = useRef(true)
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const assignSyncValue = <K extends SyncKey>(
     target: PartialSyncPayload,
