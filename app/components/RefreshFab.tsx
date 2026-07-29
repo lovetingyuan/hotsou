@@ -62,7 +62,7 @@ export default function RefreshFab() {
         onLongPress={handleLongPress}
         delayLongPress={400}
         style={styles.fab}
-        android_ripple={{ color: '#4a8a00' }}
+        android_ripple={{ color: '#4a8a00', borderless: true, radius: 24 }}
       >
         <Animated.View
           style={{
