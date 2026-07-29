@@ -24,6 +24,11 @@ const showToast = (message: string) => {
 
 export async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${BASE_URL}${endpoint}`
+  const headers = new Headers(options?.headers)
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
   console.log('[api] request start', {
     method: options?.method ?? 'GET',
     url,
@@ -31,11 +36,8 @@ export async function request<T>(endpoint: string, options?: RequestInit): Promi
 
   try {
     const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
       ...options,
+      headers,
     })
 
     console.log('[api] response received', {
