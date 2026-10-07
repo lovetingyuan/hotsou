@@ -1,6 +1,7 @@
 // ==================== Response Types ====================
 
 import { Platform, ToastAndroid } from 'react-native'
+import { z } from 'zod'
 
 import { normalizeAuthEmail } from '@/utils/authEmail'
 
@@ -26,11 +27,13 @@ export interface VerifyResponse {
   error?: string
 }
 
-export interface StatusResponse {
-  success: boolean
-  valid: boolean
-  newToken?: string
-}
+const AuthStatusResponseSchema = z.object({
+  success: z.boolean(),
+  valid: z.boolean(),
+  newToken: z.string().optional(),
+})
+
+export type StatusResponse = z.infer<typeof AuthStatusResponseSchema>
 
 export interface LogoutResponse {
   success: boolean
@@ -189,16 +192,15 @@ export async function checkAuthStatus(email: string, token: string): Promise<Sta
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: normalizeAuthEmail(email) }),
     })
 
-    const data = await response.json()
-
-    return {
-      success: data.success,
-      valid: data.valid,
-      newToken: data.newToken,
+    // 服务异常不能当作登录过期，否则会误删本地凭证。
+    if (!response.ok) {
+      throw new Error(`检查登录状态失败: ${response.status}`)
     }
+
+    return AuthStatusResponseSchema.parse(await response.json())
   } catch (error) {
     console.error('[Auth API] checkAuthStatus error:', error)
     showToast('无法连接服务器检查状态')

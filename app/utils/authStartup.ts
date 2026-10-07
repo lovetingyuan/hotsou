@@ -46,7 +46,7 @@ export async function resolveStartupAuthAction({
     return { type: 'unavailable' }
   }
 
-  if (!status.success && !status.valid) {
+  if (!status.success) {
     return { type: 'unavailable' }
   }
 

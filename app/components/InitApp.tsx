@@ -4,7 +4,7 @@ import * as Application from 'expo-application'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Alert, Linking, ToastAndroid } from 'react-native'
+import { Alert, AppState, Linking, ToastAndroid } from 'react-native'
 
 import * as authApi from '@/api/auth'
 import { LoginModal } from '@/components/LoginModal'
@@ -53,33 +53,70 @@ function App(props: React.PropsWithChildren) {
     })
   }, [])
 
-  // 启动时验证登录状态，如果 token 过期则弹出重新验证弹窗
+  // 冷启动和回到前台都要续期，避免常驻后台的 App 长期使用却未刷新会话。
   useEffect(() => {
-    getAuthData().then(async ({ email, token }) => {
-      const action = await resolveStartupAuthAction({
-        email,
-        token,
-        checkAuthStatus: authApi.checkAuthStatus,
-      })
+    let isCheckingAuth = false
+    let cancelled = false
+    let appState = AppState.currentState
 
-      switch (action.type) {
-        case 'logged-out':
-        case 'unavailable':
-          getStoreMethods().setIsLogin(false)
+    const checkAuth = async () => {
+      if (isCheckingAuth || cancelled) {
+        return
+      }
+
+      isCheckingAuth = true
+      try {
+        const { email, token } = await getAuthData()
+        const action = await resolveStartupAuthAction({
+          email,
+          token,
+          checkAuthStatus: authApi.checkAuthStatus,
+        })
+
+        // 请求期间可能切换账号或退出，旧响应不能覆盖当前登录状态。
+        const currentAuth = await getAuthData()
+        if (cancelled || currentAuth.email !== email || currentAuth.token !== token) {
           return
-        case 'login':
-          if (action.newToken) {
-            await updateToken(action.newToken)
-          }
-          getStoreMethods().setIsLogin(true)
-          return
-        case 'reauth':
-          await clearToken()
-          getStoreMethods().setIsLogin(false)
-          setReAuthEmail(action.email)
-          setShowReAuthModal(true)
+        }
+
+        switch (action.type) {
+          case 'logged-out':
+            getStoreMethods().setIsLogin(false)
+            return
+          case 'unavailable':
+            return
+          case 'login':
+            if (action.newToken && action.newToken !== token) {
+              await updateToken(action.newToken)
+            }
+            getStoreMethods().setIsLogin(true)
+            return
+          case 'reauth':
+            await clearToken()
+            getStoreMethods().setIsLogin(false)
+            setReAuthEmail(action.email)
+            setShowReAuthModal(true)
+        }
+      } catch (error) {
+        console.error('[Auth] Failed to check login status:', error)
+      } finally {
+        isCheckingAuth = false
+      }
+    }
+
+    void checkAuth()
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      const returningToForeground = appState !== 'active' && nextAppState === 'active'
+      appState = nextAppState
+      if (returningToForeground) {
+        void checkAuth()
       }
     })
+
+    return () => {
+      cancelled = true
+      subscription.remove()
+    }
   }, [])
 
   const [loaded] = useFonts({

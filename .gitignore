@@ -201,3 +201,5 @@ server/.wrangler/
 server/.localflare/
 
 .opencode/
+
+/tmp

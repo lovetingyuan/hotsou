@@ -30,16 +30,6 @@ export const AuthStatus = factory.createHandlers(
     const id = c.env.USER_STORAGE.idFromName(email)
     const stub = c.env.USER_STORAGE.get(id)
 
-    const verifyResult = await stub.verifyToken(token)
-
-    // Token 无效或已过期
-    if (!verifyResult.valid) {
-      return c.json({
-        success: true,
-        valid: false,
-      })
-    }
-
     const newToken = await stub.refreshToken(token)
     if (!newToken) {
       return c.json({

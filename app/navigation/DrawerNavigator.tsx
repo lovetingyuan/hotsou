@@ -4,6 +4,7 @@ import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItemList,
+  useDrawerStatus,
 } from '@react-navigation/drawer'
 import { HeaderTitleProps } from '@react-navigation/elements'
 import { DrawerActions, useRoute } from '@react-navigation/native'
@@ -66,6 +67,17 @@ const SCREEN_MAP: Partial<Record<string, React.ComponentType<any>>> = {
   [TabsName.bilibili]: BilibiliScreen,
   [TabsName.kr36]: Kr36Screen,
   [TabsName.ithome]: IthomeScreen,
+}
+
+function DrawerScreenLayout({ children }: React.PropsWithChildren) {
+  const drawerStatus = useDrawerStatus()
+
+  return (
+    <View style={{ flex: 1 }}>
+      {children}
+      {drawerStatus === 'closed' && <RefreshFab />}
+    </View>
+  )
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
@@ -133,10 +145,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 }
 
 function DrawerNavigator() {
-  const { setClickTab, reloadAllTab, $tabsList, setActiveTab } = useStore()
+  const { setClickTab, $tabsList, setActiveTab } = useStore()
   const route = useRoute()
   const colorScheme = useColorScheme()
-  const [drawerOpen, setDrawerOpen] = React.useState(false)
 
   const getHeaderRight = () => {
     return <HeaderRight />
@@ -214,58 +225,49 @@ function DrawerNavigator() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Drawer.Navigator
-        screenOptions={({ navigation }) => ({
-          drawerStyle: {
-            width: '62%',
-          },
-          // Avoid Metro dev-server requests for React Navigation's packaged PNG toggle icon.
-          headerLeft: ({ tintColor }) =>
-            getHeaderLeft(() => navigation.dispatch(DrawerActions.toggleDrawer()), tintColor),
-          headerTitle: getTitle,
-          headerRight: getHeaderRight,
-          swipeEdgeWidth: 80,
-          headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
-          swipeMinDistance: 30,
-        })}
-        screenListeners={{
-          state: (e) => {
-            const state = (e.data as any)?.state
-            if (state) {
-              setDrawerOpen(state.history?.some((h: any) => h.type === 'drawer') ?? false)
-            }
-          },
-        }}
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-      >
-        {$tabsList
-          .map((page) => {
-            if (!page.show) {
-              return null
-            }
-            return (
-              <Drawer.Screen
-                key={page.name + '-' + reloadAllTab}
-                name={page.name as keyof DrawerParamList}
-                component={SCREEN_MAP[page.name] ?? CustomPage}
-                options={{
-                  drawerLabel: (props) => getDrawerLabel(props, page as any),
-                  title: page.title,
-                  drawerIcon: () => getDrawerIcon(page as any),
-                }}
-                listeners={{
-                  focus: () => {
-                    setActiveTab(page.name)
-                  },
-                }}
-              />
-            )
-          })
-          .filter(Boolean)}
-      </Drawer.Navigator>
-      {!drawerOpen && <RefreshFab />}
-    </View>
+    <Drawer.Navigator
+      screenOptions={({ navigation }) => ({
+        drawerStyle: {
+          width: '62%',
+        },
+        // Avoid Metro dev-server requests for React Navigation's packaged PNG toggle icon.
+        headerLeft: ({ tintColor }) =>
+          getHeaderLeft(() => navigation.dispatch(DrawerActions.toggleDrawer()), tintColor),
+        headerTitle: getTitle,
+        headerRight: getHeaderRight,
+        swipeEdgeWidth: 80,
+        headerTintColor: colorScheme === 'dark' ? 'white' : 'black',
+        swipeMinDistance: 30,
+      })}
+      screenLayout={({ children }) => <DrawerScreenLayout>{children}</DrawerScreenLayout>}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
+      {$tabsList
+        .map((page) => {
+          if (!page.show) {
+            return null
+          }
+          return (
+            <Drawer.Screen
+              // WebViews handle refresh signals themselves; the route key must stay stable during drawer transitions.
+              key={page.name}
+              name={page.name as keyof DrawerParamList}
+              component={SCREEN_MAP[page.name] ?? CustomPage}
+              options={{
+                drawerLabel: (props) => getDrawerLabel(props, page as any),
+                title: page.title,
+                drawerIcon: () => getDrawerIcon(page as any),
+              }}
+              listeners={{
+                focus: () => {
+                  setActiveTab(page.name)
+                },
+              }}
+            />
+          )
+        })
+        .filter(Boolean)}
+    </Drawer.Navigator>
   )
 }
 

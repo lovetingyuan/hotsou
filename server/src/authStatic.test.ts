@@ -8,7 +8,6 @@ const authCheckRegisteredSource = readFileSync(
   'utf8',
 )
 const authVerifySource = readFileSync(new URL('./endpoints/authVerify.ts', import.meta.url), 'utf8')
-const userStorageSource = readFileSync(new URL('./UserStorage.ts', import.meta.url), 'utf8')
 
 assert.equal(indexSource.includes('/api/users/:userEmail/sync'), false)
 assert.equal(indexSource.includes('openapi'), false)
@@ -22,6 +21,5 @@ assert.equal(authCheckRegisteredSource.includes('registered:'), false)
 assert.match(authCheckRegisteredSource, /message:/)
 
 assert.match(authVerifySource, /regex\(\/\^\\d\{6\}\$\//)
-assert.match(userStorageSource, /await this\.clearToken\(\)/)
 
 console.log('server auth static checks passed')

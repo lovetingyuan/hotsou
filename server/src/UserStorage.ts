@@ -6,7 +6,7 @@ import {
   type OtpVerificationResult,
   verifyStoredOtp,
 } from './authSecurity'
-import { createRefreshedTokenState, type TokenVerifyResult, verifyStoredToken } from './authToken'
+import { type TokenVerifyResult, verifyStoredToken } from './authToken'
 import type { SyncOperation } from './types'
 
 export interface CanSendOtpResult {
@@ -167,9 +167,11 @@ export class UserStorage extends DurableObject {
     const existingEmail = await this.ctx.storage.get<string>('auth_email')
     const isNewUser = !existingEmail
 
-    await this.ctx.storage.put('auth_token', token)
-    await this.ctx.storage.put('auth_token_created_at', now)
-    await this.ctx.storage.put('auth_email', email)
+    await this.ctx.storage.put({
+      auth_token: token,
+      auth_token_created_at: now,
+      auth_email: email,
+    })
 
     // 如果是新用户，记录注册时间
     if (isNewUser) {
@@ -183,44 +185,34 @@ export class UserStorage extends DurableObject {
    * 验证 token 是否有效；超过 90 天未刷新则过期
    */
   async verifyToken(token: string): Promise<TokenVerifyResult> {
-    const storedToken = await this.ctx.storage.get<string>('auth_token')
-    const createdAt = await this.ctx.storage.get<number>('auth_token_created_at')
-
-    const result = verifyStoredToken({
-      storedToken,
-      createdAt,
-      token,
-      now: Date.now(),
-    })
-
-    if (!result.valid && result.expired) {
-      await this.clearToken()
-    }
-
-    return result
+    return this.verifyTokenState(token)
   }
 
   /**
-   * 刷新 token（需要验证旧 token 有效）
+   * 验证成功后延长现有 token 的有效期。
    */
-  async refreshToken(oldToken: string): Promise<string | null> {
-    const verifyResult = await this.verifyToken(oldToken)
+  async refreshToken(token: string): Promise<string | null> {
+    const result = await this.verifyTokenState(token, true)
+    return result.valid ? token : null
+  }
 
-    // 只有 token 有效且未过期时才能刷新
-    if (!verifyResult.valid) {
-      return null
-    }
+  private async verifyTokenState(token: string, renew = false): Promise<TokenVerifyResult> {
+    // 校验与续期/清理必须原子执行，避免并发登录或退出后又写回旧会话。
+    return this.ctx.storage.transaction(async (txn) => {
+      const storedToken = await txn.get<string>('auth_token')
+      const createdAt = await txn.get<number>('auth_token_created_at')
+      const now = Date.now()
+      const result = verifyStoredToken({ storedToken, createdAt, token, now })
 
-    const refreshedToken = createRefreshedTokenState({
-      now: Date.now(),
+      if (result.expired) {
+        await txn.delete(['auth_token', 'auth_token_created_at'])
+      } else if (result.valid && renew) {
+        // 保持 token 不变，响应丢失或并发请求仍可继续使用同一会话。
+        await txn.put('auth_token_created_at', now)
+      }
+
+      return result
     })
-
-    await this.ctx.storage.put({
-      auth_token: refreshedToken.token,
-      auth_token_created_at: refreshedToken.createdAt,
-    })
-
-    return refreshedToken.token
   }
 
   /**
