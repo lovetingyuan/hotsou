@@ -14,7 +14,7 @@
     "typegen": "npm run cf-typegen -w hotsou-server",
     "doctor": "npm run doctor -w hotsou",
     "app:check-unused": "npm run check-unused -w hotsou",
-    "build": "npm run build:android -w hotsou",
+    "build": "npm run build:android -w hotsou --",
     "build:preview": "npm run build:preview -w hotsou",
     "server": "npm run dev -w hotsou-server",
     "deploy": "npm run deploy -w hotsou-server",

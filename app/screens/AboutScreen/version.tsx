@@ -1,4 +1,5 @@
 import * as Application from 'expo-application'
+import Constants from 'expo-constants'
 import * as Updates from 'expo-updates'
 import React from 'react'
 import { Alert, Linking, StyleSheet, ToastAndroid, TouchableOpacity, View } from 'react-native'
@@ -8,10 +9,8 @@ import { ThemedText } from '@/components/ThemedText'
 import { useThemeColor } from '@/hooks/useThemeColor'
 import checkAppUpdate from '@/utils/checkAppUpdate'
 
-// @ts-ignore
-const gitHash = typeof GIT_HASH === 'string' ? GIT_HASH : 'N/A'
-// @ts-ignore
-const buildDate = typeof BUILD_DATE === 'number' ? BUILD_DATE : Date.now()
+const gitHash: unknown = Constants.expoConfig?.extra?.gitHash
+const buildDate: unknown = Constants.expoConfig?.extra?.buildDate
 
 export default function Version() {
   const primaryColor = useThemeColor({}, 'primary')
@@ -98,14 +97,13 @@ export default function Version() {
         <ThemedText
           style={styles.currentVersionText}
           onPress={() => {
-            const date = Updates.createdAt || new Date(buildDate)
+            const date =
+              Updates.createdAt || (typeof buildDate === 'number' ? new Date(buildDate) : null)
             ToastAndroid.show(
               '发布时间：' +
-                date.toLocaleDateString() +
+                (date?.toLocaleString() ?? 'N/A') +
                 ' ' +
-                date.toLocaleTimeString() +
-                ' ' +
-                gitHash,
+                (typeof gitHash === 'string' ? gitHash : 'unknown'),
               ToastAndroid.SHORT,
             )
           }}
