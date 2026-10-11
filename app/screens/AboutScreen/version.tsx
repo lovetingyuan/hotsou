@@ -56,7 +56,7 @@ export default function Version() {
       .catch((err) => {
         setChecking(false)
         ToastAndroid.show('检查更新失败!', ToastAndroid.SHORT)
-        throw err
+        console.error('[Check Update] Error:', err)
       })
   }
   const versionView = () => {

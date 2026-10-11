@@ -22,7 +22,11 @@ const showToast = (message: string) => {
   }
 }
 
-export async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+export async function request<T>(
+  endpoint: string,
+  options?: RequestInit,
+  { silent = false }: { silent?: boolean } = {},
+): Promise<T> {
   const url = `${BASE_URL}${endpoint}`
   const headers = new Headers(options?.headers)
   if (!headers.has('Content-Type')) {
@@ -35,9 +39,21 @@ export async function request<T>(endpoint: string, options?: RequestInit): Promi
   })
 
   try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
+    const fetchOptions = { ...options, headers }
+    const response = await fetch(url, fetchOptions).catch(async (error: unknown) => {
+      // 只重试只读请求，避免连接中断时重复提交写操作。
+      if (
+        !['GET', 'HEAD'].includes((options?.method ?? 'GET').toUpperCase()) ||
+        options?.signal?.aborted ||
+        (error instanceof Error && error.name === 'AbortError')
+      ) {
+        throw error
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      if (options?.signal?.aborted) {
+        throw error
+      }
+      return fetch(url, fetchOptions)
     })
 
     console.log('[api] response received', {
@@ -58,11 +74,13 @@ export async function request<T>(endpoint: string, options?: RequestInit): Promi
         await markAuthExpired()
       }
 
-      showToast(message)
+      if (!silent || response.status === 401) {
+        showToast(message)
+      }
       throw new ApiError(message, response.status)
     }
 
-    return response.json() as Promise<T>
+    return await response.json()
   } catch (error) {
     if (error instanceof ApiError) {
       console.log('[api] request failed', {
@@ -83,7 +101,13 @@ export async function request<T>(endpoint: string, options?: RequestInit): Promi
       message,
     })
 
-    showToast(message)
+    if (
+      !silent &&
+      !options?.signal?.aborted &&
+      !(error instanceof Error && error.name === 'AbortError')
+    ) {
+      showToast('网络连接失败，请稍后重试')
+    }
     throw error
   }
 }
@@ -104,13 +128,17 @@ export const userApi = {
       error: z.string().optional(),
     })
 
-    const data = await request('/api/users/sync', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const data = await request(
+      '/api/users/sync',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email, ...payload }),
       },
-      body: JSON.stringify({ email, ...payload }),
-    })
+      { silent: true },
+    )
 
     return Schema.parse(data)
   },

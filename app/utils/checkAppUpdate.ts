@@ -14,7 +14,7 @@ const AppVersionResponseSchema = z.object({
 })
 
 export default async function checkAppUpdate() {
-  const data = await request('/api/app/version')
+  const data = await request('/api/app/version', undefined, { silent: true })
   const { result } = AppVersionResponseSchema.parse(data)
   const latest = result?.version
   if (latest) {

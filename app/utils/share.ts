@@ -28,11 +28,15 @@ async function getShareUrl(url: string) {
 
   try {
     console.log('[share] before request /api/links/shorten')
-    const data = await request('/api/links/shorten', {
-      method: 'POST',
-      body: JSON.stringify({ url }),
-      signal: controller.signal,
-    })
+    const data = await request(
+      '/api/links/shorten',
+      {
+        method: 'POST',
+        body: JSON.stringify({ url }),
+        signal: controller.signal,
+      },
+      { silent: true },
+    )
     console.log('[share] after request /api/links/shorten', data)
 
     return ShortLinkResponseSchema.parse(data).result.shortUrl
